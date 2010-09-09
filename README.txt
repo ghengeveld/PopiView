@@ -1,0 +1,6 @@
+LiveUserStats is a real-time website analytics system aimed at providing insight
+ into sudden changes in the popularity of certain pages of a news site or blog.
+It measures the deviation between the current popularity and the historic
+popularity of a page. This will allow the website editors to quickly take action
+ in response to current events as measured by LiveUserStats. The system consists
+ of three parts: a front-end dashboard, a back-end processing system and a trigger script for the back-end. The front-end is a visualization to be displayed on screen. It shows the pages which are most popular at that time, in such a way that it's easy for the end-user to recognize what's happening and estimate the gravity of the event. The back-end is a program that runs outside the end-user's view. It gathers and processes incoming data and forwards relevant data to the frond-end. The trigger script is a small code snippet which must be included in every page. It sends information about the current visitor to the back-end, so that the page popularity can be measured.
