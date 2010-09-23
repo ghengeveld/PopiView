@@ -1,0 +1,13 @@
+Some help with installation and running the application.
+
+Create virtualenv:
+virtualenv dirname
+
+Set virtualenv:
+source bin/activate
+
+Run doctest:
+python -m doctest -v README.txt
+
+Start WSGI server:
+python bin/paster serve --reload settings.ini
