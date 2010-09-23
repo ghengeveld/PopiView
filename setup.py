@@ -26,5 +26,6 @@ setup(
       'PasteDeploy',
       'WebOb',
       'WSGIUtils'
-    ]
+    ],
+    test_suite='popiview.test.suite'
 )
