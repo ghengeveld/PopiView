@@ -1,13 +1,16 @@
 import urlparse
+from datetime import datetime
 
 class Hit(object):
 
-    def __init__(self, url, remove_www=False, referrer='', user_agent=None):
+    def __init__(self, url, remove_www=False, referrer='', user_agent=None, when=''):
 
         self._url_parts = list(urlparse.urlsplit(url))
         self._remove_www = remove_www
         self._referrer_parts = list(urlparse.urlsplit(referrer))
 
+        if when == '':
+            when = datetime.utcnow()
 
     def url(self):
 	url = self._url_parts
@@ -24,7 +27,7 @@ class Hit(object):
     def keywords(self):
         ref = self._referrer_parts
         qs = urlparse.parse_qs(ref[3])
-        keywords = qs['q'][0].decode('utf8').split(' ')
+        keywords = qs['q'][0].lower().decode('utf8').split(' ')
         return keywords
 
 

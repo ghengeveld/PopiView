@@ -1,5 +1,4 @@
 from webob import Request, Response
-
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage
 

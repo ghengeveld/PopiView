@@ -59,8 +59,8 @@ Storing Hits
 Hits need to be stored, so we can sum them and analyse them over time.
 We first create a storage object
 
->>> from Popiview import InMemoryStorage
->>> storage = InMemoryStorage()
+>>> from popiview.storage import MemoryStorage
+>>> storage = MemoryStorage()
 
 Adding a hit is quite simple:
 
@@ -79,7 +79,7 @@ We can now ask the storage for a list of urls that have been
 accessed within a certain period.
 
 >>> storage.urls_accessed(start_time=23454325, 
-...                       minimal_hits=5)
+...                       minimum_hits=2)
 [u'http://www.mysite.com/page/']
 
 These page urls are the ones that we are actually interested in.
