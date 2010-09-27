@@ -1,0 +1,2 @@
+class MemoryStorage(object):
+    pass
