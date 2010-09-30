@@ -1,21 +1,28 @@
 import urlparse
-from datetime import datetime
+import time
 
 class Hit(object):
 
-    def __init__(self, url, remove_www=False, referrer='', user_agent=None, when=''):
+    def __init__(self, url, remove_www=False, referrer=None, timestamp=None):
 
         self._url_parts = list(urlparse.urlsplit(url))
         self._remove_www = remove_www
-        self._referrer_parts = list(urlparse.urlsplit(referrer))
+    
+        if referrer is None:
+            self._referrer_parts = None
+        else:
+            self._referrer_parts = list(urlparse.urlsplit(referrer))
 
-        if when == '':
-            when = datetime.utcnow()
+        if timestamp is None:
+            self._timestamp = time.gmtime()
+        else:
+            self._timestamp = timestamp
+
 
     def url(self):
-	url = self._url_parts
-
-	if url[2].endswith('/'):
+        url = self._url_parts
+        
+        if url[2].endswith('/'):
             url[2] = url[2][:-1]
 
         if(self._remove_www == True):
@@ -24,10 +31,22 @@ class Hit(object):
         return urlparse.urlunsplit(url)
 
 
+    def timestamp(self):
+        return self._timestamp
+    
+
     def keywords(self):
+        keywords = []
         ref = self._referrer_parts
+        
+        if ref is None:
+            return []
+
         qs = urlparse.parse_qs(ref[3])
-        keywords = qs['q'][0].lower().decode('utf8').split(' ')
+        for query_string in ['q', 'query']:
+            for query in qs.get(query_string, []):
+                keywords += query.lower().decode('utf8').split(' ')
+        
         return keywords
 
 
