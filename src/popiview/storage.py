@@ -1,8 +1,7 @@
 import operator
 from popiview.counter import Counter
 
-class MemoryStorage(object):
-    
+class MemoryStorage(object):    
 
     def __init__(self):
         self._hits = []
@@ -27,12 +26,10 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        selection = self.filter_timestamp(hits, start_time, end_time)
+        hits = filter(self.filter_timestamp(start_time, end_time), hits)
 
-        urls = []
-        for item in selection:
-            urls.append(item['url'])
-        
+        urls = map(operator.itemgetter('url'), hits)
+ 
         if unique:
             return list(set(urls))
 
@@ -46,8 +43,8 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        hits = self.filter_url(hits, url)
-        hits = self.filter_timestamp(hits, start_time, end_time)
+        hits = filter(self.filter_url(url), hits)
+        hits = filter(self.filter_timestamp(start_time, end_time), hits)
 
         return len(hits)
 
@@ -61,75 +58,79 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        hits = self.filter_timestamp(hits, start_time, end_time)
+        hits = filter(self.filter_timestamp(start_time, end_time), hits)
 
         # Get a dictionary like {url: count}
-        hitcount = Counter(map(operator.itemgetter('url'), hits))
+        hitcounts = Counter(map(operator.itemgetter('url'), hits))
         
         # Iterate over the hitcounts, putting them through the filter function.
         # Items are removed if the filter function returns false.
-        return dict(filter(self.filter_hitcount(minimum_hits), 
-                           hitcount.iteritems()))
+        hitcounts = dict(filter(self.filter_hitcount(minimum_hits), 
+                                hitcounts.iteritems()))
+
+        return hitcounts
 
     
-    def get_keywords(self, url=None, start_time=None, end_time=None):
-        """Get all keywords. Returns dictionary: {keyword: count}
+    def get_keywords(self, url=None, start_time=None, end_time=None, 
+                     minimum_count=None):
+        """Get all keywords and their counts.
+        Returns dictionary: {keyword: count}
         """
         hits = self._hits
         
-        if url is not None:
-            hits = self.filter_url(hits, url)
-        
-        hits = self.filter_timestamp(hits, start_time, end_time)
+        hits = filter(self.filter_url(url), hits)
+        hits = filter(self.filter_timestamp(start_time, end_time), hits)
         
         # Iterate over keywords in hits, combining them in a single list.
         # Then use Counter to get a dictionary like {keyword: count}
         keywords = Counter(reduce(operator.add,
                                   map(operator.itemgetter('keywords'), hits)))
+        
+        keywords = dict(filter(self.filter_keywordcount(minimum_count), 
+                        keywords.iteritems()))
 
         return keywords
 
 
-    def filter_url(self, hits, url):
-        """Filter hits by url. Return only hits for the given url.
+    def filter_url(self, url=None):
+        """Returns a filter function to filter hits by url.
         """
-        selection = []
-
-        for item in hits:
-            if item['url'] == url:
-                selection.append(item)
         
-        return selection
+        def filter_function(item):
+            """Filter hits by url. Return false if item doesn't match the given
+            url, true otherwise.
+            """
+            if url is not None:
+                if item['url'] != url:
+                    return False
+            return True
+
+        return filter_function
 
 
-    def filter_timestamp(self, hits, start_time=None, end_time=None):
-        """Filter hits by start and end time. Return only hits between these
-        timestamps.
+    def filter_timestamp(self, start_time=None, end_time=None):
+        """Return a filter function for filtering by start and end time.
         """
-        if start_time is None and end_time is None:
-            return hits
 
-        selection = []
-        if start_time is None:
-            for item in hits:
-                if item['timestamp'] <= end_time:
-                    selection.append(item)
-        elif end_time is None:
-            for item in hits:
-                if item['timestamp'] >= start_time:
-                    selection.append(item)
-        else:
-            for item in hits:
-                if (item['timestamp'] <= end_time 
-                        and item['timestamp'] >= start_time):
-                    selection.append(item)
+        def filter_function(item):
+            """Filter hits by start and end time.
+            Returns false if out of bounds, true otherwise.
+            """
+            if start_time is not None:
+                if item['timestamp'] < start_time:
+                    return False
+            if end_time is not None:
+                if item['timestamp'] > end_time:
+                    return False
+            return True
 
-        return selection
+        return filter_function
 
 
     def filter_hitcount(self, minimum_hits=None, maximum_hits=None):
         """Returns a filter function for filtering by minimum and maximum hits.
         """
+
         def filter_function((url, count),):
             """Filter hitcounts by minimum or maximum number of hits.
             Returns false if out of bounds, true otherwise.
@@ -139,6 +140,22 @@ class MemoryStorage(object):
                     return False
             if maximum_hits is not None:
                 if count > maximum_hits:
+                    return False
+            return True
+
+        return filter_function
+
+
+    def filter_keywordcount(self, minimum_count=None):
+        """Returns a filter function for filtering by minimum keyword count.
+        """
+
+        def filter_function((keyword, count),):
+            """Filter keywords by minimum count.
+            Returns false if count is less than minimum_count, true otherwise.
+            """
+            if minimum_count is not None:
+                if count < minimum_count:
                     return False
             return True
 

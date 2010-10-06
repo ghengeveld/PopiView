@@ -69,10 +69,10 @@ We can retrieve a list of all pages accessed
 >>> storage.list_urls()
 [u'http://www.mysite.com/page']
 
-Lets add another hit from a while ago
+Lets add another hit from a long time ago
 
 >>> storage.add_hit(Hit(u'http://www.mysite.com/page2',
-...                     timestamp=1285600000))
+...                     timestamp=1000))
 
 Now we should have two urls stored
 
@@ -83,7 +83,7 @@ We can also ask the storage for a list of urls that have been
 accessed within a certain period. This should return only our first entry, 
 because the other one had an older timestamp.
 
->>> storage.list_urls(start_time=1285600100)
+>>> storage.list_urls(start_time=9000)
 [u'http://www.mysite.com/page']
 
 Lets empty the hit log now and create some dummy hits with different timestamps
@@ -178,4 +178,7 @@ Now we can test the analyzer
 [{'url': u'http://www.mysite.com/page', 
   'keywords': {u'page': 69, u'cool': 103}, 'value': 405}]
 
+We can also get a keyword 'cloud':
 
+>>> analyzer.get_keyword_cloud()
+{u'page': 69, u'cool': 103}

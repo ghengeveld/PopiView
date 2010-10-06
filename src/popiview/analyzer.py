@@ -1,11 +1,12 @@
 import time
 import operator
 import math
+import random
 
 class Analyzer(object):
 
-
-    def __init__(self, storage, start_time=None, boundary_time=None, end_time=None):
+    def __init__(self, storage, start_time=None, boundary_time=None, 
+                 end_time=None):
         self._storage = storage
         now = time.time()
         
@@ -32,7 +33,8 @@ class Analyzer(object):
         boundary = self._boundary_time
         end = self._end_time
 
-        historic = self._storage.get_hitcounts(start_time=start, end_time=boundary)
+        historic = self._storage.get_hitcounts(start_time=start, 
+                                               end_time=boundary)
         recent = self._storage.get_hitcounts(start_time=boundary, end_time=end)
         historic_length = boundary - start
         recent_length = end - boundary
@@ -46,14 +48,38 @@ class Analyzer(object):
             deviation_pct = int((recent_hps - historic_hps) / historic_hps *
                                 100)
             keywords = self._storage.get_keywords(url)
-            deviators.append({'url':url, 'value':deviation_pct, 'keywords':keywords})
+            deviators.append({'url':url, 'value':deviation_pct, 
+                              'keywords':keywords})
         
+        # Reverse sort by absolute deviation pct value
         deviators.sort(key=lambda x: abs(x['value']), reverse=True)
 
         if limit is None:
             return deviators
         else:
             return deviators[:limit]
+
+    
+    def get_keyword_cloud(self, minimum_count=None, maximum_items=50,
+                          minimum_pct=0, maximum_pct=100):
+        """Returns a dictionary of keywords and their size relative to the
+        others, as a percentage with set bounds.
+        """
+        cloud = []
+        pct_range = maximum_pct - minimum_pct
+        
+        keywords = self._storage.get_keywords(minimum_count=minimum_count)
+        totalcount = sum(keywords.itervalues())
+
+        keys = keywords.keys()
+        keys.sort()
+
+        for keyword in keys:
+            pct = (keywords[keyword] / float(totalcount) * pct_range 
+                   + minimum_pct)
+            cloud.append((keyword, round(pct)))
+
+        return cloud
 
 
     def calc_sd(self, numlist):

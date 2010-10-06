@@ -14,7 +14,7 @@ class Hit(object):
             self._referrer_parts = list(urlparse.urlsplit(referrer))
 
         if timestamp is None:
-            self._timestamp = time.gmtime()
+            self._timestamp = time.time()
         else:
             self._timestamp = timestamp
 
