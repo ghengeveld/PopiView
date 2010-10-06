@@ -43,9 +43,10 @@ class Analyzer(object):
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)
-            deviation = (recent_hps - historic_hps) / historic_hps
+            deviation_pct = int((recent_hps - historic_hps) / historic_hps *
+                                100)
             keywords = self._storage.get_keywords(url)
-            deviators.append({'url':url, 'value':deviation, 'keywords':keywords})
+            deviators.append({'url':url, 'value':deviation_pct, 'keywords':keywords})
         
         deviators.sort(key=lambda x: abs(x['value']), reverse=True)
 

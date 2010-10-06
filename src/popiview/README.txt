@@ -175,7 +175,7 @@ Add some more dummy data
 Now we can test the analyzer
 
 >>> analyzer.get_top_deviators(limit=1)
-[{'url': u'http://www.mysite.com/page2',
-  'value: 0.25,
-  'keywords': {'cool': 1, 'page': 1}]
+[{'url': u'http://www.mysite.com/page', 
+  'keywords': {u'page': 69, u'cool': 103}, 'value': 405}]
+
 
