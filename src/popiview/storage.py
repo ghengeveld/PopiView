@@ -5,6 +5,7 @@ class MemoryStorage(object):
 
     def __init__(self):
         self._hits = []
+        self._recenthits = []
 
 
     def clear_hits(self):
@@ -12,8 +13,17 @@ class MemoryStorage(object):
 
 
     def add_hit(self, hit):
-        self._hits.append({'url': hit.url(), 'timestamp': hit.timestamp(), 
-                           'keywords': hit.keywords()})
+        hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
+                  'keywords': hit.keywords()}
+        self._hits.append(hitobj)
+        self._recenthits.append(hitobj)
+    
+    
+    def get_recenthits(self):
+        recenthits = self._recenthits             
+        self._recenthits = []
+
+        return recenthits
 
 
     def list_urls(self, unique=False, start_time=None, end_time=None, 
@@ -84,7 +94,8 @@ class MemoryStorage(object):
         # Iterate over keywords in hits, combining them in a single list.
         # Then use Counter to get a dictionary like {keyword: count}
         keywords = Counter(reduce(operator.add,
-                                  map(operator.itemgetter('keywords'), hits)))
+                                  map(operator.itemgetter('keywords'), hits),
+                                  []))
         
         keywords = dict(filter(self.filter_keywordcount(minimum_count), 
                         keywords.iteritems()))

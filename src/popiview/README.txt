@@ -174,11 +174,56 @@ Add some more dummy data
 
 Now we can test the analyzer
 
+>>> analyzer.get_top_deviators()
+[{'url': u'http://www.mysite.com/page', 
+  'keywords': {u'page': 69, u'cool': 103}, 'value': 405},
+ {'url': u'http://www.mysite.com/page3', 'keywords': {}, 'value': 200},
+ {'url': u'http://www.mysite.com/page4', 'keywords': {}, 'value': -66},
+ {'url': u'http://www.mysite.com/page2', 'keywords': {}, 'value': 0}]
+
+By default they are sorted by absolute value, meaning -66 comes between 
+200 and 0. We can disable this behavior:
+
+>>> analyzer.get_top_deviators(sort_absolute=False)
+[{'url': u'http://www.mysite.com/page', 
+  'keywords': {u'page': 69, u'cool': 103}, 'value': 405},
+ {'url': u'http://www.mysite.com/page3', 'keywords': {}, 'value': 200},
+ {'url': u'http://www.mysite.com/page2', 'keywords': {}, 'value': 0},
+ {'url': u'http://www.mysite.com/page4', 'keywords': {}, 'value': -66}]
+
+If we want just the top # of deviators we can set a limit:
+
 >>> analyzer.get_top_deviators(limit=1)
 [{'url': u'http://www.mysite.com/page', 
   'keywords': {u'page': 69, u'cool': 103}, 'value': 405}]
 
-We can also get a keyword 'cloud':
 
->>> analyzer.get_keyword_cloud()
-{u'page': 69, u'cool': 103}
+Keyword Cloud
+-------------
+
+A separate part of the application is the keyword cloud. Because we want to set
+a different timespan for this we create a new Analyzer first.
+
+>>> keywordanalyzer = Analyzer(storage, start_time=0, boundary_time=5000,
+...                            end_time=10000)
+
+We can now get a keyword 'cloud':
+
+>>> keywordanalyzer.get_keyword_cloud()
+[(u'cool', 60.0), (u'page', 40.0)]
+
+We can specify a minimum hitcount for the keyword, so only keywords with at
+least so many hits are returned:
+
+>>> keywordanalyzer.get_keyword_cloud(minimum_count=80)
+[(u'cool', 100.0)]
+
+Or with a limit:
+
+>>> keywordanalyzer.get_keyword_cloud(limit=1)
+[(u'cool', 100.0)]
+
+We can adjust the percentage by setting minimum and/or maximum values:
+
+>>> keywordanalyzer.get_keyword_cloud(minimum_pct=25, maximum_pct=175)
+[(u'cool', 115.0), (u'page', 85.0)]

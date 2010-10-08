@@ -1,7 +1,4 @@
 import time
-import operator
-import math
-import random
 
 class Analyzer(object):
 
@@ -26,7 +23,11 @@ class Analyzer(object):
             self._end_time = end_time
 
 
-    def get_top_deviators(self, limit=None, sort_absolute=False):
+    def get_top_deviators(self, limit=None, sort_absolute=True):
+        """Returns a list containing top deviators, each represented in a 
+        dictionary: {'url': url, 'value': deviation_pct, 'keywords': []}
+        Sorted by deviation pct, optionally absolute.
+        """
         deviators = []
         
         start = self._start_time
@@ -51,31 +52,43 @@ class Analyzer(object):
             deviators.append({'url':url, 'value':deviation_pct, 
                               'keywords':keywords})
         
-        # Reverse sort by absolute deviation pct value
-        deviators.sort(key=lambda x: abs(x['value']), reverse=True)
+        # Reverse sort by deviation pct value
+        if sort_absolute:
+            deviators.sort(key=lambda x: abs(x['value']), reverse=True)
+        else:
+            deviators.sort(key=lambda x: x['value'], reverse=True)
 
         if limit is None:
             return deviators
         else:
             return deviators[:limit]
 
-    
-    def get_keyword_cloud(self, minimum_count=None, maximum_items=50,
+
+    def get_keyword_cloud(self, minimum_count=None, limit=50,
                           minimum_pct=0, maximum_pct=100):
         """Returns a dictionary of keywords and their size relative to the
-        others, as a percentage with set bounds.
+        others, as a percentage with set bounds. Sorted alphabetically.
         """
         cloud = []
-        pct_range = maximum_pct - minimum_pct
-        
-        keywords = self._storage.get_keywords(minimum_count=minimum_count)
-        totalcount = sum(keywords.itervalues())
 
+        keywords = self._storage.get_keywords(minimum_count=minimum_count)
+
+        limitval = 0
+        vals = keywords.values()
+        vals.sort(reverse=True)
+        if limit < len(keywords):
+            vals = vals[:limit]
+            limitval = vals[-1]
+
+        totalcount = sum(vals)
+        pct_range = maximum_pct - minimum_pct
         keys = keywords.keys()
         keys.sort()
 
         for keyword in keys:
-            pct = (keywords[keyword] / float(totalcount) * pct_range 
+            if limitval and keywords[keyword] < limitval:
+                continue
+            pct = (keywords[keyword] / float(totalcount) * pct_range
                    + minimum_pct)
             cloud.append((keyword, round(pct)))
 
@@ -83,6 +96,8 @@ class Analyzer(object):
 
 
     def calc_sd(self, numlist):
+        """Returns the standard deviation for a list of numbers.
+        """
         if len(numlist):
             avg = sum(numlist) / len(numlist)
             devs = []
