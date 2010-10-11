@@ -31,6 +31,10 @@ class Hit(object):
         return urlparse.urlunsplit(url)
 
 
+    def path(self):
+        return self._url_parts[2] 
+
+
     def timestamp(self):
         return self._timestamp
     

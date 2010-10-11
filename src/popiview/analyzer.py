@@ -1,4 +1,5 @@
 import time
+import urlparse
 
 class Analyzer(object):
 
@@ -23,7 +24,8 @@ class Analyzer(object):
             self._end_time = end_time
 
 
-    def get_top_deviators(self, limit=None, sort_absolute=True):
+    def get_top_deviators(self, limit=None, sort_absolute=True,
+                          return_paths=True):
         """Returns a list containing top deviators, each represented in a 
         dictionary: {'url': url, 'value': deviation_pct, 'keywords': []}
         Sorted by deviation pct, optionally absolute.
@@ -35,8 +37,10 @@ class Analyzer(object):
         end = self._end_time
 
         historic = self._storage.get_hitcounts(start_time=start, 
-                                               end_time=boundary)
-        recent = self._storage.get_hitcounts(start_time=boundary, end_time=end)
+                                               end_time=boundary,
+                                               return_paths=return_paths)
+        recent = self._storage.get_hitcounts(start_time=boundary, end_time=end,
+                                             return_paths=return_paths)
         historic_length = boundary - start
         recent_length = end - boundary
 
@@ -48,7 +52,7 @@ class Analyzer(object):
             historic_hps = historic_value / float(historic_length)
             deviation_pct = int((recent_hps - historic_hps) / historic_hps *
                                 100)
-            keywords = self._storage.get_keywords(url)
+            keywords = self._storage.get_keywords(url)           
             deviators.append({'url':url, 'value':deviation_pct, 
                               'keywords':keywords})
         
@@ -66,7 +70,7 @@ class Analyzer(object):
 
     def get_keyword_cloud(self, minimum_count=None, limit=50,
                           minimum_pct=0, maximum_pct=100):
-        """Returns a dictionary of keywords and their size relative to the
+        """Returns a list or tuples of keywords and their size relative to the
         others, as a percentage with set bounds. Sorted alphabetically.
         """
         cloud = []
@@ -106,3 +110,9 @@ class Analyzer(object):
             if len(devs):
                 return (sum(devs) / len(devs)) ** 0.5
         return 0.0
+
+
+    def relative_url(self, url):
+        """Returns relative url
+        """
+        return 

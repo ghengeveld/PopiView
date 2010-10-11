@@ -17,6 +17,7 @@ class PopiWSGIServer(object):
         self._keyword_analyzer = Analyzer(self._storage, start_time=0,
                                           boundary_time=7000, end_time=10000)
         self._view = View()
+        self._image = self.load_image()
 
 
     def index(self):
@@ -71,7 +72,7 @@ class PopiWSGIServer(object):
         return Response('done')
 
 
-    def image_gif(self):
+    def log_hit(self):
         cur = self.request.GET['cur']
         ref = self.request.GET['ref']
 
@@ -79,17 +80,25 @@ class PopiWSGIServer(object):
         response.headers['Content-Type'] = "image/gif"
         response.headers['Expires'] = "Sat, 26 Jul 1997 05:00:00 GMT"
         response.headers['Cache-Control'] = "no-cache, must-revalidate"
-        response.body = load_image()
+        response.body = self._image
 
         hit = Hit(cur, ref)
-        self.storage.add_hit(hit)
+        self._storage.add_hit(hit)
 	
         return response
+
+
+    def load_image(self):
+        with open('components/img/img.gif') as f:
+            data = f.read()
+        return data
 
 
     def __call__(self, environ, start_response):
         self.request = Request(environ)
         name = self.request.path_info_pop()
+        if name == '':
+            name = 'index'
         method_name = self._urlmap.get(name, None)
         method = getattr(self, method_name, None)
         if method is None:
@@ -100,9 +109,14 @@ class PopiWSGIServer(object):
         return response(environ, start_response)
 
 
-def app_factory(global_config, storage_name, urlmap, **local_conf):
+def app_factory(global_config, storage_name, **local_conf):
     if storage_name == 'memory':
         storage = MemoryStorage()
     else:
         raise ValueError('No such storage: %s' % storage_name)
+    urlmap = {}
+    for key, value in local_conf.iteritems():
+        if key.startswith('urlmap'):
+            k = key.split('.', 1)[1]
+            urlmap[k] = value
     return PopiWSGIServer(storage, urlmap)

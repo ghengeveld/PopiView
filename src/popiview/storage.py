@@ -14,15 +14,15 @@ class MemoryStorage(object):
 
     def add_hit(self, hit):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
-                  'keywords': hit.keywords()}
+                'keywords': hit.keywords(), 'path': hit.path()}
         self._hits.append(hitobj)
         self._recenthits.append(hitobj)
     
     
     def get_recenthits(self):
-        recenthits = self._recenthits             
+        recenthits = self._recenthits[:20]
         self._recenthits = []
-
+        
         return recenthits
 
 
@@ -59,7 +59,8 @@ class MemoryStorage(object):
         return len(hits)
 
 
-    def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1):
+    def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
+                      return_paths=True):
         """Return dictionary of hitcounts for all urls using the format 
         {url: count} Optional parameters:
         start_time Return only urls requested after this timestamp.
@@ -70,8 +71,11 @@ class MemoryStorage(object):
         
         hits = filter(self.filter_timestamp(start_time, end_time), hits)
 
-        # Get a dictionary like {url: count}
-        hitcounts = Counter(map(operator.itemgetter('url'), hits))
+        # Get a dictionary like {url: count} or {path: count}
+        if return_paths:
+            hitcounts = Counter(map(operator.itemgetter('path'), hits))
+        else:
+            hitcounts = Counter(map(operator.itemgetter('url'), hits))
         
         # Iterate over the hitcounts, putting them through the filter function.
         # Items are removed if the filter function returns false.
