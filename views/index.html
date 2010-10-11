@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <title>Index</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="deviators">
+		<table></table>
+	</div>
+	<div id="keywordcloud"></div>
+	<div id="hitmonitor">
+		<ul></ul>
+	</div>
+
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$.getJSON('deviators.json', function(data){
+			var item
+			for (x in data){
+				if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
+				item = '<tr><td>' + data[x].url + '</td><td>' + data[x].value + ' %</td></tr>';
+				$('#deviators table').append(item);
+			}
+		});
+		$.getJSON('keywordcloud.json', function(data){
+			var item
+			for (x in data){
+				item = '<span style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</span>';
+				$('#keywordcloud').append(item);
+			}
+		});
+	});
+	var monitorIID = setInterval('updateMonitor()', 3000);
+	function updateMonitor(){
+		$.getJSON('hitmonitor.json', function(data){
+			var item
+			for (x in data) {
+				item = '<li>' + data[x].path + '</li>';
+				if ($('#hitmonitor ul li').length >= 20) {
+					$('#hitmonitor ul li:last').remove();
+				}
+				$('#hitmonitor ul').prepend(item);
+			}
+		});
+	}
+	</script>
+    </body>
+</html>
