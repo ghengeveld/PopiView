@@ -73,8 +73,11 @@ class PopiWSGIServer(object):
 
 
     def log_hit(self):
-        cur = self.request.GET['cur']
-        ref = self.request.GET['ref']
+        cur = self.request.GET.get('cur', None)
+        ref = self.request.GET.get('ref', None)
+
+        if cur is None:
+            cur = self.request.headers.get('referer', None)
 
         response = Response()
         response.headers['Content-Type'] = "image/gif"
@@ -82,8 +85,9 @@ class PopiWSGIServer(object):
         response.headers['Cache-Control'] = "no-cache, must-revalidate"
         response.body = self._image
 
-        hit = Hit(cur, ref)
-        self._storage.add_hit(hit)
+        if cur is not None:
+            hit = Hit(cur, ref)
+            self._storage.add_hit(hit)
 	
         return response
 
