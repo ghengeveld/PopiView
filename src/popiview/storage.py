@@ -1,3 +1,4 @@
+import sys
 import operator
 import MySQLdb
 from popiview.counter import Counter
@@ -128,7 +129,7 @@ class SQLStorage(object):
             print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
 
-        self.cursor = conn.cursor()
+        self.cursor = self.conn.cursor()
 
 
     def __del__(self):
