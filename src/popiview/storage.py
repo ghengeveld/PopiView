@@ -1,11 +1,14 @@
 import operator
+import MySQLdb
 from popiview.counter import Counter
+from popiview.filters import StorageFilters
 
-class MemoryStorage(object):    
-
+class MemoryStorage(object):
+    
     def __init__(self):
         self._hits = []
         self._recenthits = []
+        self._sf = StorageFilters()
 
 
     def clear_hits(self):
@@ -36,7 +39,8 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        hits = filter(self.filter_timestamp(start_time, end_time), hits)
+        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+                      hits)
 
         urls = map(operator.itemgetter('url'), hits)
  
@@ -53,8 +57,9 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        hits = filter(self.filter_url(url), hits)
-        hits = filter(self.filter_timestamp(start_time, end_time), hits)
+        hits = filter(self._sf.filter_url(url), hits)
+        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+                      hits)
 
         return len(hits)
 
@@ -69,7 +74,8 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        hits = filter(self.filter_timestamp(start_time, end_time), hits)
+        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+                      hits)
 
         # Get a dictionary like {url: count} or {path: count}
         if return_paths:
@@ -79,7 +85,7 @@ class MemoryStorage(object):
         
         # Iterate over the hitcounts, putting them through the filter function.
         # Items are removed if the filter function returns false.
-        hitcounts = dict(filter(self.filter_hitcount(minimum_hits), 
+        hitcounts = dict(filter(self._sf.filter_hitcount(minimum_hits), 
                                 hitcounts.iteritems()))
 
         return hitcounts
@@ -92,8 +98,9 @@ class MemoryStorage(object):
         """
         hits = self._hits
         
-        hits = filter(self.filter_url(url), hits)
-        hits = filter(self.filter_timestamp(start_time, end_time), hits)
+        hits = filter(self._sf.filter_url(url), hits)
+        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+                      hits)
         
         # Iterate over keywords in hits, combining them in a single list.
         # Then use Counter to get a dictionary like {keyword: count}
@@ -101,77 +108,88 @@ class MemoryStorage(object):
                                   map(operator.itemgetter('keywords'), hits),
                                   []))
         
-        keywords = dict(filter(self.filter_keywordcount(minimum_count), 
+        keywords = dict(filter(self._sf.filter_keywordcount(minimum_count),
                         keywords.iteritems()))
 
         return keywords
 
 
-    def filter_url(self, url=None):
-        """Returns a filter function to filter hits by url.
-        """
+
+class SQLStorage(object):
+    
+    def __init__(self):
+        self._sf = StorageFilters()
+        try:
+            self.conn = MySQLdb.connect(host='localhost', 
+                                        user='root', 
+                                        passwd='qqrs',
+                                        db='popiview')
+        except MySQLdb.Error, e:
+            print "Error %d: %s" % (e.args[0], e.args[1])
+            sys.exit(1)
+
+        self.cursor = conn.cursor()
+
+
+    def __del__(self):
+        self.cursor.close()
+        self.conn.close()
+
+
+    def clear_hits(self):
+        pass
+
+
+    def add_hit(self, hit):
+        timestamp = hit.timestamp()
+        url = hit.url()
+        path = hit.path()
+        referrer = hit.referrer()
+        self.cursor.execute("""INSERT INTO hits (hit_timestamp, 
+                                               hit_url,
+                                               hit_path,
+                                               hit_referrer)
+                                               VALUES (%d, `%s`, `%s`, `%s`)"""
+                            % (timestamp, url, path, referrer))
         
-        def filter_function(item):
-            """Filter hits by url. Return false if item doesn't match the given
-            url, true otherwise.
-            """
-            if url is not None:
-                if item['url'] != url:
-                    return False
-            return True
 
-        return filter_function
+    def get_recenthits(self):
+        pass
 
 
-    def filter_timestamp(self, start_time=None, end_time=None):
-        """Return a filter function for filtering by start and end time.
+    def list_urls(self, unique=False, start_time=None, end_time=None,
+                  minimum_hits=1):
+        """Returns a list of all the urls. Optional parameters:
+        unique Return only unique urls.
+        start_time Return only urls requested after this timestamp.
+        end_time Return only urls requested before this timestamp.
+        minimum_hits Return only urls with at least this amount of hits.
         """
-
-        def filter_function(item):
-            """Filter hits by start and end time.
-            Returns false if out of bounds, true otherwise.
-            """
-            if start_time is not None:
-                if item['timestamp'] < start_time:
-                    return False
-            if end_time is not None:
-                if item['timestamp'] > end_time:
-                    return False
-            return True
-
-        return filter_function
+        pass
 
 
-    def filter_hitcount(self, minimum_hits=None, maximum_hits=None):
-        """Returns a filter function for filtering by minimum and maximum hits.
+    def get_hitcount(self, url, start_time=None, end_time=None):
+        """Returns number of hits for a specific url. Optional parameters:  
+        start_time Return only urls requested after this timestamp.
+        end_time Return only urls requested before this timestamp.
         """
-
-        def filter_function((url, count),):
-            """Filter hitcounts by minimum or maximum number of hits.
-            Returns false if out of bounds, true otherwise.
-            """
-            if minimum_hits is not None:
-                if count < minimum_hits:
-                    return False
-            if maximum_hits is not None:
-                if count > maximum_hits:
-                    return False
-            return True
-
-        return filter_function
+        pass
 
 
-    def filter_keywordcount(self, minimum_count=None):
-        """Returns a filter function for filtering by minimum keyword count.
+    def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
+                      return_paths=True):
+        """Return dictionary of hitcounts for all urls using the format 
+        {url: count} Optional parameters:
+        start_time Return only urls requested after this timestamp.
+        end_time Return only urls requested before this timestamp.
+        minimum_hits Return only urls with at least this amount of hits.
         """
+        pass
 
-        def filter_function((keyword, count),):
-            """Filter keywords by minimum count.
-            Returns false if count is less than minimum_count, true otherwise.
-            """
-            if minimum_count is not None:
-                if count < minimum_count:
-                    return False
-            return True
 
-        return filter_function
+    def get_keywords(self, url=None, start_time=None, end_time=None,
+                     minimum_count=None):
+        """Get all keywords and their counts.
+        Returns dictionary: {keyword: count}
+        """
+        pass

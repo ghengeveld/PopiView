@@ -13,7 +13,7 @@
 	<div id="hitmonitor">
 		<ul></ul>
 	</div>
-
+	<img src="http://localhost:8080/image.gif?ref=http://www.google.com?q=some%20cool%20page" />
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$.getJSON('deviators.json', function(data){
@@ -48,3 +48,8 @@
 	</script>
     </body>
 </html>
+<!--
+<script type="text/javascript">
+  document.write('<img src="http://popiview.infrae.com/image.gif?ref='+escape(document.referrer)+'" alt="" width="1" height="1" />');
+</script><noscript><img src="http://popiview.infrae.com/image.gif" width="1" height="1" /></noscript>
+-->

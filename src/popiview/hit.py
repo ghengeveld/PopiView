@@ -37,6 +37,12 @@ class Hit(object):
 
     def timestamp(self):
         return self._timestamp
+
+
+    def referrer(self):
+        if self._referrer_parts is None:
+            return None
+        return urlparse.urlunsplit(self._referrer_parts)
     
 
     def keywords(self):

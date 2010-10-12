@@ -105,7 +105,8 @@ We can now get the number of hits on that page for a specific period
 
 We can also get an overview of all urls and their hitcounts
 
->>> storage.get_hitcounts(start_time=1285050000, end_time=1285070000)
+>>> storage.get_hitcounts(start_time=1285050000, end_time=1285070000,
+...                       return_paths=False)
 {u'http://www.mysite.com/page': 2}
 
 It's also possible to get the keywords for a specific page within a 
@@ -174,7 +175,7 @@ Add some more dummy data
 
 Now we can test the analyzer
 
->>> analyzer.get_top_deviators()
+>>> analyzer.get_top_deviators(return_paths=False)
 [{'url': u'http://www.mysite.com/page', 
   'keywords': {u'page': 69, u'cool': 103}, 'value': 405},
  {'url': u'http://www.mysite.com/page3', 'keywords': {}, 'value': 200},
@@ -184,7 +185,7 @@ Now we can test the analyzer
 By default they are sorted by absolute value, meaning -66 comes between 
 200 and 0. We can disable this behavior:
 
->>> analyzer.get_top_deviators(sort_absolute=False)
+>>> analyzer.get_top_deviators(sort_absolute=False, return_paths=False)
 [{'url': u'http://www.mysite.com/page', 
   'keywords': {u'page': 69, u'cool': 103}, 'value': 405},
  {'url': u'http://www.mysite.com/page3', 'keywords': {}, 'value': 200},
@@ -193,7 +194,7 @@ By default they are sorted by absolute value, meaning -66 comes between
 
 If we want just the top # of deviators we can set a limit:
 
->>> analyzer.get_top_deviators(limit=1)
+>>> analyzer.get_top_deviators(limit=1, return_paths=False)
 [{'url': u'http://www.mysite.com/page', 
   'keywords': {u'page': 69, u'cool': 103}, 'value': 405}]
 

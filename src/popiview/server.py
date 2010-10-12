@@ -2,7 +2,7 @@ import json
 import random
 from webob import Request, Response
 from popiview.hit import Hit
-from popiview.storage import MemoryStorage
+from popiview.storage import MemoryStorage, SQLStorage
 from popiview.analyzer import Analyzer
 from popiview.dummy import Dummy
 from popiview.view import View
@@ -116,6 +116,8 @@ class PopiWSGIServer(object):
 def app_factory(global_config, storage_name, **local_conf):
     if storage_name == 'memory':
         storage = MemoryStorage()
+    elif storage_name == 'sql':
+        storage = SQLStorage()
     else:
         raise ValueError('No such storage: %s' % storage_name)
     urlmap = {}
