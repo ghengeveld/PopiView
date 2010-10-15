@@ -1,5 +1,6 @@
 import json
 import random
+import mimetypes
 from webob import Request, Response
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage, SQLStorage
@@ -17,31 +18,31 @@ class PopiWSGIServer(object):
         self._keyword_analyzer = Analyzer(self._storage, start_time=0,
                                           boundary_time=7000, end_time=10000)
         self._view = View()
-        self._image = self.load_image()
-
+        self._image = self.load_component('img/img.gif')
 
     def index(self):
         view = self._view.index()
         return Response(view)
-
+    
+    def cleardata(self):
+        self._storage.clear_hits()
+        return Response('done')
 
     def deviators(self):
         output = self._deviation_analyzer.get_top_deviators()
         return Response(json.dumps(output))
-
     
     def keywordcloud(self):
-        output = self._keyword_analyzer.get_keyword_cloud()
+        output = self._keyword_analyzer.get_keyword_cloud(minimum_pct=25, 
+                                                          maximum_pct=300)
         return Response(json.dumps(output))
-
 
     def hitmonitor(self):
         output = self._storage.get_recenthits()
         return Response(json.dumps(output))
 
-
     def dummydata(self):
-        dummy = Dummy(self._storage)
+        dummy = Dummy(self._storage, True)
 
         dummy.create_hits_linear(u'http://www.mysite.com/page',
                                  start_time=0, end_time=10000,
@@ -68,9 +69,19 @@ class PopiWSGIServer(object):
                                  start_hits_per_hour=rand_start, 
                                  end_hits_per_hour=rand_end,
                                  referrer='http://www.google.com?q=page2')
-
         return Response('done')
 
+    def randomdata(self):
+        dummy = Dummy(self._storage)
+        rand = int(random.random() * 10) + 1
+        for i in range(rand):
+            rand_start = random.random() * 60
+            rand_end = random.random() * 60
+            dummy.create_hits_linear(
+                u'http://www.mysite.com/page' + str(rand),
+                start_hits_per_hour=rand_start, end_hits_per_hour=rand_end,
+                referrer='http://www.google.com?q=page' + str(rand))
+        return Response('done')
 
     def log_hit(self):
         cur = self.request.GET.get('cur', None)
@@ -86,17 +97,22 @@ class PopiWSGIServer(object):
         response.body = self._image
 
         if cur is not None:
-            hit = Hit(cur, ref)
+            hit = Hit(cur, referrer=ref)
             self._storage.add_hit(hit)
-	
-        return response
+	    return response
 
-
-    def load_image(self):
-        with open('components/img/img.gif') as f:
+    def load_component(self, filepath):
+        with open('components/' + filepath) as f:
             data = f.read()
         return data
 
+    def get_component(self):
+        filepath = self.request.GET.get('file', None)
+        mimetype = mimetypes.guess_type(filepath, False)
+        response = Response()
+        response.headers['Content-Type'] = mimetype
+        response.body = self.load_component(filepath)
+        return response 
 
     def __call__(self, environ, start_response):
         self.request = Request(environ)

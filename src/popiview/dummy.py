@@ -3,13 +3,12 @@ from math import floor
 from popiview.hit import Hit
 
 class Dummy(object):
-
     
-    def __init__(self, storage):
+    def __init__(self, storage, clear=False):
         self._storage = storage
-        self._storage.clear_hits()
+        if clear:
+            self._storage.clear_hits()
 
-    
     def create_hits_evenly(self, url, referrer=None, num=100, 
                            min_time=1285040000, max_time=1285090000):
         time = min_time
@@ -18,7 +17,6 @@ class Dummy(object):
             self._storage.add_hit(Hit(url, timestamp=time, referrer=referrer))
             time = time + time_separator
             num -= 1
-
 
     def create_hits_linear(self, url, referrer=None, 
                            start_hits_per_hour=100, end_hits_per_hour=100, 

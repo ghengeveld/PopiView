@@ -1,4 +1,5 @@
 import sys
+import time
 import operator
 import MySQLdb
 from popiview.counter import Counter
@@ -20,12 +21,14 @@ class MemoryStorage(object):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
                 'keywords': hit.keywords(), 'path': hit.path()}
         self._hits.append(hitobj)
+        if len(self._recenthits) > 20:
+            self._recenthits = self._recenthits[-20:]
         self._recenthits.append(hitobj)
     
     
     def get_recenthits(self):
-        recenthits = self._recenthits[:20]
-        self._recenthits = []
+        recenthits = self._recenthits
+        #self._recenthits = []
         
         return recenthits
 
@@ -114,49 +117,83 @@ class MemoryStorage(object):
 
         return keywords
 
+import threading
+
+
+class StorageError(StandardError):
+    pass
 
 
 class SQLStorage(object):
     
     def __init__(self):
+        self.localdata = threading.local()
+        self.lastrecenthitsrequest = 0
         self._sf = StorageFilters()
+
+    def get_connection(self):
+        if not hasattr(self.localdata, 'db'):
+            self.localdata.db = self._create_connection()
+        return self.localdata.db
+
+    def _create_connection(self):
         try:
-            self.conn = MySQLdb.connect(host='localhost', 
-                                        user='root', 
-                                        passwd='qqrs',
-                                        db='popiview')
+            return MySQLdb.connect(host='localhost', 
+                                   user='root', 
+                                   passwd='qqrs',
+                                   db='popiview')
         except MySQLdb.Error, e:
-            print "Error %d: %s" % (e.args[0], e.args[1])
-            sys.exit(1)
+            raise StorageError(str(e))
 
-        self.cursor = self.conn.cursor()
-
+    def _close_connection(self):
+        if hasattr(self.localdata, 'db'):
+            self.localdata.db.close()
 
     def __del__(self):
-        self.cursor.close()
-        self.conn.close()
-
+        self._close_connection()
 
     def clear_hits(self):
-        pass
-
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("TRUNCATE TABLE hits_keywords")
+        cursor.execute("TRUNCATE TABLE hits")
+        cursor.close()
 
     def add_hit(self, hit):
-        timestamp = hit.timestamp()
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        timestamp = int(hit.timestamp())
         url = hit.url()
         path = hit.path()
         referrer = hit.referrer()
-        self.cursor.execute("""INSERT INTO hits (hit_timestamp, 
-                                               hit_url,
-                                               hit_path,
-                                               hit_referrer)
-                                               VALUES (%d, `%s`, `%s`, `%s`)"""
-                            % (timestamp, url, path, referrer))
+        keywords = hit.keywords()
+        cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
+                                          hit_path, hit_referrer)\
+                        VALUES ('%(timestamp)i', '%(url)s',\
+                                '%(path)s', '%(referrer)s')" % {
+                       'timestamp': timestamp, 'url': url, 
+                       'path': path, 'referrer': referrer})
+        hitid = cursor.lastrowid
+        for word in keywords:
+            cursor.execute("INSERT INTO hits_keywords (hit_id, keyword)\
+                            VALUES ('%(hitid)i', '%(keyword)s')" % {
+                           'hitid': hitid, 'keyword': word})
+        cursor.close()
         
-
     def get_recenthits(self):
-        pass
-
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT hit_timestamp AS timestamp, \
+                               hit_url AS url, \
+                               hit_path AS path \
+                        FROM hits WHERE hit_timestamp > %i \
+                        ORDER BY hit_timestamp DESC LIMIT 20" % (
+                       self.lastrecenthitsrequest))
+        recenthits = list(cursor.fetchall())
+        cursor.close()
+        if recenthits:
+            self.lastrecenthitsrequest = recenthits[0]['timestamp']
+        return recenthits
 
     def list_urls(self, unique=False, start_time=None, end_time=None,
                   minimum_hits=1):
@@ -166,31 +203,84 @@ class SQLStorage(object):
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
-        pass
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT hit_url FROM hits")
+        urls = cursor.fetchall().values()
+        cursor.close()
 
+        urls = filter(self._sf.filter_timestamp(start_time, end_time), 
+                      urls)
+
+        if unique:
+            return list(set(urls))
+        
+        return urls
 
     def get_hitcount(self, url, start_time=None, end_time=None):
         """Returns number of hits for a specific url. Optional parameters:  
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         """
-        pass
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        qstart = ''
+        qend = ''
+        if start_time is not None:
+            qstart = " AND hit_timestamp >= %i" % (start_time)
+        if end_time is not None:
+            qend = " AND hit_timestamp <= %i" % (end_time)
 
+        cursor.execute("SELECT COUNT(hit_url) AS count FROM hits \
+                        WHERE hit_url = '%s'%s%s" % (url, qstart, qend))
+        count = cursor.fetchone()['count']
+        cursor.close()
+        return count
 
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
                       return_paths=True):
         """Return dictionary of hitcounts for all urls using the format 
-        {url: count} Optional parameters:
+        {url: count}. Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
-        pass
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        qfield = 'hit_url'
+        qstart = ''
+        qend = ''
+        if return_paths:
+            qfield = 'hit_path'
+        if start_time is not None:
+            qstart = " AND hit_timestamp >= %i" % (start_time)
+            pass
+        if end_time is not None:
+            qend = " AND hit_timestamp <= %i" % (end_time)
+            pass
 
+        cursor.execute("SELECT %s AS url, COUNT(hit_url) AS count \
+                        FROM hits WHERE 1=1%s%s GROUP BY hit_url" % (
+                       qfield, qstart, qend))
+        counts = {}
+        res = list(cursor.fetchall())
+        cursor.close()
+        for item in res:
+            counts[item['url']] = item['count']
+        return counts
 
     def get_keywords(self, url=None, start_time=None, end_time=None,
                      minimum_count=None):
         """Get all keywords and their counts.
         Returns dictionary: {keyword: count}
         """
-        pass
+        conn = self.get_connection()
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT keyword, COUNT(keyword) AS count \
+                        FROM hits_keywords GROUP BY keyword")
+        keywords = {}
+        res = list(cursor.fetchall())
+        cursor.close()
+        for item in res:
+            keywords[item['keyword']] = item['count']
+        return keywords
