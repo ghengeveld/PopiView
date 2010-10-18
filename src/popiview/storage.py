@@ -2,6 +2,7 @@ import sys
 import time
 import operator
 import MySQLdb
+import threading
 from popiview.counter import Counter
 from popiview.filters import StorageFilters
 
@@ -12,26 +13,19 @@ class MemoryStorage(object):
         self._recenthits = []
         self._sf = StorageFilters()
 
-
     def clear_hits(self):
         self._hits = []
-
 
     def add_hit(self, hit):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
                 'keywords': hit.keywords(), 'path': hit.path()}
         self._hits.append(hitobj)
+        self._recenthits.append(hitobj)
         if len(self._recenthits) > 20:
             self._recenthits = self._recenthits[-20:]
-        self._recenthits.append(hitobj)
-    
     
     def get_recenthits(self):
-        recenthits = self._recenthits
-        #self._recenthits = []
-        
-        return recenthits
-
+        return self._recenthits
 
     def list_urls(self, unique=False, start_time=None, end_time=None, 
                   minimum_hits=1):
@@ -53,7 +47,6 @@ class MemoryStorage(object):
 
         return urls
 
-     
     def get_hitcount(self, url, start_time=None, end_time=None):
         """Returns number of hits for a specific url. Optional parameters:  
         start_time Return only urls requested after this timestamp.
@@ -66,7 +59,6 @@ class MemoryStorage(object):
                       hits)
 
         return len(hits)
-
 
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
                       return_paths=True):
@@ -91,9 +83,7 @@ class MemoryStorage(object):
         # Items are removed if the filter function returns false.
         hitcounts = dict(filter(self._sf.filter_hitcount(minimum_hits), 
                                 hitcounts.iteritems()))
-
         return hitcounts
-
     
     def get_keywords(self, url=None, start_time=None, end_time=None, 
                      minimum_count=None):
@@ -114,10 +104,7 @@ class MemoryStorage(object):
         
         keywords = dict(filter(self._sf.filter_keywordcount(minimum_count),
                         keywords.iteritems()))
-
         return keywords
-
-import threading
 
 
 class StorageError(StandardError):
@@ -129,6 +116,7 @@ class SQLStorage(object):
     def __init__(self):
         self.localdata = threading.local()
         self.lastrecenthitsrequest = 0
+        self._recenthits = []
         self._sf = StorageFilters()
 
     def get_connection(self):
@@ -179,8 +167,16 @@ class SQLStorage(object):
                             VALUES ('%(hitid)i', '%(keyword)s')" % {
                            'hitid': hitid, 'keyword': word})
         cursor.close()
+        hitobj = {'url': url, 'timestamp': timestamp, 
+                  'keywords': keywords, 'path': path}
+        self._recenthits.append(hitobj)
+        if len(self._recenthits) > 20:
+            self._recenthits = self._recenthits[-20:]
         
     def get_recenthits(self):
+        return self._recenthits
+    
+    def __get_recenthits(self):
         conn = self.get_connection()
         cursor = conn.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("SELECT hit_timestamp AS timestamp, \
