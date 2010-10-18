@@ -113,7 +113,8 @@ class StorageError(StandardError):
 
 class SQLStorage(object):
     
-    def __init__(self):
+    def __init__(self, dbhost, dbuser, dbpass, dbname):
+	self._cred = {'host':dbhost,'user':dbuser,'pass':dbpass,'name':dbname}
         self.localdata = threading.local()
         self.lastrecenthitsrequest = 0
         self._recenthits = []
@@ -125,11 +126,12 @@ class SQLStorage(object):
         return self.localdata.db
 
     def _create_connection(self):
+	cred = self._cred
         try:
-            return MySQLdb.connect(host='localhost', 
-                                   user='popiview', 
-                                   passwd='qqrs',
-                                   db='popiview')
+            return MySQLdb.connect(host = cred['host'], 
+                                   user = cred['user'], 
+                                   passwd = cred['pass'],
+                                   db = cred['name'])
         except MySQLdb.Error, e:
             raise StorageError(str(e))
 

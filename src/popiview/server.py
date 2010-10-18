@@ -131,7 +131,12 @@ def app_factory(global_config, storage_name, **local_conf):
     if storage_name == 'memory':
         storage = MemoryStorage()
     elif storage_name == 'sql':
-        storage = SQLStorage()
+        storage = SQLStorage(
+            dbhost = local_conf['dbhost'],
+            dbuser = local_conf['dbuser'],
+            dbpass = local_conf['dbpass'],
+            dbname = local_conf['dbname']
+        )
     else:
         raise ValueError('No such storage: %s' % storage_name)
     urlmap = {}
