@@ -21,8 +21,8 @@
 	        </div>
         </div>
     	<script type="text/javascript">
-    	var deviators = setInterval('updateDeviators()', 60000);
-    	var keywordcloud = setInterval('updateKeywordCloud()', 60000);
+    	var deviators = setInterval('updateDeviators()', 30000);
+    	var keywordcloud = setInterval('updateKeywordCloud()', 30000);
     	var monitor = setInterval('updateMonitor()', 3000);
     	function updateDeviators(){
     		$.getJSON('deviators.json', function(data){
