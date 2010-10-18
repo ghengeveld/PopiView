@@ -18,7 +18,6 @@ class Hit(object):
         else:
             self._timestamp = timestamp
 
-
     def url(self):
         url = self._url_parts
         
@@ -30,21 +29,19 @@ class Hit(object):
 
         return urlparse.urlunsplit(url)
 
-
     def path(self):
-        return self._url_parts[2] + self._url_parts[3]
-
+	if self._url_parts[3]:
+	    return self._url_parts[2] + '?' + self._url_parts[3]
+        return self._url_parts[2] 
 
     def timestamp(self):
         return self._timestamp
-
 
     def referrer(self):
         if self._referrer_parts is None:
             return None
         return urlparse.urlunsplit(self._referrer_parts)
     
-
     def keywords(self):
         keywords = []
         url = self._url_parts
@@ -57,7 +54,4 @@ class Hit(object):
         for query_string in ['q', 'query']:
             for query in qs.get(query_string, []):
                 keywords += query.lower().decode('utf8').split(' ')
-        
         return keywords
-
-
