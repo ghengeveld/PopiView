@@ -13,10 +13,8 @@ class PopiWSGIServer(object):
     def __init__(self, storage, urlmap):
         self._storage = storage
         self._urlmap = urlmap
-        self._deviation_analyzer = Analyzer(self._storage, start_time=0,
-                                            boundary_time=7000, end_time=10000)
-        self._keyword_analyzer = Analyzer(self._storage, start_time=0,
-                                          boundary_time=7000, end_time=10000)
+        self._deviation_analyzer = Analyzer(self._storage)
+        self._keyword_analyzer = Analyzer(self._storage)
         self._view = View()
         self._image = self.load_component('img/img.gif')
 
