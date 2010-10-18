@@ -177,7 +177,8 @@ class SQLStorage(object):
         
     def get_recenthits(self, last_timestamp=0):
         recenthits = self._recenthits
-        recenthits = filter(self._sf.filter_timestamp(last_timestamp, None),
+        recenthits = filter(self._sf.filter_timestamp(
+                             start_time = last_timestamp),
                             recenthits)
         return recenthits
     
