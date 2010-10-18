@@ -32,7 +32,7 @@ class Hit(object):
 
 
     def path(self):
-        return self._url_parts[2] 
+        return self._url_parts[2] + self._url_parts[3]
 
 
     def timestamp(self):
@@ -47,9 +47,10 @@ class Hit(object):
 
     def keywords(self):
         keywords = []
+        url = self._url_parts
         ref = self._referrer_parts
         
-        if ref is None:
+        if ref is None or url[1] == ref[1]:
             return []
 
         qs = urlparse.parse_qs(ref[3])
