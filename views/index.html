@@ -22,25 +22,25 @@
         </div>
     	<script type="text/javascript">
     	var deviators = setInterval('updateDeviators()', 60000);
-    	var keywordcloud = setInterval('updateKeywordCloud()', 600000);
+    	var keywordcloud = setInterval('updateKeywordCloud()', 60000);
     	var monitor = setInterval('updateMonitor()', 3000);
     	function updateDeviators(){
     		$.getJSON('deviators.json', function(data){
-    			var item
+    			var items
     			for (x in data){
     				if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
-	    			item = '<tr><td>' + data[x].url + '</td><td>' + data[x].value + ' %</td></tr>';
-		    		$('#deviators table').append(item);
+	    			items += '<tr><td>' + data[x].url + '</td><td>' + data[x].value + ' %</td></tr>';
 		    	}
+		    	$('#deviators table').html(items);
     		});
 	}
 	function updateKeywordCloud(){
     		$.getJSON('keywordcloud.json', function(data){
-    			var item
+    			var items
     			for (x in data){
-                    item = '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
-    				$('#keywordcloud ul').append(item);
+                    items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
     			}
+    			$('#keywordcloud ul').html(items);
     		});
     	}
     	function updateMonitor(){
