@@ -127,7 +127,7 @@ class SQLStorage(object):
     def _create_connection(self):
         try:
             return MySQLdb.connect(host='localhost', 
-                                   user='root', 
+                                   user='popiview', 
                                    passwd='qqrs',
                                    db='popiview')
         except MySQLdb.Error, e:
