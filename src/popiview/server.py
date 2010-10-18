@@ -110,7 +110,7 @@ class PopiWSGIServer(object):
         filepath = self.request.GET.get('file', None)
         mimetype = mimetypes.guess_type(filepath, False)
         response = Response()
-        response.headers['Content-Type'] = mimetype
+        response.headers['Content-Type'] = mimetype[0]
         response.body = self.load_component(filepath)
         return response 
 
