@@ -45,14 +45,11 @@
     	}
     	function updateMonitor(){
     		$.getJSON('hitmonitor.json', function(data){
-    			var item
+    			var items = ''
     			for (x in data) {
-    				item = '<li>' + data[x].path + '</li>';
-    				if ($('#hitmonitor ul li').length >= 20) {
-    					$('#hitmonitor ul li:last').remove();
-    				}
-    				$('#hitmonitor ul').prepend(item);
+    				items += '<li>' + data[x].path + '</li>';
     			}
+    			$('#hitmonitor ul').html(items);
     		});
     	}
 	$(document).ready(function(){
