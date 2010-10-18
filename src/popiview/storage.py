@@ -175,8 +175,11 @@ class SQLStorage(object):
         if len(self._recenthits) > 20:
             self._recenthits = self._recenthits[-20:]
         
-    def get_recenthits(self):
-        return self._recenthits
+    def get_recenthits(self, last_timestamp=0):
+        recenthits = self._recenthits
+        recenthits = filter(self._sf.filter_timestamp(last_timestamp, None),
+                            recenthits)
+        return recenthits
     
     def __get_recenthits(self):
         conn = self.get_connection()

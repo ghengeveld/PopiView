@@ -36,7 +36,8 @@ class PopiWSGIServer(object):
         return Response(json.dumps(output))
 
     def hitmonitor(self):
-        output = self._storage.get_recenthits()
+        last_timestamp = self.request.GET.get('last_timestamp', 0)
+        output = self._storage.get_recenthits(last_timestamp)
         return Response(json.dumps(output))
 
     def dummydata(self):
