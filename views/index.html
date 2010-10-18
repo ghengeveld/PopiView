@@ -26,7 +26,7 @@
     	var monitor = setInterval('updateMonitor()', 3000);
     	function updateDeviators(){
     		$.getJSON('deviators.json', function(data){
-    			var items
+    			var items = ''
     			for (x in data){
     				if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
 	    			items += '<tr><td>' + data[x].url + '</td><td>' + data[x].value + ' %</td></tr>';
@@ -36,7 +36,7 @@
 	}
 	function updateKeywordCloud(){
     		$.getJSON('keywordcloud.json', function(data){
-    			var items
+    			var items = ''
     			for (x in data){
                     items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
     			}
