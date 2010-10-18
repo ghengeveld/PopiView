@@ -2,66 +2,66 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <title>Index</title>
-        <link rel="stylesheet" href="component?file=css/style.css" type="text/css" />
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    </head>
-    <body>
-        <div id="colleft">
-            <div id="deviators">
-		        <table></table>
-            </div>
-            <div id="keywordcloud">
-                <ul></ul>
-            </div>
-        </div>
-        <div id="colright">
-        	<div id="hitmonitor">
-	        	<ul></ul>
-	        </div>
-        </div>
-    	<script type="text/javascript">
-    	var deviators = setInterval('updateDeviators()', 30000);
-    	var keywordcloud = setInterval('updateKeywordCloud()', 30000);
-    	var monitor = setInterval('updateMonitor()', 3000);
-    	function updateDeviators(){
-    		$.getJSON('deviators.json', function(data){
-    			var items = ''
-    			for (x in data){
-    				if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
-	    			items += '<tr><td>' + data[x].url + '</td><td>' + data[x].value + ' %</td></tr>';
-		    	}
-		    	$('#deviators table').html(items);
-    		});
-	}
-	function updateKeywordCloud(){
-    		$.getJSON('keywordcloud.json', function(data){
-    			var items = ''
-    			for (x in data){
-                    items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
-    			}
-    			$('#keywordcloud ul').html(items);
-    		});
-    	}
-    	function updateMonitor(){
-    		$.getJSON('hitmonitor.json', function(data){
-    			var items = ''
-    			for (x in data) {
-    				items += '<li>' + data[x].path + '</li>';
-    			}
-    			$('#hitmonitor ul').html(items);
-    		});
-    	}
-	$(document).ready(function(){
-		updateDeviators();
-		updateKeywordCloud();
-		updateMonitor();
-	});
-    	</script>
-    </body>
+		<title>Index</title>
+		<link rel="stylesheet" href="component?file=css/style.css" type="text/css" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	</head>
+	<body>
+		<div id="colleft">
+			<div id="deviators">
+				<table></table>
+			</div>
+			<div id="keywordcloud">
+				<ul></ul>
+			</div>
+		</div>
+		<div id="colright">
+			<div id="hitmonitor">
+				<ul></ul>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var monitor_timestamp = 0;
+			var deviators = setInterval('updateDeviators()', 30000);
+			var keywordcloud = setInterval('updateKeywordCloud()', 30000);
+			var monitor = setInterval('updateMonitor()', 3000);
+			function updateDeviators(){
+				$.getJSON('deviators.json', function(data){
+					var items = ''
+					for (x in data){
+						if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
+						items += '<tr><td>' + data[x].url + '</td><td>' + data[x].value + ' %</td></tr>';
+					}
+					$('#deviators table').html(items);
+				});
+			}
+			function updateKeywordCloud(){
+				$.getJSON('keywordcloud.json', function(data){
+					var items = ''
+					for (x in data){
+						items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
+					}
+					$('#keywordcloud ul').html(items);
+				});
+			}
+			function updateMonitor(){
+				$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp, function(data){
+					var item
+					for (x in data){
+						monitor_timestamp = data[x].timestamp;
+						item = '<li>' + data[x].path + '</li>';
+						$('#hitmonitor ul').prepend(item);
+						if($('#hitmonitor ul li').length > 20){
+							$('#hitmonitor ul li:last').remove();
+						}
+					}
+				});
+			}
+			$(document).ready(function(){
+				updateDeviators();
+				updateKeywordCloud();
+				updateMonitor();
+			});
+		</script>
+	</body>
 </html>
-<!--
-<script type="text/javascript">
-  document.write('<img src="http://popiview.infrae.com/image.gif?ref='+escape(document.referrer)+'" alt="" width="1" height="1" />');
-</script><noscript><img src="http://popiview.infrae.com/image.gif" width="1" height="1" /></noscript>
--->
