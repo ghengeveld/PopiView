@@ -10,23 +10,23 @@ h1 {
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
-#deviators { width:98%; height:50%; overflow:hidden; }
+#deviators { width:98%; height:50%; }
 #deviators table {
 	display:block; background:#fff; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #deviators table td { padding:0 10px; line-height:2em; }
 
-#keywordcloud { margin-top:20px; height:50%; overflow:hidden; }
+#keywordcloud { margin-top:20px; height:50%; }
 #keywordcloud ul {
-    display:block; width:100%; background:#fff; list-style:none; text-align:center;
+    display:block; width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #keywordcloud li { display:inline-block; margin:5px; }
 
-#hitmonitor { width:100%; height:100%; overflow:hidden; }
+#hitmonitor { width:100%; height:100%; }
 #hitmonitor ul {
-	display:block; width:100%; background:#fff; list-style:none;
+	display:block; background:#fff; list-style:none; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #hitmonitor li { padding:8px 10px; line-height:0.9em; }
