@@ -2,7 +2,8 @@ html,body { background:#eee; }
 
 h1 { 
 	background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom;
-	padding:0 10px; margin:0 0 10px 0; line-height:2.2em; font-size:1.8em; color:#fff;
+	padding:0 20px; margin:0 0 10px 0; line-height:2.2em;
+	font-weight:bold; font-size:1.8em; color:#fff;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
@@ -15,19 +16,20 @@ h1 {
 	display:block; background:#fff; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
-#deviators table td { padding:0 10px; line-height:2em; font-size:1.4em; }
+#deviators table td { padding:0 10px; line-height:2em; font-size:1.5em; }
 
 #keywordcloud { width:98%; height:40%; }
 #keywordcloud ul {
     display:block; background:#fff; list-style:none; text-align:center; overflow:auto;
-    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; font-size:1.5em;
 }
-#keywordcloud li { display:inline-block; margin:5px; font-size:1.4em; }
+#keywordcloud li { display:inline-block; margin:5px; }
 
 #hitmonitor { width:100%; height:100%; }
 #hitmonitor ul {
-	display:block; background:#fff; list-style:none; overflow:auto;
+	display:block; width:100%; background:#fff; list-style:none; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
+	margin:0; padding:0;
 }
-#hitmonitor li { padding:8px 10px; line-height:0.9em; font-size:1.4em; }
-#hitmonitor li span { font-size:1em; }
+#hitmonitor li { margin:0; padding:8px 10px; line-height:0.9em; font-size:1.5em; }
+#hitmonitor li span { font-size:0.6em; }
