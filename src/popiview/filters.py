@@ -57,3 +57,11 @@ class StorageFilters(object):
                     return False
             return True
         return filter_function
+
+    def filter_path(self, path):
+        """Returns a filter function for filtering incoming hits by a blacklist.
+        """
+        blacklist = ['','/','/index.php']
+        if path in blacklist:
+            return False
+        return True 
