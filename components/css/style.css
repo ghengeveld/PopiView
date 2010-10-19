@@ -6,11 +6,11 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
-#container { width:96%; height:96%; position:absolute; left:50%; top:50%; margin-left:-48%; margin-top:-48%; }
+#container { width:96%; height:94%; position:absolute; left:50%; top:50%; margin-left:-48%; margin-top:-47%; }
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
-#deviators { height:50%; overflow:hidden; }
+#deviators { width:98%; height:50%; overflow:hidden; }
 #deviators table {
 	display:block; background:#fff; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
@@ -24,9 +24,9 @@ h1 {
 }
 #keywordcloud li { display:inline-block; margin:5px; }
 
-#hitmonitor { margin-left:20px; height:100%; overflow:hidden; }
+#hitmonitor { width:100%; height:100%; overflow:hidden; }
 #hitmonitor ul {
-	background:#fff; list-style:none;
+	display:block; width:100%; background:#fff; list-style:none;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #hitmonitor li { padding:8px 10px; line-height:0.9em; }
