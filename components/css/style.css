@@ -1,31 +1,35 @@
 html,body { background:#eee; }
 
-h1 { background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom; padding:0 10px; margin:0; line-height:2em; font-size:1.5em; }
+h1 { 
+	background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom;
+	padding:0 10px; margin:0; line-height:2em; font-size:1.5em;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
+}
 
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
 #deviators { 
 	margin-left:20px; height:50%; overflow:hidden;
-    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
 }
-#deviators table { display:block; background:#fff; }
+#deviators table {
+	display:block; background:#fff;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
+}
 #deviators table td { padding:0 10px; line-height:2em; }
 
-#keywordcloud {
-	height:50%; overflow:hidden;
-    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
-}
+#keywordcloud { height:50%; overflow:hidden; }
 #keywordcloud ul {
     display:block; width:100%; margin:20px; background:#fff; list-style:none;
     text-align:center;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #keywordcloud li { display:inline-block; margin:5px; }
 
-#hitmonitor {
-	height:100%; overflow:hidden;
-    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
+#hitmonitor { height:100%; overflow:hidden; }
+#hitmonitor ul {
+	margin:20px; background:#fff; list-style:none;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
-#hitmonitor ul { margin:20px; background:#fff; list-style:none; }
 #hitmonitor li { padding:8px 10px; line-height:0.9em; }
 #hitmonitor li span { font-size:0.6em; }
