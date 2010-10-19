@@ -20,10 +20,11 @@ h1 {
 
 #keywordcloud { width:98%; height:40%; }
 #keywordcloud ul {
-    background:#fff; list-style:none; text-align:center; overflow:auto;
-    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; font-size:1.5em;
+    width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
+	margin:0; padding:0; font-size:1.5em;
 }
-#keywordcloud li { display:inline-block; margin:5px; }
+#keywordcloud li { display:inline-block; margin:5px; padding:0; }
 
 #hitmonitor { width:100%; height:100%; }
 #hitmonitor ul {
