@@ -3,7 +3,7 @@
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
-#deviators { height:50%; }
+#deviators { height:50%; overflow:hidden; }
 #deviators table { 
     display:block; margin:20px; background:#f3f3f3; 
     border:1px #666 solid; -moz-border-radius:10px; border-radius:10px;
