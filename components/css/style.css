@@ -7,7 +7,7 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
-#container { width:96%; height:94%; position:absolute; left:50%; top:50%; margin-left:-48%; margin-top:-47%; }
+#container { width:96%; height:94%; position:absolute; left:50%; margin-left:-48%; margin-top:3%; }
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
