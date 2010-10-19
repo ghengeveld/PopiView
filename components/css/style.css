@@ -1,15 +1,15 @@
 html,body { background:#eee; }
 
-h1 { background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom; padding:0 10px; margin:0 0 10px 0; line-height: 2em; }
+h1 { background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom; padding:0 10px; margin:0; line-height:2em; font-size:1.5em; }
 
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
 #deviators { 
-	height:50%; overflow:hidden;
+	margin-left:20px; height:50%; overflow:hidden;
     -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
 }
-#deviators table { display:block; margin:20px; background:#fff; }
+#deviators table { display:block; background:#fff; }
 #deviators table td { padding:0 10px; line-height:2em; }
 
 #keywordcloud {
