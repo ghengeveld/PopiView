@@ -1,5 +1,5 @@
 html,body { background:#eee; }
-body { padding:20px; }
+body { padding:5%; }
 
 h1 { 
 	background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom;
@@ -7,8 +7,8 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
-#colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
-#colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
+#colleft { position:absolute; height:90%; width:60%; overflow:hidden; }
+#colright { position:absolute; right:0; height:90%; width:30%; overflow:hidden; }
 
 #deviators { height:50%; overflow:hidden; }
 #deviators table {
