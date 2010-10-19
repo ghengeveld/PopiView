@@ -13,14 +13,14 @@ h1 {
 
 #deviators { width:98%; height:60%; }
 #deviators table {
-	display:block; height:88%; background:#fff; overflow:auto;
+	display:block; height:87%; background:#fff; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #deviators table td { padding:0 20px; line-height:2em; font-size:1.5em; }
 
 #keywordcloud { width:98%; height:40%; }
 #keywordcloud ul {
-    display:block; background:#fff; list-style:none; text-align:center; overflow:auto;
+    display:block; width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; font-size:1.5em;
 }
 #keywordcloud li { display:inline-block; margin:5px; }
