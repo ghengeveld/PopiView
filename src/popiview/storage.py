@@ -117,7 +117,7 @@ class StorageError(StandardError):
 class SQLStorage(object):
     
     def __init__(self, dbhost, dbuser, dbpass, dbname):
-	self._cred = {'host':dbhost,'user':dbuser,'pass':dbpass,'name':dbname}
+        self._cred = {'host':dbhost,'user':dbuser,'pass':dbpass,'name':dbname}
         self.localdata = threading.local()
         self.lastrecenthitsrequest = 0
         self._recenthits = []
