@@ -18,7 +18,8 @@ class MemoryStorage(object):
 
     def add_hit(self, hit):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
-                'keywords': hit.keywords(), 'path': hit.path()}
+                'keywords': hit.keywords(), 'path': hit.path(), 
+                'source': hit.source()}
         self._hits.append(hitobj)
         self._recenthits.append(hitobj)
         if len(self._recenthits) > 20:
@@ -157,6 +158,7 @@ class SQLStorage(object):
         path = hit.path()
         referrer = hit.referrer()
         keywords = hit.keywords()
+        source = hit.source()
         cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
                                           hit_path, hit_referrer)\
                         VALUES ('%(timestamp)i', '%(url)s',\
@@ -170,7 +172,7 @@ class SQLStorage(object):
                            'hitid': hitid, 'keyword': word})
         cursor.close()
         hitobj = {'url': url, 'timestamp': timestamp, 
-                  'keywords': keywords, 'path': path}
+                  'keywords': keywords, 'path': path, 'source': source}
         self._recenthits.append(hitobj)
         if len(self._recenthits) > 20:
             self._recenthits = self._recenthits[-20:]

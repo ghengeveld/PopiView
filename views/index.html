@@ -49,7 +49,8 @@
 					var item
 					for (x in data){
 						monitor_timestamp = data[x].timestamp;
-						item = '<li>' + data[x].path + '</li>';
+						item = '<li>' + data[x].path + '<br/><span>' +
+                        data[x].source + '</span></li>';
 						$('#hitmonitor ul').prepend(item);
 						if($('#hitmonitor ul li').length > 20){
 							$('#hitmonitor ul li:last').remove();

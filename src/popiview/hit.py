@@ -41,17 +41,37 @@ class Hit(object):
         if self._referrer_parts is None:
             return None
         return urlparse.urlunsplit(self._referrer_parts)
+
+    def searchquery(self):
+        ref = self._referrer_parts
+        sites = [('Google', '.google.', 'q'), 
+                 ('Yahoo', '.yahoo.', 'p'),
+                 ('Bing', '.bing.', 'q')]
     
+        for site in sites:
+            if ref[1].find(site[1]) > -1:
+                qs = urlparse.parse_qs(ref[3])
+                query = qs.get(site[2], [])
+                if query is not []:
+                    return (site[0], query[0])
+        return None
+
     def keywords(self):
         keywords = []
+        query = self.searchquery()
+        if query is not None:
+            keywords += query[1].lower().decode('utf8').split(' ')
+        return keywords
+
+    def source(self):
         url = self._url_parts
         ref = self._referrer_parts
-        
-        if ref is None or url[1] == ref[1]:
-            return []
 
-        qs = urlparse.parse_qs(ref[3])
-        for query_string in ['q', 'query']:
-            for query in qs.get(query_string, []):
-                keywords += query.lower().decode('utf8').split(' ')
-        return keywords
+        if ref is None or ref[1] == '':
+            return 'direct'
+        if url[1] == ref[1]:
+            return 'internal'
+        query = self.searchquery()
+        if query is not None:
+            return query[0] + ': ' + query[1]
+        return 'unknown'

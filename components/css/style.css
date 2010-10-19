@@ -26,4 +26,5 @@
     border:1px #666 solid; -moz-border-radius:10px; border-radius:10px;
     -moz-box-shadow:0 0 10px #999; -webkit-box-shadow:0 0 10px #999; box-shadow:0 0 10px #999;
 }
-#hitmonitor li { padding:0 10px; line-height:2em; }
+#hitmonitor li { padding:8px 10px; line-height:0.9em; }
+#hitmonitor li span { font-size:0.6em; }
