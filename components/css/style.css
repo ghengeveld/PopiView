@@ -1,28 +1,31 @@
+html,body { background:#eee; }
+
+h1 { background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom; padding:0 10px; margin:0 0 10px 0; line-height: 2em; }
+
 #colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
 #colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
 
-#deviators { height:50%; overflow:hidden; }
-#deviators table { 
-    display:block; margin:20px; background:#f3f3f3; 
-    border:1px #666 solid; -moz-border-radius:10px; border-radius:10px;
-    -moz-box-shadow:0 0 10px #999; -webkit-box-shadow:0 0 10px #999; box-shadow:0 0 10px #999;
+#deviators { 
+	height:50%; overflow:hidden;
+    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
 }
+#deviators table { display:block; margin:20px; background:#fff; }
 #deviators table td { padding:0 10px; line-height:2em; }
 
-#keywordcloud { height:50%; }
+#keywordcloud {
+	height:50%; overflow:hidden;
+    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
+}
 #keywordcloud ul {
-    display:block; margin:20px; background:#f3f3f3; list-style:none;
-    border:1px #666 solid; -moz-border-radius:10px; border-radius:10px;
-    -moz-box-shadow:0 0 10px #999; -webkit-box-shadow:0 0 10px #999; box-shadow:0 0 10px #999;
+    display:block; width:100%; margin:20px; background:#fff; list-style:none;
     text-align:center;
 }
 #keywordcloud li { display:inline-block; margin:5px; }
 
-#hitmonitor { height:100%; }
-#hitmonitor ul { 
-    margin:20px; background:#f3f3f3; list-style:none;
-    border:1px #666 solid; -moz-border-radius:10px; border-radius:10px;
-    -moz-box-shadow:0 0 10px #999; -webkit-box-shadow:0 0 10px #999; box-shadow:0 0 10px #999;
+#hitmonitor {
+	height:100%; overflow:hidden;
+    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
 }
+#hitmonitor ul { margin:20px; background:#fff; list-style:none; }
 #hitmonitor li { padding:8px 10px; line-height:0.9em; }
 #hitmonitor li span { font-size:0.6em; }
