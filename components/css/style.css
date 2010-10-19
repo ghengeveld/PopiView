@@ -19,7 +19,7 @@ h1 {
 
 #keywordcloud { width:98%; height:40%; }
 #keywordcloud ul {
-    display:block; width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
+    display:block; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #keywordcloud li { display:inline-block; margin:5px; }
