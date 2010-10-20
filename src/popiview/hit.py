@@ -3,15 +3,15 @@ import time
 
 class Hit(object):
 
-    def __init__(self, url, remove_www=False, referrer=None, timestamp=None):
+    def __init__(self, url, referrer=None, timestamp=None):
 
-        self._url_parts = list(urlparse.urlsplit(url))
-        self._remove_www = remove_www
+        self._url_parts = self._urlparser(list(urlparse.urlsplit(url)))
     
         if referrer is None:
             self._referrer_parts = None
         else:
-            self._referrer_parts = list(urlparse.urlsplit(referrer))
+            self._referrer_parts = self._urlparser(
+                list(urlparse.urlsplit(referrer)))
 
         if timestamp is None:
             self._timestamp = time.time()
@@ -19,9 +19,7 @@ class Hit(object):
             self._timestamp = timestamp
 
     def url(self):
-        urlparts = self._urlparser(self._url_parts)
-        
-        return urlparse.urlunsplit(urlparts)
+        return urlparse.urlunsplit(self._url_parts)
 
     def path(self):
         if self._url_parts[3]:
@@ -74,15 +72,22 @@ class Hit(object):
         # Filters is a list of tuples, following the pattern:
         # int:urlparse index, string:find, string:replace [, int: position]
         filters = [('endswith', 2, '/', ''),
-                   ('replace', 1, 'www.', '', 1)]
+                   ('replace', 1, 'www.', '', 1),
+                   ('cutoff', 2, 'PHPSESSID=')]
 
         for f in filters:
             if f[0] == 'endswith':
                 if url[f[1]].endswith(f[2]):
-                    url[f[1]] = url[f[1]][:-1] + f[3]
+                    url[f[1]] = url[f[1]][:-len(f[2])] + f[3]
             elif f[0] == 'replace':
                 if f[4]:
                     url[f[1]] = url[f[1]].replace(f[2], f[3], f[4])
                 else:
                     url[f[1]] = url[f[1]].replace(f[2], f[3])
+            elif f[0] == 'cutoff':
+                strpos = url[f[1]].find(f[2])
+                if strpos > 0:
+                    url[f[1]] = url[f[1]][:strpos]
+                    if url[f[1]][-1] == '&' or url[f[1]][-1] == '?':
+                        url[f[1]] = url[f[1]][:-1]
         return url
