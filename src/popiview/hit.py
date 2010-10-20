@@ -36,9 +36,9 @@ class Hit(object):
 
     def searchquery(self):
         ref = self._referrer_parts
-        sites = [('Google', '.google.', 'q'), 
-                 ('Yahoo', '.yahoo.', 'p'),
-                 ('Bing', '.bing.', 'q')]
+        sites = [('Google', 'google.', 'q'), 
+                 ('Yahoo', 'yahoo.', 'p'),
+                 ('Bing', 'bing.', 'q')]
     
         for site in sites:
             if ref[1].find(site[1]) > -1:
