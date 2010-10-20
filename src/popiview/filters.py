@@ -64,4 +64,4 @@ class StorageFilters(object):
         blacklist = ['','/','/index.php']
         if path in blacklist:
             return False
-        return True 
+        return True

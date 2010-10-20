@@ -18,9 +18,10 @@ class MemoryStorage(object):
 
     def add_hit(self, hit):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
-                'keywords': hit.keywords(), 'path': hit.path(), 
-                'source': hit.source()}
+                  'keywords': hit.keywords(), 'path': hit.path(), 
+                  'source': hit.source()}
         if self._sf.filter_path(hit.path()):
+            # Don't store hits for blacklisted paths
             return
         self._hits.append(hitobj)
         self._recenthits.append(hitobj)

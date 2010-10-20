@@ -19,15 +19,9 @@ class Hit(object):
             self._timestamp = timestamp
 
     def url(self):
-        url = self._url_parts
+        urlparts = self._urlparser(self._url_parts)
         
-        if url[2].endswith('/'):
-            url[2] = url[2][:-1]
-
-        if(self._remove_www == True):
-            url[1] = url[1].replace('www.', '', 1)
-
-        return urlparse.urlunsplit(url)
+        return urlparse.urlunsplit(urlparts)
 
     def path(self):
         if self._url_parts[3]:
@@ -75,3 +69,20 @@ class Hit(object):
         if query is not None:
             return query[0] + ': ' + query[1]
         return 'unknown'
+
+    def _urlparser(self, url):
+        # Filters is a list of tuples, following the pattern:
+        # int:urlparse index, string:find, string:replace [, int: position]
+        filters = [('endswith', 2, '/', ''),
+                   ('replace', 1, 'www.', '', 1)]
+
+        for f in filters.items():
+            if f[0] == 'endswith':
+                if url[f[1]].endswith(f[2]):
+                    url[f[1]] = url[f[1]][:-1] + f[3]
+            elif f[0] == 'replace':
+                if f[4]:
+                    url[f[1]] = url[f[1]].replace(f[2], f[3], f[4])
+                else:
+                    url[f[1]] = url[f[1]].replace(f[2], f[3])
+        return url
