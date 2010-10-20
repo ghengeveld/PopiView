@@ -69,24 +69,27 @@ class Hit(object):
         return 'unknown'
 
     def _urlparser(self, url):
-        # Filters is a list of tuples, following the pattern:
-        # int:urlparse index, string:find, string:replace [, int: position]
-        filters = [('endswith', 2, '/', ''),
-                   ('replace', 1, 'www.', '', 1)]
+        # Filters is a list of dictionaries
+        filters = [
+            {'type': 'endswith', 'urlpart': 2, 'find': '/', 'replace': ''},
+            {'type': 'replace', 'urlpart': 1, 'find': 'www.', 'replace': '',
+                'limit': 1},
+            {'type': 'cutoff', 'urlpart': 3, 'find': 'PHPSESSID'}]
 
         for f in filters:
-            if f[0] == 'endswith':
-                if url[f[1]].endswith(f[2]):
-                    url[f[1]] = url[f[1]][:-len(f[2])] + f[3]
-            elif f[0] == 'replace':
-                if f[4]:
-                    url[f[1]] = url[f[1]].replace(f[2], f[3], f[4])
+            if f['type'] == 'endswith':
+                if url[f['urlpart']].endswith(f['find']):
+                    url[f['urlpart']] = url[f['urlpart']][:-len(f['find'])] + \
+                        f['replace']
+            elif f['type'] == 'replace':
+                if f['limit']:
+                    url[f['urlpart']] = url[f['urlpart']].replace(f['find'], 
+                        f['replace'], f['limit'])
                 else:
-                    url[f[1]] = url[f[1]].replace(f[2], f[3])
-            elif f[0] == 'cutoff':
-                strpos = url[f[1]].find(f[2])
+                    url[f['urlpart']] = url[f['urlpart']].replace(f['find'],
+                        f['replace'])
+            elif f['type'] == 'cutoff':
+                strpos = url[f['urlpart']].find(f['find'])
                 if strpos >= 0:
-                    url[f[1]] = url[f[1]][:strpos]
-                    #if url[f[1]][-1] == '&' or url[f[1]][-1] == '?':
-                    #    url[f[1]] = url[f[1]][:-1]
+                    url[f['urlpart']] = url[f['urlpart']][:-strpos]
         return url

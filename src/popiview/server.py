@@ -119,8 +119,9 @@ class PopiWSGIServer(object):
         if name == '':
             name = 'index'
         method_name = self._urlmap.get(name, None)
-        method = getattr(self, method_name, None)
-        if method is None:
+        if method_name:
+            method = getattr(self, method_name, None)
+        if method_name is None or method is None:
             response = Response('Not Found')
             response.status = 404
         else:
