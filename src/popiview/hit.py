@@ -90,6 +90,7 @@ class Hit(object):
                         f['replace'])
             elif f['type'] == 'cutoff':
                 strpos = url[f['urlpart']].find(f['find'])
+                print str(strpos) + ' -----------------------'
                 if strpos >= 0:
                     url[f['urlpart']] = url[f['urlpart']][:-strpos]
         return url
