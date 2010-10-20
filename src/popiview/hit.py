@@ -66,7 +66,7 @@ class Hit(object):
         query = self.searchquery()
         if query is not None:
             return query[0] + ': ' + query[1]
-        return 'unknown'
+        return 'external: ' + ref[1]
 
     def _urlparser(self, url):
         # Filters is a list of dictionaries

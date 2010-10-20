@@ -28,14 +28,8 @@ the end of the url.
 >>> hit.url()
 u'http://mysite.com/page'
 
-There is an option to remove 'www' subdomains from the url
-
->>> hit = Hit(u'http://www.mysite.com/page/', remove_www=True)
->>> hit.url()
-u'http://mysite.com/page'
-
 The referrer string can also be passed to the hit class, which will
-be analyzed to see if there are interesting keywords.
+be analyzed to see if there are any keywords.
 
 >>> hit = Hit(u'http://www.mysite.com/page', 
 ...           referrer='http://searchengine.com?q=cool%20page')
