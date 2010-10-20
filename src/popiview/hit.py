@@ -92,5 +92,5 @@ class Hit(object):
                 strpos = url[f['urlpart']].find(f['find'])
                 if strpos >= 0:
                     print url[f['urlpart']] + ' (' + str(strpos) + ')'
-                    url[f['urlpart']] = url[f['urlpart']][:-strpos]
+                    url[f['urlpart']] = url[f['urlpart']][:strpos]
         return url
