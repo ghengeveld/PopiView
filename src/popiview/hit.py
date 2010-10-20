@@ -72,8 +72,7 @@ class Hit(object):
         # Filters is a list of tuples, following the pattern:
         # int:urlparse index, string:find, string:replace [, int: position]
         filters = [('endswith', 2, '/', ''),
-                   ('replace', 1, 'www.', '', 1),
-                   ('cutoff', 2, 'PHPSESSID=')]
+                   ('replace', 1, 'www.', '', 1)]
 
         for f in filters:
             if f[0] == 'endswith':
