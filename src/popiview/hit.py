@@ -93,4 +93,6 @@ class Hit(object):
                 if strpos >= 0:
                     print url[f['urlpart']] + ' (' + str(strpos) + ')'
                     url[f['urlpart']] = url[f['urlpart']][:strpos]
+            if url[3].endswith('&'):
+                url[3] = url[3][:-1]
         return url
