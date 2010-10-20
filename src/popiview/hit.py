@@ -76,7 +76,7 @@ class Hit(object):
         filters = [('endswith', 2, '/', ''),
                    ('replace', 1, 'www.', '', 1)]
 
-        for f in filters.items():
+        for f in filters:
             if f[0] == 'endswith':
                 if url[f[1]].endswith(f[2]):
                     url[f[1]] = url[f[1]][:-1] + f[3]
