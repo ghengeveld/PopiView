@@ -85,8 +85,8 @@ class Hit(object):
                     url[f[1]] = url[f[1]].replace(f[2], f[3])
             elif f[0] == 'cutoff':
                 strpos = url[f[1]].find(f[2])
-                if strpos > 0:
+                if strpos >= 0:
                     url[f[1]] = url[f[1]][:strpos]
-                    if url[f[1]][-1] == '&' or url[f[1]][-1] == '?':
-                        url[f[1]] = url[f[1]][:-1]
+                    #if url[f[1]][-1] == '&' or url[f[1]][-1] == '?':
+                    #    url[f[1]] = url[f[1]][:-1]
         return url
