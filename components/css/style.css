@@ -3,7 +3,8 @@ html,body { background:#eee; font-family:'AurulentSansRegular', Arial, sans-seri
 h1 {
 	background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom;
 	padding:0 20px; margin:0 0 10px 0; line-height:2.2em;
-	font-family:'UbuntuBold', Arial, sans-serif; font-size:1.8em; color:#fff;
+	font-family:'UbuntuRegular', Arial, sans-serif;
+	font-weight:bold; font-size:1.8em; color:#fff;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
