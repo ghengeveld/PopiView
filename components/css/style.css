@@ -29,5 +29,5 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 	margin:0; padding:0;
 }
-#hitmonitor li { margin:0; padding:8px 20px; line-height:0.9em; font-size:1.5em; }
-#hitmonitor li span { font-size:0.6em; }
+#hitmonitor li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; }
+#hitmonitor li span { font-size:0.8em; color:#666; }
