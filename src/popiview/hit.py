@@ -3,7 +3,7 @@ import time
 
 class Hit(object):
 
-    def __init__(self, url, referrer=None, timestamp=None):
+    def __init__(self, url, referrer=None, title=None, timestamp=None):
 
         self._url_parts = self._urlparser(list(urlparse.urlsplit(url)))
     
@@ -12,6 +12,11 @@ class Hit(object):
         else:
             self._referrer_parts = self._urlparser(
                 list(urlparse.urlsplit(referrer)))
+
+        if title is None:
+            self._title = ''
+        else:
+            self._title = title
 
         if timestamp is None:
             self._timestamp = time.time()
@@ -25,6 +30,9 @@ class Hit(object):
         if self._url_parts[3]:
             return self._url_parts[2] + '?' + self._url_parts[3]
         return self._url_parts[2] 
+
+    def title(self):
+        return self._title
 
     def timestamp(self):
         return self._timestamp

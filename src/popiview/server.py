@@ -85,6 +85,7 @@ class PopiWSGIServer(object):
     def log_hit(self):
         cur = self.request.GET.get('cur', None)
         ref = self.request.GET.get('ref', None)
+        title = self.request.GET.get('title', None)
 
         if cur is None:
             cur = self.request.headers.get('referer', None)
@@ -96,7 +97,7 @@ class PopiWSGIServer(object):
         response.body = self._image
 
         if cur is not None:
-            hit = Hit(cur, referrer=ref)
+            hit = Hit(cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
 	    return response
 

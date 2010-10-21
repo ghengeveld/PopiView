@@ -19,8 +19,8 @@ class MemoryStorage(object):
     def add_hit(self, hit):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
                   'keywords': hit.keywords(), 'path': hit.path(), 
-                  'source': hit.source()}
-        if self._sf.filter_path(hit.path()):
+                  'title': hit.title(), 'source': hit.source()}
+        if not self._sf.filter_path(hit.path()):
             # Don't store hits for blacklisted paths
             return
         self._hits.append(hitobj)
@@ -159,10 +159,12 @@ class SQLStorage(object):
         timestamp = int(hit.timestamp())
         url = hit.url()
         path = hit.path()
+        title = hit.title()
         referrer = hit.referrer()
         keywords = hit.keywords()
         source = hit.source()
         if not self._sf.filter_path(path):
+            # Don't store hits for blacklisted paths
             return
         cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
                                           hit_path, hit_referrer)\
@@ -176,7 +178,7 @@ class SQLStorage(object):
                             VALUES ('%(hitid)i', '%(keyword)s')" % {
                            'hitid': hitid, 'keyword': word})
         cursor.close()
-        hitobj = {'url': url, 'timestamp': timestamp, 
+        hitobj = {'url': url, 'timestamp': timestamp, 'title': title, 
                   'keywords': keywords, 'path': path, 'source': source}
         self._recenthits.append(hitobj)
         if len(self._recenthits) > 20:
@@ -185,7 +187,7 @@ class SQLStorage(object):
     def get_recenthits(self, last_timestamp=0):
         recenthits = self._recenthits
         recenthits = filter(self._sf.filter_timestamp(
-                             start_time = last_timestamp),
+                                start_time = last_timestamp),
                             recenthits)
         return recenthits
     
