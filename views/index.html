@@ -50,16 +50,16 @@
 			function updateMonitor(){
 				$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp, function(data){
 					var item
+					var colorcode = 'ff0';
 					for (x in data){
 						monitor_timestamp = data[x].timestamp;
-						item = '<li class="new">' + data[x].path + '<br/><span>' +
+						item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].path + '<br/><span>' +
                         data[x].source + '</span></li>';
 						$('#hitmonitor ul').prepend(item);
 						if($('#hitmonitor ul li').length > 20){
 							$('#hitmonitor ul li:last').remove();
 						}
 					}
-					$("li.new").css("background-color", "#ff0");
 					$("li.new").animate({
 						backgroundColor: "#fff"
 					}, 3000 );
