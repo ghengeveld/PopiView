@@ -167,11 +167,11 @@ class SQLStorage(object):
             # Don't store hits for blacklisted paths
             return
         cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
-                                          hit_path, hit_referrer)\
+                                          hit_path, hit_title, hit_referrer)\
                         VALUES ('%(timestamp)i', '%(url)s',\
-                                '%(path)s', '%(referrer)s')" % {
+                                '%(path)s', '%(title)s', '%(referrer)s')" % {
                        'timestamp': timestamp, 'url': url, 
-                       'path': path, 'referrer': referrer})
+                       'path': path, 'title': title, 'referrer': referrer})
         hitid = cursor.lastrowid
         for word in keywords:
             cursor.execute("INSERT INTO hits_keywords (hit_id, keyword)\
@@ -194,9 +194,10 @@ class SQLStorage(object):
     def __get_recenthits(self):
         conn = self.get_connection()
         cursor = conn.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("SELECT hit_timestamp AS timestamp, \
-                               hit_url AS url, \
-                               hit_path AS path \
+        cursor.execute("SELECT hit_timestamp AS timestamp,\
+                               hit_url AS url,\
+                               hit_path AS path,\
+                               hit_title AS title\
                         FROM hits WHERE hit_timestamp > %i \
                         ORDER BY hit_timestamp DESC LIMIT 20" % (
                        self.lastrecenthitsrequest))
