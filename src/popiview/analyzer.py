@@ -9,7 +9,7 @@ class Analyzer(object):
         now = time.time()
         
         if start_time is None:
-            self._start_time = now - 3600 * 24
+            self._start_time = now - 3600 * 25
         else:
             self._start_time = start_time
         
