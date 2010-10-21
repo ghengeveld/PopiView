@@ -33,7 +33,7 @@
 					var items = ''
 					for (x in data){
 						if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
-						items += '<tr><td>' + data[x].url + ' (' + data[x].title + ')</td><td>' + data[x].value + ' %</td></tr>';
+						items += '<tr><td>' + data[x].name + '</td><td>' + data[x].value + ' %</td></tr>';
 					}
 					$('#deviators table').html(items);
 				});
