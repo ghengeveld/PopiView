@@ -8,14 +8,14 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
-#deviators { position:absolute; top:2%; left:2%; width:60%; height:47%; }
+#deviators { position:absolute; top:3%; left:2%; width:60%; height:50%; }
 #deviators table {
 	display:block; height:87%; background:#fff; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #deviators table td { padding:0 20px; line-height:2em; font-size:1.5em; }
 
-#keywordcloud { position:absolute; top:51%; left:2%; width:60%; height:47%; }
+#keywordcloud { position:absolute; top:56%; left:2%; width:60%; height:41%; }
 #keywordcloud ul {
     width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
