@@ -29,3 +29,35 @@
 	font-weight: normal;
 	font-style: normal;
 }
+
+@font-face {
+	font-family: 'UbuntuRegular';
+	src: url('./component?file=fonts/Ubuntu-R-webfont.eot');
+	src: local('☺'), url('./component?file=fonts/Ubuntu-R-webfont.woff') format('woff'), url('./component?file=fonts/Ubuntu-R-webfont.ttf') format('truetype'), url('./component?file=fonts/Ubuntu-R-webfont.svg#webfontAaiAvJXZ') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'UbuntuItalic';
+	src: url('./component?file=fonts/Ubuntu-I-webfont.eot');
+	src: local('☺'), url('./component?file=fonts/Ubuntu-I-webfont.woff') format('woff'), url('./component?file=fonts/Ubuntu-I-webfont.ttf') format('truetype'), url('./component?file=fonts/Ubuntu-I-webfont.svg#webfontpXedHGzY') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'UbuntuBold';
+	src: url('./component?file=fonts/Ubuntu-B-webfont.eot');
+	src: local('☺'), url('./component?file=fonts/Ubuntu-B-webfont.woff') format('woff'), url('./component?file=fonts/Ubuntu-B-webfont.ttf') format('truetype'), url('./component?file=fonts/Ubuntu-B-webfont.svg#webfontN7lW3csj') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'UbuntuBoldItalic';
+	src: url('./component?file=fonts/Ubuntu-BI-webfont.eot');
+	src: local('☺'), url('./component?file=fonts/Ubuntu-BI-webfont.woff') format('woff'), url('./component?file=fonts/Ubuntu-BI-webfont.ttf') format('truetype'), url('./component?file=fonts/Ubuntu-BI-webfont.svg#webfontiRDbe4gV') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
