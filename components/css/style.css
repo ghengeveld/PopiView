@@ -1,4 +1,4 @@
-html,body { background:#eee; }
+html,body { background:#eee; font-family:Verdana, Arial, Helvetica, sans-serif; }
 
 h1 {
 	background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom;
