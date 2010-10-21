@@ -25,7 +25,7 @@ class Analyzer(object):
 
 
     def get_top_deviators(self, limit=None, sort_absolute=True,
-                          return_paths=True):
+                          qfield='hit_path'):
         """Returns a list containing top deviators, each represented in a 
         dictionary: {'url': url, 'value': deviation_pct, 'keywords': []}
         Sorted by deviation pct, optionally absolute.
@@ -38,9 +38,9 @@ class Analyzer(object):
 
         historic = self._storage.get_hitcounts(start_time=start, 
                                                end_time=boundary,
-                                               return_paths=return_paths)
+                                               qfield=qfield)
         recent = self._storage.get_hitcounts(start_time=boundary, end_time=end,
-                                             return_paths=return_paths)
+                                             qfield=qfield)
         historic_length = boundary - start
         recent_length = end - boundary
 

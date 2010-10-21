@@ -65,9 +65,9 @@ class MemoryStorage(object):
         return len(hits)
 
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
-                      return_paths=True):
+                      qfield='hit_path'):
         """Return dictionary of hitcounts for all urls using the format 
-        {url: count} Optional parameters:
+        {name: count} Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
@@ -78,10 +78,12 @@ class MemoryStorage(object):
                       hits)
 
         # Get a dictionary like {url: count} or {path: count}
-        if return_paths:
-            hitcounts = Counter(map(operator.itemgetter('path'), hits))
-        else:
+        if qfield == 'hit_url':
             hitcounts = Counter(map(operator.itemgetter('url'), hits))
+        elif qfield == 'hit_title':
+            hitcounts = Counter(map(operator.itemgetter('title'), hits))
+        else:
+            hitcounts = Counter(map(operator.itemgetter('path'), hits))
         
         # Iterate over the hitcounts, putting them through the filter function.
         # Items are removed if the filter function returns false.
@@ -250,7 +252,7 @@ class SQLStorage(object):
         return count
 
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
-                      return_paths=True):
+                      qfield='hit_path'):
         """Return dictionary of hitcounts for all urls using the format 
         {url: count}. Optional parameters:
         start_time Return only urls requested after this timestamp.
@@ -259,11 +261,10 @@ class SQLStorage(object):
         """
         conn = self.get_connection()
         cursor = conn.cursor(MySQLdb.cursors.DictCursor)
-        qfield = 'hit_url'
         qstart = ''
         qend = ''
-        if return_paths:
-            qfield = 'hit_path'
+        if returnfield in ['hit_url', 'hit_path', 'hit_title']:
+            qfield = returnfield
         if start_time is not None:
             qstart = " AND hit_timestamp >= %i" % (start_time)
             pass
@@ -271,14 +272,14 @@ class SQLStorage(object):
             qend = " AND hit_timestamp <= %i" % (end_time)
             pass
 
-        cursor.execute("SELECT %s AS url, COUNT(hit_url) AS count \
+        cursor.execute("SELECT %s AS name, COUNT(hit_url) AS count \
                         FROM hits WHERE 1=1%s%s GROUP BY hit_url" % (
                        qfield, qstart, qend))
         counts = {}
         res = list(cursor.fetchall())
         cursor.close()
         for item in res:
-            counts[item['url']] = item['count']
+            counts[item['name']] = item['count']
         return counts
 
     def get_keywords(self, url=None, start_time=None, end_time=None,
