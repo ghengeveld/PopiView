@@ -23,7 +23,7 @@ h1 {
 }
 #keywordcloud li { display:inline-block; margin:5px; padding:0; }
 
-#hitmonitor { position:absolute; top:2%; left:64%; width:34%; height:96%; }
+#hitmonitor { position:absolute; top:3%; left:64%; width:34%; height:94%; }
 #hitmonitor ul {
 	display:block; width:100%; background:#fff; list-style:none; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
