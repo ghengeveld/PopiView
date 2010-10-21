@@ -36,16 +36,17 @@ class Hit(object):
 
     def searchquery(self):
         ref = self._referrer_parts
-        sites = [('Google', 'google.', 'q'), 
-                 ('Yahoo', 'yahoo.', 'p'),
-                 ('Bing', 'bing.', 'q')]
+        sites = {'google.': 'q', 
+                 'yahoo.': 'p',
+                 'bing.': 'q'}
     
-        for site in sites:
-            if ref[1].find(site[1]) > -1:
+        for domain, q in sites.iteritems():
+            domainpos = ref[1].find(domain)
+            if domainpos > -1:
                 qs = urlparse.parse_qs(ref[3])
-                query = qs.get(site[2], [])
+                query = qs.get(q, [])
                 if query is not []:
-                    return (site[0], query[0])
+                    return (ref[1][domainpos:], query[0])
         return None
 
     def keywords(self):
