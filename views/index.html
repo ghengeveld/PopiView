@@ -50,15 +50,15 @@
 			function updateMonitor(){
 				$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp, function(data){
 					var item
-					var colorcode = 'f00';
+					var colorcode = 'f22';
 					for (x in data){
 						monitor_timestamp = data[x].timestamp;
-						if(data[x].source.indexOf('internal') == 0) { colorcode = 'ff0'; }
+						if(data[x].source.indexOf('internal') == 0) { colorcode = 'ff2'; }
 						else if(data[x].source.indexOf('direct') == 0) { colorcode = '28f'; }
 						else if(data[x].source.indexOf('Google') == 0) { colorcode = '0f0'; }
 						else if(data[x].source.indexOf('Yahoo') == 0) { colorcode = '0f0'; }
 						else if(data[x].source.indexOf('Bing') == 0) { colorcode = '0f0'; }
-						else { var colorcode = 'f00'; }
+						else { var colorcode = 'f22'; }
 						item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].path + '<br/><span>' +
                         data[x].source + '</span></li>';
 						$('#hitmonitor ul').prepend(item);
