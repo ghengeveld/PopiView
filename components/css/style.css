@@ -1,6 +1,7 @@
 html,body { background:#eee; }
 
-h1 { 
+h1 {
+	font: 18px/27px 'AurulentSansRegular', Arial, sans-serif;
 	background:#207ab0 url(./component?file=img/bar.png) repeat-x bottom;
 	padding:0 20px; margin:0 0 10px 0; line-height:2.2em;
 	font-weight:bold; font-size:1.8em; color:#fff;
