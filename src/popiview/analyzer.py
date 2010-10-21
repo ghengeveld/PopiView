@@ -27,7 +27,7 @@ class Analyzer(object):
     def get_top_deviators(self, limit=None, sort_absolute=True,
                           qfield='hit_path'):
         """Returns a list containing top deviators, each represented in a 
-        dictionary: {'url': url, 'value': deviation_pct, 'keywords': []}
+        dictionary: {'name': name, 'value': deviation_pct}
         Sorted by deviation pct, optionally absolute.
         """
         deviators = []
@@ -44,17 +44,15 @@ class Analyzer(object):
         historic_length = boundary - start
         recent_length = end - boundary
 
-        for url, recent_value in recent.iteritems():
-            historic_value = historic.get(url, 0.0)
+        for name, recent_value in recent.iteritems():
+            historic_value = historic.get(name, 0.0)
             if not historic_value:
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)
             deviation_pct = int((recent_hps - historic_hps) / historic_hps *
                                 100)
-            keywords = self._storage.get_keywords(url)           
-            deviators.append({'url':url, 'value':deviation_pct, 
-                              'keywords':keywords})
+            deviators.append({'name': name, 'value': deviation_pct})
         
         # Reverse sort by deviation pct value
         if sort_absolute:
