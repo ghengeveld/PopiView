@@ -10,7 +10,7 @@ h1 {
 
 #deviators { position:absolute; top:3%; left:2%; width:60%; height:60%; }
 #deviators table {
-	display:block; height:87%; background:#fff; overflow:auto;
+	display:block; height:87%; background:#fff; overflow:auto; padding:8px 0;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #deviators table td { padding:0 20px; line-height:2em; font-size:1.5em; }
@@ -25,9 +25,9 @@ h1 {
 
 #hitmonitor { position:absolute; top:3%; left:64%; width:34%; height:94%; }
 #hitmonitor ul {
-	display:block; height:100%; width:100%; background:#fff; list-style:none; overflow:auto;
+	display:block; height:92%; width:100%; background:#fff; list-style:none; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
-	margin:0; padding:0;
+	margin:0; padding:8px 0;
 }
 #hitmonitor li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; }
 #hitmonitor li span { font-size:0.8em; color:#666; }
