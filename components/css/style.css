@@ -8,18 +8,14 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
-#container { width:96%; height:94%; position:absolute; left:50%; margin-left:-48%; margin-top:3%; }
-#colleft { position:absolute; height:100%; width:70%; overflow:hidden; }
-#colright { position:absolute; right:0; height:100%; width:30%; overflow:hidden; }
-
-#deviators { width:98%; height:60%; }
+#deviators { position:absolute; top:2%; left:2%; width:60%; height:47%; }
 #deviators table {
 	display:block; height:87%; background:#fff; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #deviators table td { padding:0 20px; line-height:2em; font-size:1.5em; }
 
-#keywordcloud { width:98%; height:40%; }
+#keywordcloud { position:absolute; top:51%; left:2%; width:60%; height:47%; }
 #keywordcloud ul {
     width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
@@ -27,7 +23,7 @@ h1 {
 }
 #keywordcloud li { display:inline-block; margin:5px; padding:0; }
 
-#hitmonitor { width:100%; height:100%; }
+#hitmonitor { position:absolute; top:2%; left:64%; width:34%; height:96%; }
 #hitmonitor ul {
 	display:block; width:100%; background:#fff; list-style:none; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
