@@ -263,7 +263,7 @@ class SQLStorage(object):
         cursor = conn.cursor(MySQLdb.cursors.DictCursor)
         qstart = ''
         qend = ''
-        if returnfield in ['hit_url', 'hit_path', 'hit_title']:
+        if qfield in ['hit_url', 'hit_path', 'hit_title']:
             qfield = returnfield
         if start_time is not None:
             qstart = " AND hit_timestamp >= %i" % (start_time)
