@@ -32,55 +32,66 @@
 			<ol></ol>
 		</div>
 		<script type="text/javascript">
-			var monitor_timestamp = 0;
-			var deviators = setInterval('updateDeviators()', 30000);
-			var keywordcloud = setInterval('updateKeywordCloud()', 30000);
-			var monitor = setInterval('updateMonitor()', 3000);
-			function updateDeviators(){
-				$.getJSON('deviators.json', function(data){
-					var items = ''
-					for (x in data){
-						if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
-						items += '<tr><td>' + data[x].name + '</td><td>' + data[x].value + ' %</td></tr>';
-					}
-					$('#deviators table').html(items);
-				});
-			}
-			function updateKeywordCloud(){
-				$.getJSON('keywordcloud.json', function(data){
-					var items = ''
-					for (x in data){
-						items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
-					}
-					$('#keywordcloud ol').html(items);
-				});
-			}
-			function updateMonitor(){
-				$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp, function(data){
-					var item
-					var colorcode = 'f22';
-					for (x in data){
-						monitor_timestamp = data[x].timestamp;
-						if(data[x].source.indexOf('internal') == 0) { colorcode = 'ff6'; }
-						else if(data[x].source.indexOf('direct') == 0) { colorcode = '28f'; }
-						else if(data[x].source.indexOf('Google') == 0) { colorcode = '0f0'; }
-						else if(data[x].source.indexOf('Yahoo') == 0) { colorcode = '0f0'; }
-						else if(data[x].source.indexOf('Bing') == 0) { colorcode = '0f0'; }
-						else { var colorcode = 'f22'; }
-						item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].path + '<br/><span>' +
-                        data[x].source + '</span></li>';
-						$('#hitmonitor ol').prepend(item);
-						if($('#hitmonitor ol li').length > 20){
-							$('#hitmonitor ol li:last').remove();
-						}
-					}
-					$("li.new").animate({
-						backgroundColor: "#fff"
-					}, 3000 );
-					$("li.new").removeClass('new');
-				});
-			}
 			$(document).ready(function(){
+				var monitor_timestamp = 0;
+				var opts
+				opts['external'] = 1;
+				opts['searches'] = 1;
+				opts['internal'] = 1;
+				opts['direct'] = 1;
+				$("input[type=checkbox]").toggle(function(){
+					opts[$(this).attr('name')] = 0;
+				}, function(){
+					opts[$(this).attr('name')] = 1;
+				});
+
+				var deviators = setInterval('updateDeviators()', 30000);
+				var keywordcloud = setInterval('updateKeywordCloud()', 30000);
+				var monitor = setInterval('updateMonitor()', 3000);
+				function updateDeviators(){
+					$.getJSON('deviators.json', function(data){
+						var items = ''
+						for (x in data){
+							if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
+							items += '<tr><td>' + data[x].name + '</td><td>' + data[x].value + ' %</td></tr>';
+						}
+						$('#deviators table').html(items);
+					});
+				}
+				function updateKeywordCloud(){
+					$.getJSON('keywordcloud.json', function(data){
+						var items = ''
+						for (x in data){
+							items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
+						}
+						$('#keywordcloud ol').html(items);
+					});
+				}
+				function updateMonitor(){
+					$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp+'&ext='+opts['external']+'&sea='+opts['searches']+'&int='+opts['internal']+'&dir='+opts['direct'], function(data){
+						var item
+						var colorcode = 'f22';
+						for (x in data){
+							monitor_timestamp = data[x].timestamp;
+							if(data[x].source.indexOf('internal') == 0) { colorcode = 'ff6'; }
+							else if(data[x].source.indexOf('direct') == 0) { colorcode = '28f'; }
+							else if(data[x].source.indexOf('Google') == 0) { colorcode = '0f0'; }
+							else if(data[x].source.indexOf('Yahoo') == 0) { colorcode = '0f0'; }
+							else if(data[x].source.indexOf('Bing') == 0) { colorcode = '0f0'; }
+							else { var colorcode = 'f22'; }
+							item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].path + '<br/><span>' +
+							data[x].source + '</span></li>';
+							$('#hitmonitor ol').prepend(item);
+							if($('#hitmonitor ol li').length > 20){
+								$('#hitmonitor ol li:last').remove();
+							}
+						}
+						$("li.new").animate({
+							backgroundColor: "#fff"
+						}, 3000 );
+						$("li.new").removeClass('new');
+					});
+				}
 				updateDeviators();
 				updateKeywordCloud();
 				updateMonitor();
