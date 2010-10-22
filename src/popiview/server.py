@@ -37,10 +37,10 @@ class PopiWSGIServer(object):
 
     def hitmonitor(self):
         last_timestamp = int(self.request.GET.get('last_timestamp', 0))
-        sources = {'ext': int(self.request.GET.get('ext', 1)), 
-                   'sea': int(self.request.GET.get('sea', 1)),
-                   'int': int(self.request.GET.get('int', 1)),
-                   'dir': int(self.request.GET.get('dir', 1))}
+        sources = {'external': int(self.request.GET.get('ext', 1)), 
+                   'searches': int(self.request.GET.get('sea', 1)),
+                   'internal': int(self.request.GET.get('int', 1)),
+                   'direct': int(self.request.GET.get('dir', 1))}
         output = self._storage.get_recenthits(sources, last_timestamp + 1)
         return Response(json.dumps(output))
 
