@@ -140,12 +140,19 @@ def app_factory(global_config, storage_name, **local_conf):
     config = {}
     for key, value in local_conf.iteritems():
         if key.startswith('cfg.'):
-            key = key.split('.', 1)[1]
-            if key.find('.') == -1:
-                config[key] = value
+            cfgs = key.split('.',1)[1]
+            keys = cfgs.split('.')
+            if len(keys) == 1:
+                config[keys[0]] = value
             else:
-                key = key.split('.', 1)[1]
-                config[key] = value
+                if not keys[0] in config:
+                    config[keys[0]] = {}
+                if len(keys) == 2:
+                    config[keys[0]][keys[1]] = value
+                else:
+                    if not keys[1] in config[keys[0]]:
+                        config[keys[0]][keys[1]] = {}
+                    config[keys[0]][keys[1]][keys[2]] = value
     if storage_name == 'memory':
         storage = MemoryStorage(config)
     elif storage_name == 'sql':
