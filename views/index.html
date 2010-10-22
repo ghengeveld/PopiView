@@ -45,9 +45,6 @@
 					opts[$(this).attr('name')] = 1;
 				});
 
-				setInterval('updateDeviators()', 30000);
-				setInterval('updateKeywordCloud()', 30000);
-				setInterval('updateMonitor()', 3000);
 				function updateDeviators(){
 					$.getJSON('deviators.json', function(data){
 						var items = '';
@@ -95,6 +92,9 @@
 				updateDeviators();
 				updateKeywordCloud();
 				updateMonitor();
+				setInterval('updateDeviators()', 30000);
+				setInterval('updateKeywordCloud()', 30000);
+				setInterval('updateMonitor()', 3000);
 			});
 		</script>
 	</body>
