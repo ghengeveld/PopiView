@@ -8,7 +8,8 @@ from popiview.filters import StorageFilters
 
 class MemoryStorage(object):
     
-    def __init__(self):
+    def __init__(self, config):
+        self._conf = config
         self._hits = []
         self._recenthits = []
         self._sf = StorageFilters()
@@ -124,8 +125,8 @@ class StorageError(StandardError):
 
 class SQLStorage(object):
     
-    def __init__(self, dbhost, dbuser, dbpass, dbname):
-        self._cred = {'host':dbhost,'user':dbuser,'pass':dbpass,'name':dbname}
+    def __init__(self, config):
+        self._conf = config
         self.localdata = threading.local()
         self.lastrecenthitsrequest = 0
         self._recenthits = []
@@ -137,12 +138,12 @@ class SQLStorage(object):
         return self.localdata.db
 
     def _create_connection(self):
-	cred = self._cred
+        cfg = self._conf
         try:
-            return MySQLdb.connect(host = cred['host'], 
-                                   user = cred['user'], 
-                                   passwd = cred['pass'],
-                                   db = cred['name'])
+            return MySQLdb.connect(host = cfg['dbhost'], 
+                                   user = cfg['dbuser'], 
+                                   passwd = cfg['dbpass'],
+                                   db = cfg['dbname'])
         except MySQLdb.Error, e:
             raise StorageError(str(e))
 

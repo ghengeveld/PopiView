@@ -9,8 +9,9 @@ from popiview.dummy import Dummy
 from popiview.view import View
 
 class PopiWSGIServer(object):
-    global local_conf    
-    def __init__(self, storage):
+    
+    def __init__(self, config, storage):
+        self._conf = config
         self._storage = storage
         self._deviation_analyzer = Analyzer(self._storage)
         self._keyword_analyzer = Analyzer(self._storage)
@@ -100,7 +101,7 @@ class PopiWSGIServer(object):
         response.body = self._image
 
         if cur:
-            hit = Hit(cur, referrer=ref, title=title)
+            hit = Hit(self._conf, cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
 	    return response
 
@@ -125,7 +126,7 @@ class PopiWSGIServer(object):
 
     def __call__(self, environ, start_response):
         self.request = Request(environ)
-        urlmap = local_conf['urlmap']
+        urlmap = self._conf['urlmap']
         name = self.request.path_info_pop()
         if name == '':
             name = 'index'
@@ -136,15 +137,19 @@ class PopiWSGIServer(object):
 
 
 def app_factory(global_config, storage_name, **local_conf):
+    config = {}
+    for key, value in local_conf.iteritems():
+        if key.startswith('cfg.'):
+            key = key.split('.', 1)[1]
+            if key.find('.') == -1:
+                config[key] = value
+            else:
+                key = key.split('.', 1)[1]
+                config[key] = value
     if storage_name == 'memory':
-        storage = MemoryStorage()
+        storage = MemoryStorage(config)
     elif storage_name == 'sql':
-        storage = SQLStorage(
-            dbhost = local_conf['dbhost'],
-            dbuser = local_conf['dbuser'],
-            dbpass = local_conf['dbpass'],
-            dbname = local_conf['dbname']
-        )
+        storage = SQLStorage(config)
     else:
         raise ValueError('No such storage: %s' % storage_name)
-    return PopiWSGIServer(storage)
+    return PopiWSGIServer(config, storage)
