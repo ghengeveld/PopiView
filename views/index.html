@@ -13,15 +13,23 @@
 	<body>
 		<div id="deviators">
 			<h1>Top Deviators</h1>
+			<ul class="options"><li>Options</li></ul>
 			<table></table>
 		</div>
 		<div id="keywordcloud">
 			<h1>Search Keywords</h1>
-			<ul></ul>
+			<ul class="options"><li>Options</li></ul>
+			<ol></ol>
 		</div>
 		<div id="hitmonitor">
 			<h1>Hit Monitor</h1>
-			<ul></ul>
+			<ul class="options">
+				<li><input type="checkbox" name="external" checked />External</li>
+				<li><input type="checkbox" name="searches" checked />Searches</li>
+				<li><input type="checkbox" name="internal" checked />Internal</li>
+				<li><input type="checkbox" name="direct" checked />Direct</li>
+			</ul>
+			<ol></ol>
 		</div>
 		<script type="text/javascript">
 			var monitor_timestamp = 0;
@@ -44,7 +52,7 @@
 					for (x in data){
 						items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
 					}
-					$('#keywordcloud ul').html(items);
+					$('#keywordcloud ol').html(items);
 				});
 			}
 			function updateMonitor(){
@@ -61,9 +69,9 @@
 						else { var colorcode = 'f22'; }
 						item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].path + '<br/><span>' +
                         data[x].source + '</span></li>';
-						$('#hitmonitor ul').prepend(item);
-						if($('#hitmonitor ul li').length > 20){
-							$('#hitmonitor ul li:last').remove();
+						$('#hitmonitor ol').prepend(item);
+						if($('#hitmonitor ol li').length > 20){
+							$('#hitmonitor ol li:last').remove();
 						}
 					}
 					$("li.new").animate({

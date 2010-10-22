@@ -8,6 +8,17 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 
+.options {
+	float:right; background:#044466; height:2.2em; list-style:none;
+	margin:0; padding:0; margin-top:-57px; margin-right:20px; padding-right:15px;
+	-moz-border-radius:0 0 8px 8px; -webkit-border-radius:0 0 8px 8px; border-radius:0 0 8px 8px;
+}
+.options li {
+	float:left; margin:0; padding:0 0 0 15px; line-height:2.4em; font-size:0.9em; color:#fff;
+    
+}
+.options li input[type=checkbox] { margin:0 5px 0 0; }
+
 #deviators { position:absolute; top:3%; left:2%; width:60%; height:60%; }
 #deviators table {
 	display:block; height:87%; background:#fff; overflow:auto; padding:8px 0;
@@ -16,18 +27,18 @@ h1 {
 #deviators table td { padding:0 20px; line-height:2em; font-size:1.5em; }
 
 #keywordcloud { position:absolute; top:66%; left:2%; width:60%; height:31%; }
-#keywordcloud ul {
+#keywordcloud ol {
     width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 	margin:0; padding:8px 0; font-size:1.5em;
 }
-#keywordcloud li { display:inline-block; margin:5px; padding:0; }
+#keywordcloud ol li { display:inline-block; margin:5px; padding:0; }
 
 #hitmonitor { position:absolute; top:3%; left:64%; width:34%; height:94%; }
-#hitmonitor ul {
+#hitmonitor ol {
 	display:block; height:92%; width:100%; background:#fff; list-style:none; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 	margin:0; padding:8px 0;
 }
-#hitmonitor li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; }
-#hitmonitor li span { font-size:0.8em; color:#666; }
+#hitmonitor ol li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; }
+#hitmonitor ol li span { font-size:0.8em; color:#666; }
