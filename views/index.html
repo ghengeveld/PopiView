@@ -45,12 +45,12 @@
 					opts[$(this).attr('name')] = 1;
 				});
 
-				var deviators = setInterval('updateDeviators()', 30000);
-				var keywordcloud = setInterval('updateKeywordCloud()', 30000);
-				var monitor = setInterval('updateMonitor()', 3000);
+				setInterval('updateDeviators()', 30000);
+				setInterval('updateKeywordCloud()', 30000);
+				setInterval('updateMonitor()', 3000);
 				function updateDeviators(){
 					$.getJSON('deviators.json', function(data){
-						var items = ''
+						var items = '';
 						for (x in data){
 							if (data[x].value > 0) { data[x].value = '+' + data[x].value; }
 							items += '<tr><td>' + data[x].name + '</td><td>' + data[x].value + ' %</td></tr>';
@@ -60,7 +60,7 @@
 				}
 				function updateKeywordCloud(){
 					$.getJSON('keywordcloud.json', function(data){
-						var items = ''
+						var items = '';
 						for (x in data){
 							items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
 						}
@@ -69,7 +69,7 @@
 				}
 				function updateMonitor(){
 					$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp+'&ext='+opts['external']+'&sea='+opts['searches']+'&int='+opts['internal']+'&dir='+opts['direct'], function(data){
-						var item
+						var item = '';
 						var colorcode = 'f22';
 						for (x in data){
 							monitor_timestamp = data[x].timestamp;
