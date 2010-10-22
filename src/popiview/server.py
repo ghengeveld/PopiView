@@ -9,7 +9,7 @@ from popiview.dummy import Dummy
 from popiview.view import View
 
 class PopiWSGIServer(object):
-    
+    global local_conf    
     def __init__(self, storage):
         self._storage = storage
         self._deviation_analyzer = Analyzer(self._storage)
@@ -136,7 +136,6 @@ class PopiWSGIServer(object):
 
 
 def app_factory(global_config, storage_name, **local_conf):
-    global local_conf
     if storage_name == 'memory':
         storage = MemoryStorage()
     elif storage_name == 'sql':
