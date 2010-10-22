@@ -40,8 +40,10 @@
 				opts['internal'] = 1;
 				opts['direct'] = 1;
 				$("input[type=checkbox]").toggle(function(){
+					$(this).removeAttr('checked');
 					opts[$(this).attr('name')] = 0;
 				}, function(){
+					$(this).attr('checked', 'checked');
 					opts[$(this).attr('name')] = 1;
 				});
 
