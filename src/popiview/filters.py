@@ -68,5 +68,7 @@ class StorageFilters(object):
 
     def filter_sources(self, sources):
         def filter_function(item):
+            if item['source'].startswith('searches'):
+                return bool(sources['searches'])
             return bool(sources[item['source']])
         return filter_function

@@ -71,7 +71,7 @@ class Hit(object):
             return 'internal'
         query = self.searchquery()
         if query is not None:
-            return query[0] + ': ' + query[1]
+            return 'searches - ' + query[0] + ': ' + query[1]
         return 'external: ' + ref[1]
 
     def _urlparser(self, url):
