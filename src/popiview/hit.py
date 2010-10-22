@@ -3,6 +3,8 @@ import time
 
 class Hit(object):
 
+    global local_conf
+
     def __init__(self, url, referrer=None, title=None, timestamp=None):
 
         self._url_parts = self._urlparser(list(urlparse.urlsplit(url)))
@@ -44,10 +46,7 @@ class Hit(object):
 
     def searchquery(self):
         ref = self._referrer_parts
-        sites = {'google.': 'q', 
-                 'yahoo.': 'p',
-                 'bing.': 'q'}
-    
+        sites = local_conf['sparams'] 
         for domain, q in sites.iteritems():
             domainpos = ref[1].find(domain)
             if domainpos > -1:

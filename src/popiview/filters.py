@@ -65,3 +65,8 @@ class StorageFilters(object):
         if path in ignorelist:
             return False
         return True
+
+    def filter_sources(self, sources):
+        def filter_function(item):
+            return bool(sources[item['source']])
+        return filter_function

@@ -28,8 +28,13 @@ class MemoryStorage(object):
         if len(self._recenthits) > 20:
             self._recenthits = self._recenthits[-20:]
     
-    def get_recenthits(self):
-        return self._recenthits
+    def get_recenthits(self, sources, last_timestamp=0):
+        recenthits = self._recenthits
+        recenthits = filter(self._sf.filter_timestamp(
+                                start_time = last_timestamp),
+                            recenthits)
+        recenthits = filter(self._sf.filter_sources(sources), recenthits)
+        return recenthits
 
     def list_urls(self, unique=False, start_time=None, end_time=None, 
                   minimum_hits=1):
@@ -186,11 +191,12 @@ class SQLStorage(object):
         if len(self._recenthits) > 20:
             self._recenthits = self._recenthits[-20:]
         
-    def get_recenthits(self, last_timestamp=0):
+    def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
         recenthits = filter(self._sf.filter_timestamp(
                                 start_time = last_timestamp),
                             recenthits)
+        recenthits = filter(self._sf.filter_sources(sources), recenthits)
         return recenthits
     
     def __get_recenthits(self):

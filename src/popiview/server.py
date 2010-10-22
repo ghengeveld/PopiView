@@ -10,9 +10,8 @@ from popiview.view import View
 
 class PopiWSGIServer(object):
     
-    def __init__(self, storage, urlmap):
+    def __init__(self, storage):
         self._storage = storage
-        self._urlmap = urlmap
         self._deviation_analyzer = Analyzer(self._storage)
         self._keyword_analyzer = Analyzer(self._storage)
         self._view = View()
@@ -37,7 +36,11 @@ class PopiWSGIServer(object):
 
     def hitmonitor(self):
         last_timestamp = int(self.request.GET.get('last_timestamp', 0))
-        output = self._storage.get_recenthits(last_timestamp + 1)
+        sources = {'ext': int(self.request.GET.get('ext', 1)), 
+                   'sea': int(self.request.GET.get('sea', 1)),
+                   'int': int(self.request.GET.get('int', 1)),
+                   'dir': int(self.request.GET.get('dir', 1))}
+        output = self._storage.get_recenthits(sources, last_timestamp + 1)
         return Response(json.dumps(output))
 
     def dummydata(self):
@@ -116,10 +119,11 @@ class PopiWSGIServer(object):
 
     def __call__(self, environ, start_response):
         self.request = Request(environ)
+        urlmap = local_conf['urlmap']
         name = self.request.path_info_pop()
         if name == '':
             name = 'index'
-        method_name = self._urlmap.get(name, None)
+        method_name = urlmap.get(name, None)
         if method_name:
             method = getattr(self, method_name, None)
         if method_name is None or method is None:
@@ -131,6 +135,7 @@ class PopiWSGIServer(object):
 
 
 def app_factory(global_config, storage_name, **local_conf):
+    global local_conf
     if storage_name == 'memory':
         storage = MemoryStorage()
     elif storage_name == 'sql':
@@ -142,9 +147,4 @@ def app_factory(global_config, storage_name, **local_conf):
         )
     else:
         raise ValueError('No such storage: %s' % storage_name)
-    urlmap = {}
-    for key, value in local_conf.iteritems():
-        if key.startswith('urlmap'):
-            k = key.split('.', 1)[1]
-            urlmap[k] = value
-    return PopiWSGIServer(storage, urlmap)
+    return PopiWSGIServer(storage)
