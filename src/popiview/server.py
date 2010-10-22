@@ -139,9 +139,9 @@ class PopiWSGIServer(object):
 def app_factory(global_config, storage_name, **local_conf):
     config = {}
     for key, value in local_conf.iteritems():
-        if key.startswith('cfg.'):
-            cfgs = key.split('.',1)[1]
-            keys = cfgs.split('.')
+        if key.startswith('cfg>>'):
+            cfgs = key.split('>>',1)[1]
+            keys = cfgs.split('>>')
             if len(keys) == 1:
                 config[keys[0]] = value
             else:
