@@ -120,7 +120,7 @@ class MemoryStorage(object):
 
 
 class StorageError(StandardError):
-    pass
+    print '---------------- Storage Error ----------------'  
 
 
 class SQLStorage(object):
