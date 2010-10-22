@@ -4,7 +4,7 @@ import time
 class Hit(object):
 
     def __init__(self, config, url, referrer=None, title=None, timestamp=None):
-        self._config = config
+        self._conf = config
         self._url_parts = self._urlparser(list(urlparse.urlsplit(url)))
     
         if referrer is None:
