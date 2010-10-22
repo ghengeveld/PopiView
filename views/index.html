@@ -94,9 +94,9 @@
 				updateDeviators();
 				updateKeywordCloud();
 				updateMonitor();
-				setInterval('updateDeviators()', 30000);
-				setInterval('updateKeywordCloud()', 30000);
-				setInterval('updateMonitor()', 3000);
+				setInterval(function(){ updateDeviators(); }, 30000);
+				setInterval(function(){ updateKeywordCloud(); }, 30000);
+				setInterval(function(){ updateMonitor(); }, 3000);
 			});
 		</script>
 	</body>
