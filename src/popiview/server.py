@@ -15,7 +15,7 @@ class PopiWSGIServer(object):
         self._deviation_analyzer = Analyzer(self._storage)
         self._keyword_analyzer = Analyzer(self._storage)
         self._view = View()
-        self._image = self.load_component('img/img.gif')
+        self._image = self._load_component('img/img.gif')
 
     def index(self):
         view = self._view.index()
@@ -90,7 +90,7 @@ class PopiWSGIServer(object):
         ref = self.request.GET.get('ref', None)
         title = self.request.GET.get('title', None)
 
-        if cur is None:
+        if not cur:
             cur = self.request.headers.get('referer', None)
 
         response = Response()
@@ -99,12 +99,12 @@ class PopiWSGIServer(object):
         response.headers['Cache-Control'] = "no-cache, must-revalidate"
         response.body = self._image
 
-        if cur is not None:
+        if cur:
             hit = Hit(cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
 	    return response
 
-    def load_component(self, filepath):
+    def _load_component(self, filepath):
         with open('components/' + filepath) as f:
             data = f.read()
         return data
@@ -114,8 +114,14 @@ class PopiWSGIServer(object):
         mimetype = mimetypes.guess_type(filepath, False)
         response = Response()
         response.headers['Content-Type'] = mimetype[0]
-        response.body = self.load_component(filepath)
+        response.body = self._load_component(filepath)
         return response 
+
+    def http404(self):
+        response = Response()
+        response.status = 404
+        response.body = 'Not Found.'
+        return response
 
     def __call__(self, environ, start_response):
         self.request = Request(environ)
@@ -123,14 +129,9 @@ class PopiWSGIServer(object):
         name = self.request.path_info_pop()
         if name == '':
             name = 'index'
-        method_name = urlmap.get(name, None)
-        if method_name:
-            method = getattr(self, method_name, None)
-        if method_name is None or method is None:
-            response = Response('Not Found')
-            response.status = 404
-        else:
-            response = method()
+        method_name = urlmap.get(name, 'http404')
+        method = getattr(self, method_name, None)
+        response = method()
         return response(environ, start_response)
 
 
