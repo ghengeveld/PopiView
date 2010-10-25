@@ -1,7 +1,7 @@
 import json
 import random
 import mimetypes
-import urllib
+import httplib2
 from webob import Request, Response
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage, SQLStorage
@@ -93,11 +93,11 @@ class PopiWSGIServer(object):
         title = self.request.GET.get('title', None)
 
         if cur is not None:
-            cur = urllib.unquote(cur)
+            cur = httplib2.iri2uri(cur)
         if ref is not None:
-            ref = urllib.unquote(ref)
+            ref = httplib2.iri2uri(ref)
         if title is not None:
-            title = urllib.unquote(title)
+            title = httplib2.iri2uri(title)
 
         if not cur:
             cur = self.request.headers.get('referer', None)
