@@ -88,9 +88,16 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def log_hit(self):
-        cur = urllib.unquote(self.request.GET.get('cur', None))
-        ref = urllib.unquote(self.request.GET.get('ref', None))
-        title = urllib.unquote(self.request.GET.get('title', None))
+        cur = self.request.GET.get('cur', None)
+        ref = self.request.GET.get('ref', None)
+        title = self.request.GET.get('title', None)
+
+        if cur is not None:
+            cur = urllib.unquote(cur)
+        if ref is not None:
+            ref = urllib.unquote(ref)
+        if title is not None:
+            title = urllib.unquote(title)
 
         if not cur:
             cur = self.request.headers.get('referer', None)
