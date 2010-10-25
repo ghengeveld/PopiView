@@ -120,7 +120,13 @@ class MemoryStorage(object):
 
 
 class StorageError(StandardError):
-    print '---------------- Storage Error ----------------'  
+    
+    def __init__(self, value):
+        self.message = value
+        print '-'*10 + value
+
+    def __str__(self):
+        return repr(self.message)
 
 
 class SQLStorage(object):
