@@ -1,6 +1,7 @@
 import json
 import random
 import mimetypes
+import urllib
 from webob import Request, Response
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage, SQLStorage
