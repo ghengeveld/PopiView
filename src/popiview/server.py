@@ -28,7 +28,8 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def deviators(self):
-        output = self._deviation_analyzer.get_top_deviators()
+        qfield = self.request.GET.get('qfield', 'hit_path')
+        output = self._deviation_analyzer.get_top_deviators(qfield=qfield)
         return Response(json.dumps(output))
     
     def keywordcloud(self):
