@@ -14,7 +14,7 @@ h1 {
 	-moz-border-radius:0 0 8px 8px; -webkit-border-radius:0 0 8px 8px; border-radius:0 0 8px 8px;
 }
 .options li {
-	float:left; margin:0; padding:0 0 0 15px; line-height:2.4em; font-size:0.9em; color:#fff;
+	float:left; margin:0; padding:0 0 0 10px; line-height:2.4em; font-size:0.9em; color:#fff;
     
 }
 .options li input[type=checkbox] { margin:0 5px 0 0; }
