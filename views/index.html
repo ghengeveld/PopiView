@@ -78,7 +78,7 @@
 							else if(data[x].source.indexOf('Yahoo') == 0) { colorcode = '0f0'; }
 							else if(data[x].source.indexOf('Bing') == 0) { colorcode = '0f0'; }
 							else { var colorcode = 'f22'; }
-							item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].path + '<br/><span>' +
+							item = '<li class="new" style="background-color:#' + colorcode + '">' + data[x].title + '<br/><span>' +
 							data[x].source + '</span></li>';
 							$('#hitmonitor ol').prepend(item);
 							if($('#hitmonitor ol li').length > 20){
