@@ -89,7 +89,7 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def log_hit(self):
-        #self.request.charset = 'utf8'
+        self.request.charset = 'utf8'
         cur = self.request.GET.get('cur', None)
         ref = self.request.GET.get('ref', None)
         title = self.request.GET.get('title', None)
