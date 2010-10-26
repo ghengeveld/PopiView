@@ -12,7 +12,7 @@ class Hit(object):
         else:
             self._referrer_parts = self._urlparser(
                 list(urlparse.urlsplit(referrer)))
-
+        
         if title is None:
             self._title = ''
         else:
@@ -50,8 +50,8 @@ class Hit(object):
                 domainpos = ref[1].find(domain)
                 if domainpos > -1:
                     qs = urlparse.parse_qs(ref[3])
-                    query = qs.get(q, [])
-                    if query is not []:
+                    query = qs.get(q, None)
+                    if query:
                         return (ref[1][domainpos:], query[0])
         return None
 
@@ -79,8 +79,8 @@ class Hit(object):
         # Filters is a list of dictionaries
         filters = [
             {'type': 'endswith', 'urlpart': 2, 'find': '/', 'replace': ''},
-            {'type': 'replace', 'urlpart': 1, 'find': 'www.', 'replace': '',
-                'limit': 1},
+            #{'type': 'replace', 'urlpart': 1, 'find': 'www.', 'replace': '',
+            #    'limit': 1},
             {'type': 'cutoff', 'urlpart': 3, 'find': 'PHPSESSID'}]
 
         for f in filters:

@@ -4,7 +4,8 @@ from popiview.hit import Hit
 
 class Dummy(object):
     
-    def __init__(self, storage, clear=False):
+    def __init__(self, config, storage, clear=False):
+        self._conf = config
         self._storage = storage
         if clear:
             self._storage.clear_hits()
@@ -14,7 +15,8 @@ class Dummy(object):
         time = min_time
         time_separator = floor((max_time - min_time) / num)
         while num > 0:
-            self._storage.add_hit(Hit(url, timestamp=time, referrer=referrer))
+            self._storage.add_hit(Hit(self._conf, url, timestamp=time, 
+                                      referrer=referrer))
             time = time + time_separator
             num -= 1
 
@@ -44,4 +46,5 @@ class Dummy(object):
 
             for j in range(0, int(num_hits)):
                 ts = start_time + i
-                self._storage.add_hit(Hit(url, timestamp=ts, referrer=referrer))
+                self._storage.add_hit(Hit(self._conf, url, timestamp=ts, 
+                                          referrer=referrer))

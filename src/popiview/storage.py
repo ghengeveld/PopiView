@@ -141,6 +141,7 @@ class SQLStorage(object):
     def get_connection(self):
         if not hasattr(self.localdata, 'db'):
             self.localdata.db = self._create_connection()
+            self.localdata.db.set_character_set('utf8')
         return self.localdata.db
 
     def _create_connection(self):
@@ -201,8 +202,7 @@ class SQLStorage(object):
     def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
         recenthits = filter(self._sf.filter_timestamp(
-                                start_time = last_timestamp),
-                            recenthits)
+                                start_time = last_timestamp), recenthits)
         recenthits = filter(self._sf.filter_sources(sources), recenthits)
         return recenthits
     

@@ -68,7 +68,9 @@ class StorageFilters(object):
 
     def filter_sources(self, sources):
         def filter_function(item):
-            if item['source'].startswith('searches'):
-                return bool(sources['searches'])
-            return bool(sources[item['source']])
+            types = ['direct', 'internal', 'external', 'searches']
+            for sourcetype in types:
+                if item['source'].startswith(sourcetype):
+                    return bool(sources[sourcetype])
+            return False
         return filter_function
