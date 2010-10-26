@@ -16,6 +16,7 @@ class MemoryStorage(object):
 
     def clear_hits(self):
         self._hits = []
+        self._recenthits = []
 
     def add_hit(self, hit):
         hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
