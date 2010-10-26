@@ -1,22 +1,17 @@
 import unittest
 import doctest
 
+from tests import test_hit
+
 FLAGS = doctest.NORMALIZE_WHITESPACE + doctest.ELLIPSIS
 GLOBS = {}
 
-class PopiViewTest(unittest.TestCase):
-
-    def test_something(self):
-        pass
-
 
 def suite():
-    test_suite = unittest.TestSuite()
-    test_suite.addTests([
-        doctest.DocFileSuite('README.txt',
-                             package='popiview',
-                             globs=GLOBS,
-                             optionflags=FLAGS),
-        unittest.makeSuite(PopiViewTest)
-    ])
-    return test_suite
+    suite = unittest.TestSuite()
+    suite.addTests(doctest.DocFileSuite('README.txt',
+                                        package='popiview',
+                                        globs=GLOBS,
+                                        optionflags=FLAGS))
+    suite.addTests(test_hit.test_suite())
+    return suite

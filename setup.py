@@ -24,7 +24,6 @@ setup(
       ]
     },
     install_requires=[
-      'gdata',
       'PasteScript',
       'PasteDeploy',
       'WebOb',
