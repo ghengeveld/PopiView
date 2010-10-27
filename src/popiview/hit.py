@@ -19,9 +19,9 @@ class Hit(object):
             self._title = title
 
         if timestamp is None:
-            self._timestamp = time.time()
+            self._timestamp = int(time.time())
         else:
-            self._timestamp = timestamp
+            self._timestamp = int(timestamp)
 
     def url(self):
         return urlparse.urlunsplit(self._url_parts)
@@ -31,16 +31,16 @@ class Hit(object):
             return self._url_parts[2] + '?' + self._url_parts[3]
         return self._url_parts[2] 
 
+    def referrer(self):
+        if self._referrer_parts is None:
+            return None
+        return urlparse.urlunsplit(self._referrer_parts)
+
     def title(self):
         return self._title
 
     def timestamp(self):
         return self._timestamp
-
-    def referrer(self):
-        if self._referrer_parts is None:
-            return None
-        return urlparse.urlunsplit(self._referrer_parts)
 
     def searchquery(self):
         ref = self._referrer_parts
@@ -59,7 +59,25 @@ class Hit(object):
         keywords = []
         query = self.searchquery()
         if query is not None:
-            keywords += query[1].lower().decode('utf8').split(' ')
+            phrase = query[1].lower()
+            if phrase.find('"') <= phrase.find("'"):
+                for sub in re.finditer("\"(.*?)\"", phrase):
+                    keywords.append(sub.group(0))
+                    phrase = phrase.replace(sub.group(0), '')
+            for sub in re.finditer("\'(.*?)\'", phrase):
+                keywords.append(sub.group(0))
+                phrase = phrase.replace(sub.group(0), '')
+            if phrase.find('"') > phrase.find("'"):
+                for sub in re.finditer("\"(.*?)\"", phrase):
+                    keywords.append(sub.group(0))
+                    phrase = phrase.replace(sub.group(0), '')
+            words = phrase.split(' ')
+            for word in words:
+                word = word.strip(word)
+                word = word.replace('"', '')
+                word = word.replace("'", '')
+                if word != '':
+                    keywords.append(word)
         return keywords
 
     def source(self):
