@@ -61,27 +61,12 @@ class Hit(object):
         query = self.searchquery()
         if query is not None:
             phrase = query[1].lower()
-            if phrase.find('"') != -1 or phrase.find("'") != -1:
-                if phrase.find('"') <= phrase.find("'"):
-                    # Handle double quotes first
-                    for sub in re.finditer("\"(.*?)\"", phrase):
-                        keywords.append(sub.group(0)[1:-1])
-                        phrase = phrase.replace(sub.group(0), '')
-                # Handle single quotes
-                for sub in re.finditer("\'(.*?)\'", phrase):
-                    keywords.append(sub.group(0)[1:-1])
-                    phrase = phrase.replace(sub.group(0), '')
-                # Handle double quotes (won't find any if already executed)
-                for sub in re.finditer("\"(.*?)\"", phrase):
-                    keywords.append(sub.group(0)[1:-1])
-                    phrase = phrase.replace(sub.group(0), '')
-            words = phrase.split(' ')
-            for word in words:
-                word = word.strip()
-                word = word.replace('"', '')
-                word = word.replace("'", '')
-                if word != '':
-                    keywords.append(word)
+            pattern = re.compile(r'".*?"|\'.*\'|[^\s]+')
+            for match in re.finditer(pattern, phrase):
+                item = match.group(0)
+                if item.startswith('"') or item.startswith("'"):
+                    item = item[1:-1]
+                keywords.append(item)
         return keywords
 
     def source(self):
