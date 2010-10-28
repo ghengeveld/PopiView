@@ -1,5 +1,6 @@
 import urlparse
 import time
+import re
 
 class Hit(object):
 
@@ -60,20 +61,23 @@ class Hit(object):
         query = self.searchquery()
         if query is not None:
             phrase = query[1].lower()
-            if phrase.find('"') <= phrase.find("'"):
-                for sub in re.finditer("\"(.*?)\"", phrase):
-                    keywords.append(sub.group(0))
+            if phrase.find('"') != -1 or phrase.find("'") != -1:
+                if phrase.find('"') <= phrase.find("'"):
+                    # Handle double quotes first
+                    for sub in re.finditer("\"(.*?)\"", phrase):
+                        keywords.append(sub.group(0)[1:-1])
+                        phrase = phrase.replace(sub.group(0), '')
+                # Handle single quotes
+                for sub in re.finditer("\'(.*?)\'", phrase):
+                    keywords.append(sub.group(0)[1:-1])
                     phrase = phrase.replace(sub.group(0), '')
-            for sub in re.finditer("\'(.*?)\'", phrase):
-                keywords.append(sub.group(0))
-                phrase = phrase.replace(sub.group(0), '')
-            if phrase.find('"') > phrase.find("'"):
+                # Handle double quotes (won't find any if already executed)
                 for sub in re.finditer("\"(.*?)\"", phrase):
-                    keywords.append(sub.group(0))
+                    keywords.append(sub.group(0)[1:-1])
                     phrase = phrase.replace(sub.group(0), '')
             words = phrase.split(' ')
             for word in words:
-                word = word.strip(word)
+                word = word.strip()
                 word = word.replace('"', '')
                 word = word.replace("'", '')
                 if word != '':

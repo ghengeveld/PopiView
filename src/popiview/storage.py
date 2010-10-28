@@ -2,6 +2,8 @@ import sys
 import time
 import operator
 import MySQLdb
+from MySQLdb import cursors
+import sqlite3
 import threading
 from popiview.counter import Counter
 from popiview.filters import StorageFilters
@@ -139,39 +141,104 @@ class SQLStorage(object):
         self._recenthits = []
         self._sf = StorageFilters()
 
+    def __del__(self):
+        self._close_connection()
+
     def get_connection(self):
         if not hasattr(self.localdata, 'db'):
             self.localdata.db = self._create_connection()
-            self.localdata.db.set_character_set('utf8')
+            if self._conf['dbtype'] == 'mysql':
+                self.localdata.db.set_character_set('utf8')
         return self.localdata.db
+
+    def get_cursor(self, DictCursor=True):
+        conn = self.get_connection()
+        if self._conf['dbtype'] == 'mysql' and DictCursor==True:
+            return conn.cursor(MySQLdb.cursors.DictCursor)
+        else:
+            return conn.cursor()
 
     def _create_connection(self):
         cfg = self._conf
-        try:
-            return MySQLdb.connect(host = cfg['dbhost'], 
-                                   user = cfg['dbuser'], 
-                                   passwd = cfg['dbpass'],
-                                   db = cfg['dbname'])
-        except MySQLdb.Error, e:
-            raise StorageError(str(e))
+        if cfg['dbtype'] == 'mysql':
+            try:
+                return MySQLdb.connect(host = cfg['dbhost'], 
+                                       user = cfg['dbuser'], 
+                                       passwd = cfg['dbpass'],
+                                       db = cfg['dbname'])
+            except MySQLdb.Error, e:
+                raise StorageError(str(e))
+        else:
+            try:
+                return sqlite3.connect(cfg['dbfile'])
+            except sqlite3.Error, e:
+                raise StorageError(str(e))
 
     def _close_connection(self):
         if hasattr(self.localdata, 'db'):
             self.localdata.db.close()
 
-    def __del__(self):
-        self._close_connection()
+    def _setup(self):
+        cursor = self.get_cursor()
+        cursor.execute("DROP TABLE IF EXISTS hits")
+        cursor.execute("DROP TABLE IF EXISTS hits_keywords")
+        if self._conf['dbtype'] == 'mysql':
+            # MySQL syntax
+            cursor.execute("\
+            CREATE TABLE IF NOT EXISTS hits (\
+              hit_id int(32) NOT NULL AUTO_INCREMENT,\
+              hit_timestamp int(32) NOT NULL,\
+              hit_url varchar(500) COLLATE utf8_unicode_ci NOT NULL,\
+              hit_path varchar(500) COLLATE utf8_unicode_ci NOT NULL,\
+              hit_title varchar(200) COLLATE utf8_unicode_ci NOT NULL,\
+              hit_referrer varchar(1000) COLLATE utf8_unicode_ci NOT NULL,\
+              PRIMARY KEY (hit_id)\
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\
+            AUTO_INCREMENT=1")
+            cursor.execute("\
+            CREATE TABLE IF NOT EXISTS hits_keywords (\
+              hit_id int(32) NOT NULL,\
+              keyword varchar(100) COLLATE utf8_unicode_ci NOT NULL,\
+              PRIMARY KEY (hit_id, keyword)\
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci")
+            #cursor.execute("ALTER TABLE hits_keywords\
+            #ADD CONSTRAINT hits_keywords_ibfk_1 FOREIGN KEY (hit_id)\
+            #REFERENCES hits (hit_id) ON DELETE SET NULL ON UPDATE CASCADE")
+        else:
+            # SQLite syntax
+            cursor.execute("\
+            CREATE TABLE IF NOT EXISTS hits (\
+              hit_id INTEGER,\
+              hit_timestamp INTEGER,\
+              hit_url varchar(500),\
+              hit_path varchar(500),\
+              hit_title varchar(200),\
+              hit_referrer varchar(1000),\
+              PRIMARY KEY (hit_id)\
+            )")
+            cursor.execute("\
+            CREATE TABLE IF NOT EXISTS hits_keywords (\
+              hit_id INTEGER,\
+              keyword varchar(100),\
+              PRIMARY KEY (hit_id, keyword),\
+              FOREIGN KEY (hit_id) REFERENCES hits(hit_id)\
+            )")
+        cursor.close() 
 
     def clear_hits(self):
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("TRUNCATE TABLE hits_keywords")
-        cursor.execute("TRUNCATE TABLE hits")
+        cursor = self.get_cursor()
+        if self._conf['dbtype'] == 'mysql':
+            # MySQL syntax
+            cursor.execute("TRUNCATE TABLE hits_keywords")
+            cursor.execute("TRUNCATE TABLE hits")
+        else:
+            # SQLite syntax
+            cursor.execute("DELETE FROM hits_keywords")
+            cursor.execute("DELETE FROM hits")
         cursor.close()
 
     def add_hit(self, hit):
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = self.get_cursor()
         timestamp = int(hit.timestamp())
         url = hit.url()
         path = hit.path()
@@ -208,8 +275,7 @@ class SQLStorage(object):
         return recenthits
     
     def __get_recenthits(self):
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = self.get_cursor()
         cursor.execute("SELECT hit_timestamp AS timestamp,\
                                hit_url AS url,\
                                hit_path AS path,\
@@ -231,8 +297,7 @@ class SQLStorage(object):
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = self.get_cursor()
         cursor.execute("SELECT hit_url FROM hits")
         urls = cursor.fetchall().values()
         cursor.close()
@@ -250,8 +315,7 @@ class SQLStorage(object):
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         """
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = self.get_cursor()
         qstart = ''
         qend = ''
         if start_time is not None:
@@ -261,7 +325,10 @@ class SQLStorage(object):
 
         cursor.execute("SELECT COUNT(hit_url) AS count FROM hits \
                         WHERE hit_url = '%s'%s%s" % (url, qstart, qend))
-        count = cursor.fetchone()['count']
+        if isinstance(cursor, MySQLdb.cursors.DictCursor):
+            count = cursor.fetchone()['count']
+        else:
+            count = cursor.fetchone()[0]
         cursor.close()
         return count
 
@@ -273,8 +340,7 @@ class SQLStorage(object):
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = self.get_cursor()
         qstart = ''
         qend = ''
         if qfield not in ['hit_url', 'hit_path', 'hit_title']:
@@ -301,8 +367,7 @@ class SQLStorage(object):
         """Get all keywords and their counts.
         Returns dictionary: {keyword: count}
         """
-        conn = self.get_connection()
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = self.get_cursor()
         cursor.execute("SELECT keyword, COUNT(keyword) AS count \
                         FROM hits_keywords GROUP BY keyword")
         keywords = {}

@@ -1,17 +1,28 @@
 import unittest
+import time
+from popiview.storage import SQLStorage
 
 class TestBase(unittest.TestCase):
 
     def setUp(self):
         config = {'sparams': {'bing': 'q', 'google': 'q', 'yahoo': 'p'}, 
-                  'dbhost': 'localhost', 'dbpass': 'qqrs', 'urlmap': 
-                  {'index': 'index', 'keywordcloud.json': 'keywordcloud', 
-                   'cleardata': 'cleardata', 'component': 'get_component', 
-                   'hitmonitor.json': 'hitmonitor', 'randomdata': 'randomdata', 
-                   'deviators.json': 'deviators', 'image.gif': 'log_hit',
-                   'dummydata': 'dummydata'
-                  }, 'dbuser': 'root', 'dbname': 'popiview'}
+                  'urlmap': {
+                    'index': 'index', 'keywordcloud.json': 'keywordcloud', 
+                    'cleardata': 'cleardata', 'component': 'get_component', 
+                    'hitmonitor.json': 'hitmonitor', 
+                    'randomdata': 'randomdata', 'dummydata': 'dummydata',
+                    'deviators.json': 'deviators', 'image.gif': 'log_hit'},
+                  'dbtype': 'sqlite',
+                  'dbfile': 'unittest.db',
+                  'dbhost': 'localhost',
+                  'dbuser': 'root',
+                  'dbpass': 'qqrs',
+                  'dbname': 'popiview'
+                 }
         self._conf = config
+        self._storage = SQLStorage(config)
+        self._storage._setup()
+        self.now = int(time.time())
 
     def tearDown(self):
-        pass
+        self._storage._close_connection()

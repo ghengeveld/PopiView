@@ -46,7 +46,7 @@ be analyzed to see if there are any keywords.
 >>> hit = Hit(config, u'http://www.mysite.com/page', 
 ...           referrer='http://www.google.com?q=cool%20page')
 >>> hit.keywords()
-[u'cool', u'page']
+['cool', 'page']
 
 It is also possible to specify a datetime when the request was made.
 This is useful in unittesting, and to add historic data from external 
@@ -121,7 +121,7 @@ certain period
 >>> storage.get_keywords(u'http://www.mysite.com/page',
 ...                      start_time=1285050000,
 ...                      end_time=1285070000)
-{u'page': 1, u'cool': 2}
+{'page': 1, 'cool': 2}
 
 
 Determining Popularity
@@ -214,20 +214,20 @@ a different timespan for this we create a new Analyzer first.
 We can now get a keyword 'cloud':
 
 >>> keywordanalyzer.get_keyword_cloud()
-[(u'cool', 60.0), (u'page', 40.0)]
+[('cool', 60.0), ('page', 40.0)]
 
 We can specify a minimum hitcount for the keyword, so only keywords with at
 least so many hits are returned:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_count=80)
-[(u'cool', 100.0)]
+[('cool', 100.0)]
 
 Or with a limit:
 
 >>> keywordanalyzer.get_keyword_cloud(limit=1)
-[(u'cool', 100.0)]
+[('cool', 100.0)]
 
 We can adjust the percentage by setting minimum and/or maximum values:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_pct=25, maximum_pct=175)
-[(u'cool', 114.0), (u'page', 86.0)]
+[('cool', 114.0), ('page', 86.0)]

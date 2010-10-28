@@ -1,7 +1,6 @@
 # coding=utf-8
 
 import unittest
-import time
 from popiview.hit import Hit
 from popiview.tests.test_base import TestBase
 
@@ -130,7 +129,7 @@ class TestHit(TestBase):
         # As a string
         tests.append({'timestamp': '-1000', 'expect': -1000})
         # None (fallback to current timestamp)
-        tests.append({'timestamp': None, 'expect': int(time.time())})
+        tests.append({'timestamp': None, 'expect': self.now})
 
         for test in tests:
             self.hit = Hit(self._conf, u'http://abc.nl', 
@@ -221,12 +220,12 @@ class TestHit(TestBase):
         # Single quotes
         tests.append({
             'query': "my 'test query'",
-            'expect': ['my', 'test query']
+            'expect': [u'my', u'test query']
         })
         # Double quotes
         tests.append({
             'query': 'my "test query"',
-            'expect': ['my', 'test query']
+            'expect': [u'my', u'test query']
         })
 
         for test in tests:
