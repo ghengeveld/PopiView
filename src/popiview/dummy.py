@@ -48,3 +48,7 @@ class Dummy(object):
                 ts = start_time + i
                 self._storage.add_hit(Hit(self._conf, url, timestamp=ts, 
                                           referrer=referrer))
+        if round(decimal) == 1:
+            self._storage.add_hit(Hit(self._conf, url, timestamp=ts, 
+                                      referrer=referrer))
+

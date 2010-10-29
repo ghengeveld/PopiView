@@ -182,24 +182,24 @@ Add some more dummy data
 Now we can test the analyzer
 
 >>> analyzer.get_top_deviators(qfield='hit_url')
-[{'name': u'http://www.mysite.com/page', 'value': 405},
+[{'name': u'http://www.mysite.com/page', 'value': 412},
  {'name': u'http://www.mysite.com/page3', 'value': 200},
  {'name': u'http://www.mysite.com/page4', 'value': -66},
- {'name': u'http://www.mysite.com/page2', 'value': 0}]
+ {'name': u'http://www.mysite.com/page2', 'value': 1}]
 
 By default they are sorted by absolute value, meaning -66 comes between 
-200 and 0. We can disable this behavior:
+203 and 0. We can disable this behavior:
 
 >>> analyzer.get_top_deviators(sort_absolute=False, qfield='hit_url') 
-[{'name': u'http://www.mysite.com/page', 'value': 405},
+[{'name': u'http://www.mysite.com/page', 'value': 412},
  {'name': u'http://www.mysite.com/page3', 'value': 200},
- {'name': u'http://www.mysite.com/page2', 'value': 0},
+ {'name': u'http://www.mysite.com/page2', 'value': 1},
  {'name': u'http://www.mysite.com/page4', 'value': -66}]
 
 If we want just the top # of deviators we can set a limit:
 
 >>> analyzer.get_top_deviators(limit=1, qfield='hit_url')
-[{'name': u'http://www.mysite.com/page', 'value': 405}]
+[{'name': u'http://www.mysite.com/page', 'value': 412}]
 
 
 Keyword Cloud
@@ -230,4 +230,4 @@ Or with a limit:
 We can adjust the percentage by setting minimum and/or maximum values:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_pct=25, maximum_pct=175)
-[('cool', 114.0), ('page', 86.0)]
+[('cool', 115.0), ('page', 85.0)]

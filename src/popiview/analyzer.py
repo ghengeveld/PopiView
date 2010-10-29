@@ -50,8 +50,8 @@ class Analyzer(object):
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)
-            deviation_pct = int((recent_hps - historic_hps) / historic_hps *
-                                100)
+            deviation_pct = int(round((recent_hps - historic_hps) / 
+                historic_hps * 100.0))
             deviators.append({'name': name, 'value': deviation_pct})
         
         # Reverse sort by deviation pct value

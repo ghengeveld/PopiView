@@ -359,7 +359,10 @@ class SQLStorage(object):
         res = list(cursor.fetchall())
         cursor.close()
         for item in res:
-            counts[item['name']] = item['count']
+            if isinstance(cursor, MySQLdb.cursors.DictCursor):
+                counts[item['name']] = item['count']
+            else:
+                counts[item[0]] = item[1]
         return counts
 
     def get_keywords(self, url=None, start_time=None, end_time=None,
