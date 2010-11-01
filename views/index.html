@@ -54,6 +54,9 @@
 					} else {
 						opts[$(this).attr('name')] = 0;
 					}
+					$('#hitmonitor ol').html('');
+					monitor_timestamp = 0;
+					updateMonitor();
 				});
 
 				function updateDeviators(){
