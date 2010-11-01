@@ -440,7 +440,7 @@ class SQLStorage(object):
         for ref in referrers:
             ref = list(urlparse.urlsplit(ref))
             if ref is not None:
-                phrase = urlparser.searchquery(ref)[1]
-                if phrase is not None:
-                    phrases.append(phrase)
+                querydata = urlparser.searchquery(ref)
+                if querydata is not None:
+                    phrases.append(querydata[1])
         return phrases
