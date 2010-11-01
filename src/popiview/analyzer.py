@@ -3,8 +3,8 @@ import urlparse
 
 class Analyzer(object):
 
-    def __init__(self, storage, start_time=None, boundary_time=None, 
-                 end_time=None):
+    def __init__(self, storage, start_time=None, 
+                 boundary_time=None, end_time=None):
         self._storage = storage
         now = time.time()
         
@@ -22,7 +22,6 @@ class Analyzer(object):
             self._end_time = now
         else:
             self._end_time = end_time
-
 
     def get_top_deviators(self, limit=None, sort_absolute=True,
                           qfield='hit_path'):
@@ -65,10 +64,9 @@ class Analyzer(object):
         else:
             return deviators[:limit]
 
-
     def get_keyword_cloud(self, minimum_count=None, limit=50,
                           minimum_pct=0, maximum_pct=100):
-        """Returns a list or tuples of keywords and their size relative to the
+        """Returns a list of tuples of keywords and their size relative to the
         others, as a percentage with set bounds. Sorted alphabetically.
         """
         cloud = []
@@ -92,10 +90,10 @@ class Analyzer(object):
                 continue
             pct = (keywords[keyword] / float(totalcount) * pct_range
                    + minimum_pct)
-            cloud.append((keyword, round(pct)))
-
-        return cloud
-
+            phrases = self._storage.list_searches(keyword)
+            phrases = {}.fromkeys(phrases).keys()
+            cloud.append((keyword, round(pct), sorted(phrases)))
+        return sorted(cloud)
 
     def calc_sd(self, numlist):
         """Returns the standard deviation for a list of numbers.

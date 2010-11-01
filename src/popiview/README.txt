@@ -211,23 +211,26 @@ a different timespan for this we create a new Analyzer first.
 >>> keywordanalyzer = Analyzer(storage, start_time=0, boundary_time=5000,
 ...                            end_time=10000)
 
-We can now get a keyword 'cloud':
+We can now get a keyword 'cloud', which is a list of keywords and their 
+relative sizes and and the searchphrases in which they occurred.
 
 >>> keywordanalyzer.get_keyword_cloud()
-[('cool', 60.0), ('page', 40.0)]
+[('cool', 60.0, ['cool', 'cool page']), 
+ ('page', 40.0, ['cool page', 'page'])]
 
 We can specify a minimum hitcount for the keyword, so only keywords with at
 least so many hits are returned:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_count=80)
-[('cool', 100.0)]
+[('cool', 100.0, ['cool', 'cool page'])]
 
 Or with a limit:
 
 >>> keywordanalyzer.get_keyword_cloud(limit=1)
-[('cool', 100.0)]
+[('cool', 100.0, ['cool', 'cool page'])]
 
 We can adjust the percentage by setting minimum and/or maximum values:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_pct=25, maximum_pct=175)
-[('cool', 115.0), ('page', 85.0)]
+[('cool', 115.0, ['cool', 'cool page']), 
+ ('page', 85.0, ['cool page', 'page'])]

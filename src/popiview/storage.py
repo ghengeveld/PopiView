@@ -5,8 +5,10 @@ import MySQLdb
 from MySQLdb import cursors
 import sqlite3
 import threading
+import urlparse
 from popiview.counter import Counter
 from popiview.filters import StorageFilters
+from popiview.urlparser import URLParser
 
 class MemoryStorage(object):
     
@@ -120,6 +122,23 @@ class MemoryStorage(object):
         keywords = dict(filter(self._sf.filter_keywordcount(minimum_count),
                         keywords.iteritems()))
         return keywords
+
+    def list_searches(self, keyword=None):
+        """List all the search phrases which contain the given keyword, or all
+        phrases if no keyword given.
+        """
+        phrases = []
+        sources = map(operator.itemgetter('source'), self._hits)
+        sources = {}.fromkeys(sources).keys() # make unique
+        urlparser = URLParser(self._conf)
+        for source in sources:
+            if source.startswith('searches'):
+                qpos = source.find(': ')
+                if qpos > 0:
+                    phrase = source[qpos+2:]
+                    if keyword is None or phrase.find(keyword) != -1:
+                        phrases.append(phrase)
+        return phrases
 
 
 class StorageError(StandardError):
@@ -257,9 +276,16 @@ class SQLStorage(object):
                        'path': path, 'title': title, 'referrer': referrer})
         hitid = cursor.lastrowid
         for word in keywords:
-            cursor.execute("INSERT INTO hits_keywords (hit_id, keyword)\
-                            VALUES ('%(hitid)i', '%(keyword)s')" % {
-                           'hitid': hitid, 'keyword': word})
+            if self._conf['dbtype'] == 'sqlite':
+                cursor.execute("INSERT OR IGNORE INTO hits_keywords ( \
+                                hit_id, keyword \
+                                ) VALUES ('%(hitid)i', '%(keyword)s')" % {
+                                'hitid': hitid, 'keyword': word})
+            else:
+                cursor.execute("INSERT IGNORE INTO hits_keywords ( \
+                                hit_id, keyword \
+                                ) VALUES ('%(hitid)i', '%(keyword)s')" % {
+                                'hitid': hitid, 'keyword': word})
         cursor.close()
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title, 
                   'keywords': keywords, 'path': path, 'source': source}
@@ -377,5 +403,41 @@ class SQLStorage(object):
         res = list(cursor.fetchall())
         cursor.close()
         for item in res:
-            keywords[item['keyword']] = item['count']
+            if isinstance(cursor, MySQLdb.cursors.DictCursor):
+                keywords[item['keyword']] = item['count']
+            else:
+                keywords[str(item[0])] = item[1]
         return keywords
+
+    def list_referrers(self, url=None, urlsearch=None, refsearch=None):
+        """List all referrers (to a certain url)."""
+        referrers = []
+        cursor = self.get_cursor(DictCursor=False)
+        qand = ''
+        if url is not None:
+            qand += " AND hit_url = '%s'" % url
+        if urlsearch is not None:
+            qand += " AND hit_url LIKE '%s'" % ('%'+urlsearch+'%',)
+        if refsearch is not None:
+            qand += " AND hit_referrer LIKE '%s'" % ('%'+refsearch+'%',)
+        cursor.execute("SELECT hit_referrer FROM hits\
+            WHERE hit_referrer != '' AND hit_referrer != 'None' %s" % qand)
+        res = cursor.fetchall()
+        for ref in res:
+            referrers.append(ref[0])
+        return referrers
+    
+    def list_searches(self, keyword=None):
+        """List all the search phrases which contain the given keyword, or all
+        phrases if no keyword given.
+        """
+        phrases = []
+        urlparser = URLParser(self._conf)
+        if keyword is None:
+            referrers = self.list_referrers()
+        else:
+            referrers = self.list_referrers(refsearch=keyword)
+        for ref in referrers:
+            ref = list(urlparse.urlsplit(ref))
+            phrases.append(urlparser.searchquery(ref)[1])
+        return phrases
