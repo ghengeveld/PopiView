@@ -264,14 +264,14 @@ class SQLStorage(object):
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title, 
                   'keywords': keywords, 'path': path, 'source': source}
         self._recenthits.append(hitobj)
-        if len(self._recenthits) > 20:
-            self._recenthits = self._recenthits[-20:]
+        if len(self._recenthits) > 50:
+            self._recenthits = self._recenthits[-50:]
         
     def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
+        recenthits = filter(self._sf.filter_sources(sources), recenthits)
         recenthits = filter(self._sf.filter_timestamp(
                                 start_time = last_timestamp), recenthits)
-        recenthits = filter(self._sf.filter_sources(sources), recenthits)
         return recenthits
     
     def __get_recenthits(self):
