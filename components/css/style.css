@@ -42,3 +42,12 @@ h1 {
 }
 #hitmonitor ol li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; }
 #hitmonitor ol li span { font-size:0.8em; color:#666; }
+
+.internal.new { background-color:#ff6; }
+.internal span.bull { color:#ec3!important; }
+.external.new { background-color:#f22; }
+.external span.bull { color:#f22!important; }
+.direct.new { background-color:#28f; }
+.direct span.bull { color:#28f!important; }
+.searches.new { background-color:#0f0; }
+.searches span.bull { color:#0f0!important; }

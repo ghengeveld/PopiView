@@ -81,18 +81,17 @@
 				function updateMonitor(){
 					$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp+'&ext='+opts['external']+'&sea='+opts['searches']+'&int='+opts['internal']+'&dir='+opts['direct'], function(data){
 						var item = '';
-						var colorcode = 'f22';
+						var sourcetype = 'external';
 						for (x in data){
 							monitor_timestamp = data[x].timestamp;
-							if(data[x].source.indexOf('internal') == 0) { colorcode = 'ff6'; }
-							else if(data[x].source.indexOf('direct') == 0) { colorcode = '28f'; }
-							else if(data[x].source.indexOf('Google') == 0) { colorcode = '0f0'; }
-							else if(data[x].source.indexOf('Yahoo') == 0) { colorcode = '0f0'; }
-							else if(data[x].source.indexOf('Bing') == 0) { colorcode = '0f0'; }
-							else { var colorcode = 'f22'; }
-							item = '<li class="new" style="background-color:#' + colorcode + '" title="' + data[x].url + '">' + data[x].title + '<br/>' +
-								'<span style="color:#' + colorcode + '">&bull; </span>' +
-								'<span>' + data[x].source + '</span></li>';
+							if(data[x].source.indexOf('internal') == 0) { sourcetype = 'internal'; }
+							else if(data[x].source.indexOf('direct') == 0) { sourcetype = 'direct'; }
+							else if(data[x].source.indexOf('Google') == 0) { sourcetype = 'searches'; }
+							else if(data[x].source.indexOf('Yahoo') == 0) { sourcetype = 'searches'; }
+							else if(data[x].source.indexOf('Bing') == 0) { sourcetype = 'searches'; }
+							else { sourcetype = 'external'; }
+							item = '<li class="new '+sourcetype+'" title="' + data[x].url + '">' + data[x].title + '<br/>' +
+								'<span class="bull">&bull;</span> <span>' + data[x].source + '</span></li>';
 							$('#hitmonitor ol').prepend(item);
 							if($('#hitmonitor ol li').length > 20){
 								$('#hitmonitor ol li:last').remove();
@@ -100,8 +99,9 @@
 						}
 						$("li.new").animate({
 							backgroundColor: "#fff"
-						}, 3000 );
-						$("li.new").removeClass('new');
+						}, 3000, function(){
+							$(this).removeClass('new');
+						});
 					});
 				}
 				updateDeviators();
