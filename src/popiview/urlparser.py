@@ -14,7 +14,7 @@ class URLParser(object):
                 if domainpos > -1:
                     qs = urlparse.parse_qs(ref[3])
                     query = qs.get(q, None)
-                    if query:
+                    if query and query[0] and ref[1][domainpos:]:
                         return (ref[1][domainpos:], query[0])
         return None
 
