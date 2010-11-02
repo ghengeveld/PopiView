@@ -95,8 +95,6 @@ class Analyzer(object):
             phrases = self._storage.list_searches(keyword)
             phrases = {}.fromkeys(phrases).keys()
             keyword = parser.escape(keyword)
-            for key, value in phrases:
-                phrases[key] = parser.escape(value)
             cloud.append((keyword, round(pct), sorted(phrases)))
         return sorted(cloud)
 

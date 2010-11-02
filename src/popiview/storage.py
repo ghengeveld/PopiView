@@ -9,6 +9,7 @@ import urlparse
 from popiview.counter import Counter
 from popiview.filters import StorageFilters
 from popiview.urlparser import URLParser
+from popiview.htmlparser import HTMLParser
 
 class MemoryStorage(object):
     
@@ -130,14 +131,14 @@ class MemoryStorage(object):
         phrases = []
         sources = map(operator.itemgetter('source'), self._hits)
         sources = {}.fromkeys(sources).keys() # make unique
-        urlparser = URLParser(self._conf)
+        htmlparser = HTMLParser()
         for source in sources:
             if source.startswith('searches'):
                 qpos = source.find(': ')
                 if qpos > 0:
                     phrase = source[qpos+2:]
                     if keyword is None or phrase.find(keyword) != -1:
-                        phrases.append(phrase)
+                        phrases.append(htmlparser.escape(phrase))
         return phrases
 
 
@@ -433,6 +434,7 @@ class SQLStorage(object):
         """
         phrases = []
         urlparser = URLParser(self._conf)
+        htmlparser = HTMLParser()
         if keyword is None:
             referrers = self.list_referrers()
         else:
@@ -442,5 +444,5 @@ class SQLStorage(object):
             if ref is not None:
                 querydata = urlparser.searchquery(ref)
                 if querydata is not None:
-                    phrases.append(querydata[1])
+                    phrases.append(htmlparser.escape(querydata[1]))
         return phrases
