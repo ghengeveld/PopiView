@@ -1,5 +1,6 @@
 import time
 import urlparse
+from popiview.htmlparser import HTMLParser
 
 class Analyzer(object):
 
@@ -70,6 +71,7 @@ class Analyzer(object):
         others, as a percentage with set bounds. Sorted alphabetically.
         """
         cloud = []
+        parser = HTMLParser()
 
         keywords = self._storage.get_keywords(minimum_count=minimum_count)
 
@@ -92,6 +94,9 @@ class Analyzer(object):
                    + minimum_pct)
             phrases = self._storage.list_searches(keyword)
             phrases = {}.fromkeys(phrases).keys()
+            keyword = HTMLParser.escape(keyword)
+            for key, value in phrases:
+                phrases[key] = HTMLParser.escape(value)
             cloud.append((keyword, round(pct), sorted(phrases)))
         return sorted(cloud)
 
