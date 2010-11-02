@@ -10,15 +10,15 @@ class Dummy(object):
         if clear:
             self._storage.clear_hits()
     
-    """def create_hits_evenly(self, url, referrer=None, num=100, 
+    def create_hits_evenly(self, url, referrer=None, num=100, 
                            min_time=1285040000, max_time=1285090000):
-        time = min_time
+        ts = min_time
         time_separator = floor((max_time - min_time) / num)
         while num > 0:
-            self._storage.add_hit(Hit(self._conf, url, timestamp=time, 
+            self._storage.add_hit(Hit(self._conf, url, timestamp=ts, 
                                       referrer=referrer))
-            time = time + time_separator
-            num -= 1"""
+            ts = ts + time_separator
+            num -= 1
 
     def create_hits_linear(self, url, referrer=None, 
                            start_hits_per_hour=100, end_hits_per_hour=100, 

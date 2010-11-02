@@ -1,5 +1,6 @@
 import operator
 import MySQLdb
+import MySQLdb.cursors
 import sqlite3
 import threading
 import urlparse

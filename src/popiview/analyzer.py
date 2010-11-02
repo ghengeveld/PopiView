@@ -1,5 +1,4 @@
 import time
-import urlparse
 from popiview.htmlparser import HTMLParser
 
 class Analyzer(object):

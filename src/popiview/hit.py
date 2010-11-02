@@ -1,6 +1,5 @@
 import urlparse
 import time
-import re
 from popiview.urlparser import URLParser
 
 class Hit(object):
