@@ -94,9 +94,9 @@ class Analyzer(object):
                    + minimum_pct)
             phrases = self._storage.list_searches(keyword)
             phrases = {}.fromkeys(phrases).keys()
-            keyword = HTMLParser.escape(keyword)
+            keyword = parser.escape(keyword)
             for key, value in phrases:
-                phrases[key] = HTMLParser.escape(value)
+                phrases[key] = parser.escape(value)
             cloud.append((keyword, round(pct), sorted(phrases)))
         return sorted(cloud)
 
