@@ -202,45 +202,42 @@ class SQLStorage(object):
         cursor.execute("DROP TABLE IF EXISTS hits_keywords")
         if self._conf['dbtype'] == 'mysql':
             # MySQL syntax
-            cursor.execute("\
-            CREATE TABLE IF NOT EXISTS hits (\
-              hit_id int(32) NOT NULL AUTO_INCREMENT,\
-              hit_timestamp int(32) NOT NULL,\
-              hit_url varchar(500) COLLATE utf8_unicode_ci NOT NULL,\
-              hit_path varchar(500) COLLATE utf8_unicode_ci NOT NULL,\
-              hit_title varchar(200) COLLATE utf8_unicode_ci NOT NULL,\
-              hit_referrer varchar(1000) COLLATE utf8_unicode_ci NOT NULL,\
-              PRIMARY KEY (hit_id)\
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\
-            AUTO_INCREMENT=1")
-            cursor.execute("\
-            CREATE TABLE IF NOT EXISTS hits_keywords (\
-              hit_id int(32) NOT NULL,\
-              keyword varchar(100) COLLATE utf8_unicode_ci NOT NULL,\
-              PRIMARY KEY (hit_id, keyword)\
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci")
-            #cursor.execute("ALTER TABLE hits_keywords\
-            #ADD CONSTRAINT hits_keywords_ibfk_1 FOREIGN KEY (hit_id)\
-            #REFERENCES hits (hit_id) ON DELETE SET NULL ON UPDATE CASCADE")
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS hits (
+              hit_id int(32) NOT NULL AUTO_INCREMENT,
+              hit_timestamp int(32) NOT NULL,
+              hit_url varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+              hit_path varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+              hit_title varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+              hit_referrer varchar(1000) COLLATE utf8_unicode_ci NOT NULL,
+              PRIMARY KEY (hit_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+            AUTO_INCREMENT=1""")
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS hits_keywords (
+              hit_id int(32) NOT NULL,
+              keyword varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+              PRIMARY KEY (hit_id, keyword)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci""")
         else:
             # SQLite syntax
-            cursor.execute("\
-            CREATE TABLE IF NOT EXISTS hits (\
-              hit_id INTEGER,\
-              hit_timestamp INTEGER,\
-              hit_url varchar(500),\
-              hit_path varchar(500),\
-              hit_title varchar(200),\
-              hit_referrer varchar(1000),\
-              PRIMARY KEY (hit_id)\
-            )")
-            cursor.execute("\
-            CREATE TABLE IF NOT EXISTS hits_keywords (\
-              hit_id INTEGER,\
-              keyword varchar(100),\
-              PRIMARY KEY (hit_id, keyword),\
-              FOREIGN KEY (hit_id) REFERENCES hits(hit_id)\
-            )")
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS hits (
+              hit_id INTEGER,
+              hit_timestamp INTEGER,
+              hit_url varchar(500),
+              hit_path varchar(500),
+              hit_title varchar(200),
+              hit_referrer varchar(1000),
+              PRIMARY KEY (hit_id)
+            )""")
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS hits_keywords (
+              hit_id INTEGER,
+              keyword varchar(100),
+              PRIMARY KEY (hit_id, keyword),
+              FOREIGN KEY (hit_id) REFERENCES hits(hit_id)
+            )""")
         cursor.close()
 
     def clear_hits(self):
@@ -267,24 +264,24 @@ class SQLStorage(object):
         if not self._sf.filter_path(path):
             # Don't store hits for blacklisted paths
             return
-        cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
-                                          hit_path, hit_title, hit_referrer)\
-                        VALUES ('%(timestamp)i', '%(url)s',\
-                                '%(path)s', '%(title)s', '%(referrer)s')" % {
+        cursor.execute("""INSERT INTO hits (hit_timestamp, hit_url,
+                                          hit_path, hit_title, hit_referrer)
+                        VALUES ('%(timestamp)i', '%(url)s',
+                                '%(path)s', '%(title)s', '%(referrer)s')""" % {
                        'timestamp': timestamp, 'url': url,
                        'path': path, 'title': title, 'referrer': referrer})
         hitid = cursor.lastrowid
         for word in keywords:
             if self._conf['dbtype'] == 'sqlite':
-                cursor.execute("INSERT OR IGNORE INTO hits_keywords ( \
-                                hit_id, keyword \
-                                ) VALUES ('%(hitid)i', '%(keyword)s')" % {
-                                'hitid': hitid, 'keyword': word})
+                cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
+                                  hit_id, keyword
+                                  ) VALUES ('%(hitid)i', '%(keyword)s')""" % {
+                                  'hitid': hitid, 'keyword': word})
             else:
-                cursor.execute("INSERT IGNORE INTO hits_keywords ( \
-                                hit_id, keyword \
-                                ) VALUES ('%(hitid)i', '%(keyword)s')" % {
-                                'hitid': hitid, 'keyword': word})
+                cursor.execute("""INSERT IGNORE INTO hits_keywords (
+                                  hit_id, keyword
+                                  ) VALUES ('%(hitid)i', '%(keyword)s')""" % {
+                                  'hitid': hitid, 'keyword': word})
         cursor.close()
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title,
                   'keywords': keywords, 'path': path, 'source': source}
@@ -301,12 +298,12 @@ class SQLStorage(object):
 
     def __get_recenthits(self):
         cursor = self.get_cursor()
-        cursor.execute("SELECT hit_timestamp AS timestamp,\
-                               hit_url AS url,\
-                               hit_path AS path,\
-                               hit_title AS title\
-                        FROM hits WHERE hit_timestamp > %i \
-                        ORDER BY hit_timestamp DESC LIMIT 20" % (
+        cursor.execute("""SELECT hit_timestamp AS timestamp,
+                                 hit_url AS url,
+                                 hit_path AS path,
+                                 hit_title AS title
+                          FROM hits WHERE hit_timestamp > %i
+                          ORDER BY hit_timestamp DESC LIMIT 20""" % (
                        self.lastrecenthitsrequest))
         recenthits = list(cursor.fetchall())
         cursor.close()
@@ -348,8 +345,8 @@ class SQLStorage(object):
         if end_time is not None:
             qend = " AND hit_timestamp <= %i" % (end_time)
 
-        cursor.execute("SELECT COUNT(hit_url) AS count FROM hits \
-                        WHERE hit_url = '%s'%s%s" % (url, qstart, qend))
+        cursor.execute("""SELECT COUNT(hit_url) AS count FROM hits
+                          WHERE hit_url = '%s'%s%s""" % (url, qstart, qend))
         if isinstance(cursor, MySQLdb.cursors.DictCursor):
             count = cursor.fetchone()['count']
         else:
@@ -377,9 +374,9 @@ class SQLStorage(object):
             qend = " AND hit_timestamp <= %i" % (end_time)
             pass
 
-        cursor.execute("SELECT %s AS name, COUNT(hit_url) AS count \
-                        FROM hits WHERE 1=1%s%s GROUP BY hit_url" % (
-                       qfield, qstart, qend))
+        cursor.execute("""SELECT %s AS name, COUNT(hit_url) AS count \
+                          FROM hits WHERE 1=1%s%s GROUP BY hit_url""" % (
+                          qfield, qstart, qend))
         counts = {}
         res = list(cursor.fetchall())
         cursor.close()
@@ -396,8 +393,8 @@ class SQLStorage(object):
         Returns dictionary: {keyword: count}
         """
         cursor = self.get_cursor()
-        cursor.execute("SELECT keyword, COUNT(keyword) AS count \
-                        FROM hits_keywords GROUP BY keyword")
+        cursor.execute("""SELECT keyword, COUNT(keyword) AS count
+                          FROM hits_keywords GROUP BY keyword""")
         keywords = {}
         res = list(cursor.fetchall())
         cursor.close()
@@ -419,8 +416,9 @@ class SQLStorage(object):
             qand += " AND hit_url LIKE '%s'" % ('%'+urlsearch+'%',)
         if refsearch is not None:
             qand += " AND hit_referrer LIKE '%s'" % ('%'+refsearch+'%',)
-        cursor.execute("SELECT hit_referrer FROM hits\
-            WHERE hit_referrer != '' AND hit_referrer != 'None' %s" % qand)
+        cursor.execute("""SELECT hit_referrer FROM hits
+                          WHERE hit_referrer != '' 
+                          AND hit_referrer != 'None' %s""" % qand)
         res = cursor.fetchall()
         for ref in res:
             referrers.append(ref[0])

@@ -122,7 +122,8 @@ class PopiWSGIServer(object):
             return response
 
     def _load_component(self, filepath):
-        path = os.path.join(os.path.dirname(__file__), 'components', filepath)
+        path = os.path.join(os.path.dirname(__file__), '..', '..', 
+            'components', filepath)
         if not os.path.exists(path):
             return None
         with open(path) as f:
@@ -134,11 +135,12 @@ class PopiWSGIServer(object):
         if '..' in filepath.split('/'):
             return self.httperror(status=400, body="Bad Request")
         mimetype = mimetypes.guess_type(filepath, False)
+        component = self._load_component(filepath)
+        if component is None:
+            return self.httperror()
         response = Response()
         response.headers['Content-Type'] = mimetype[0]
-        response.body = self._load_component(filepath)
-        if response.body is None:
-            return self.httperror()
+        response.body = component
         return response
 
     def httperror(self, status=404, body="Not Found"):
@@ -150,8 +152,7 @@ class PopiWSGIServer(object):
     def __call__(self, environ, start_response):
         self.request = Request(environ)
         urlmap = self._conf['urlmap']
-        # XXX not necessarily last path component
-        name = self.request.path_info_pop()
+        name = self.request.path_info.split('/')[1]
         if name == '':
             name = 'index'
         method_name = urlmap.get(name, 'httperror')
