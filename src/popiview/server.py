@@ -2,6 +2,7 @@ import json
 import random
 import mimetypes
 import urllib
+import os.path
 from webob import Request, Response
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage, SQLStorage
@@ -116,22 +117,29 @@ class PopiWSGIServer(object):
 	    return response
 
     def _load_component(self, filepath):
-        with open('components/' + filepath) as f:
+        path = os.path.join(os.path.dirname(__file__), 'components', filepath)
+        if !os.path.exists(path):
+            return None
+        with open(path) as f:
             data = f.read()
         return data
 
     def get_component(self):
         filepath = self.request.GET.get('file', None)
+        if filepath.find('..') != -1:
+            return self.httperror(status=400, body="Bad Request")
         mimetype = mimetypes.guess_type(filepath, False)
         response = Response()
         response.headers['Content-Type'] = mimetype[0]
         response.body = self._load_component(filepath)
+        if response.body is None:
+            return self.httperror()
         return response 
 
-    def http404(self):
+    def httperror(self, status=404, body="Not Found"):
         response = Response()
-        response.status = 404
-        response.body = 'Not Found.'
+        response.status = status
+        response.body = body
         return response
 
     def __call__(self, environ, start_response):
@@ -140,7 +148,7 @@ class PopiWSGIServer(object):
         name = self.request.path_info_pop()
         if name == '':
             name = 'index'
-        method_name = urlmap.get(name, 'http404')
+        method_name = urlmap.get(name, 'httperror')
         method = getattr(self, method_name, None)
         response = method()
         return response(environ, start_response)
