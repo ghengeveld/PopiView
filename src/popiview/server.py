@@ -1,7 +1,6 @@
 import json
 import random
 import mimetypes
-import urllib
 import os.path
 from webob import Request, Response
 from popiview.hit import Hit
@@ -10,8 +9,14 @@ from popiview.analyzer import Analyzer
 from popiview.dummy import Dummy
 from popiview.view import View
 
+def json_response(data):
+    response = Response(json.dumps(data))
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
+
 class PopiWSGIServer(object):
-    
+
     def __init__(self, config, storage):
         self._conf = config
         self._storage = storage
@@ -23,7 +28,7 @@ class PopiWSGIServer(object):
     def index(self):
         view = self._view.index()
         return Response(view)
-    
+
     def cleardata(self):
         self._storage.clear_hits()
         return Response('done')
@@ -31,21 +36,21 @@ class PopiWSGIServer(object):
     def deviators(self):
         qfield = self.request.GET.get('qfield', 'hit_path')
         output = self._deviation_analyzer.get_top_deviators(qfield=qfield)
-        return Response(json.dumps(output))
-    
+        return json_response(output)
+
     def keywordcloud(self):
         output = self._keyword_analyzer.get_keyword_cloud(minimum_pct=80,
                                                           maximum_pct=500)
-        return Response(json.dumps(output))
+        return json_response(output)
 
     def hitmonitor(self):
         last_timestamp = int(self.request.GET.get('last_timestamp', 0))
-        sources = {'external': int(self.request.GET.get('ext', 1)), 
+        sources = {'external': int(self.request.GET.get('ext', 1)),
                    'searches': int(self.request.GET.get('sea', 1)),
                    'internal': int(self.request.GET.get('int', 1)),
                    'direct': int(self.request.GET.get('dir', 1))}
         output = self._storage.get_recenthits(sources, last_timestamp + 1)
-        return Response(json.dumps(output))
+        return json_response(output)
 
     def dummydata(self):
         dummy = Dummy(self._storage, True)
@@ -67,12 +72,12 @@ class PopiWSGIServer(object):
         dummy.create_hits_linear(u'http://www.mysite.com/page4',
                                  start_time=0, end_time=10000,
                                  start_hits_per_hour=200, end_hits_per_hour=0)
-        
+
         rand_start = random.random() * 60
         rand_end = random.random() * 60
         dummy.create_hits_linear(u'http://www.mysite.com/page2',
                                  start_time=0, end_time=10000,
-                                 start_hits_per_hour=rand_start, 
+                                 start_hits_per_hour=rand_start,
                                  end_hits_per_hour=rand_end,
                                  referrer='http://www.google.com?q=page2')
         return Response('done')
@@ -94,14 +99,14 @@ class PopiWSGIServer(object):
         cur = self.request.GET.get('cur', None)
         ref = self.request.GET.get('ref', None)
         title = self.request.GET.get('title', None)
-        
+
         if cur is not None:
             cur = cur.encode('utf8')
         if ref is not None:
             ref = ref.encode('utf8')
         if title is not None:
             title = title.encode('utf8')
-        
+
         if not cur:
             cur = self.request.headers.get('referer', None)
 
@@ -114,11 +119,11 @@ class PopiWSGIServer(object):
         if cur:
             hit = Hit(self._conf, cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
-	    return response
+            return response
 
     def _load_component(self, filepath):
         path = os.path.join(os.path.dirname(__file__), 'components', filepath)
-        if !os.path.exists(path):
+        if not os.path.exists(path):
             return None
         with open(path) as f:
             data = f.read()
@@ -126,7 +131,7 @@ class PopiWSGIServer(object):
 
     def get_component(self):
         filepath = self.request.GET.get('file', None)
-        if filepath.find('..') != -1:
+        if '..' in filepath.split('/'):
             return self.httperror(status=400, body="Bad Request")
         mimetype = mimetypes.guess_type(filepath, False)
         response = Response()
@@ -134,7 +139,7 @@ class PopiWSGIServer(object):
         response.body = self._load_component(filepath)
         if response.body is None:
             return self.httperror()
-        return response 
+        return response
 
     def httperror(self, status=404, body="Not Found"):
         response = Response()
@@ -145,6 +150,7 @@ class PopiWSGIServer(object):
     def __call__(self, environ, start_response):
         self.request = Request(environ)
         urlmap = self._conf['urlmap']
+        # XXX not necessarily last path component
         name = self.request.path_info_pop()
         if name == '':
             name = 'index'
@@ -157,6 +163,8 @@ class PopiWSGIServer(object):
 def app_factory(global_config, storage_name, **local_conf):
     config = {}
     for key, value in local_conf.iteritems():
+        # XXX this algorithm is a bit unreadable
+        # you could make a generic one that build nested dictionaries
         if key.startswith('cfg>>'):
             cfgs = key.split('>>',1)[1]
             keys = cfgs.split('>>')

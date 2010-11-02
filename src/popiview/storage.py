@@ -1,8 +1,5 @@
-import sys
-import time
 import operator
 import MySQLdb
-from MySQLdb import cursors
 import sqlite3
 import threading
 import urlparse
@@ -11,8 +8,9 @@ from popiview.filters import StorageFilters
 from popiview.urlparser import URLParser
 from popiview.htmlparser import HTMLParser
 
+
 class MemoryStorage(object):
-    
+
     def __init__(self, config):
         self._conf = config
         self._hits = []
@@ -24,8 +22,8 @@ class MemoryStorage(object):
         self._recenthits = []
 
     def add_hit(self, hit):
-        hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(), 
-                  'keywords': hit.keywords(), 'path': hit.path(), 
+        hitobj = {'url': hit.url(), 'timestamp': hit.timestamp(),
+                  'keywords': hit.keywords(), 'path': hit.path(),
                   'title': hit.title(), 'source': hit.source()}
         if not self._sf.filter_path(hit.path()):
             # Don't store hits for blacklisted paths
@@ -34,7 +32,7 @@ class MemoryStorage(object):
         self._recenthits.append(hitobj)
         if len(self._recenthits) > 20:
             self._recenthits = self._recenthits[-20:]
-    
+
     def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
         recenthits = filter(self._sf.filter_timestamp(
@@ -43,7 +41,7 @@ class MemoryStorage(object):
         recenthits = filter(self._sf.filter_sources(sources), recenthits)
         return recenthits
 
-    def list_urls(self, unique=False, start_time=None, end_time=None, 
+    def list_urls(self, unique=False, start_time=None, end_time=None,
                   minimum_hits=1):
         """Returns a list of all the urls. Optional parameters:
         unique Return only unique urls.
@@ -52,41 +50,41 @@ class MemoryStorage(object):
         minimum_hits Return only urls with at least this amount of hits.
         """
         hits = self._hits
-        
-        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+
+        hits = filter(self._sf.filter_timestamp(start_time, end_time),
                       hits)
 
         urls = map(operator.itemgetter('url'), hits)
- 
+
         if unique:
             return list(set(urls))
 
         return urls
 
     def get_hitcount(self, url, start_time=None, end_time=None):
-        """Returns number of hits for a specific url. Optional parameters:  
+        """Returns number of hits for a specific url. Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         """
         hits = self._hits
-        
+
         hits = filter(self._sf.filter_url(url), hits)
-        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+        hits = filter(self._sf.filter_timestamp(start_time, end_time),
                       hits)
 
         return len(hits)
 
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
                       qfield='hit_path'):
-        """Return dictionary of hitcounts for all urls using the format 
+        """Return dictionary of hitcounts for all urls using the format
         {name: count} Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
         hits = self._hits
-        
-        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+
+        hits = filter(self._sf.filter_timestamp(start_time, end_time),
                       hits)
 
         # Get a dictionary like {url: count} or {path: count}
@@ -96,30 +94,30 @@ class MemoryStorage(object):
             hitcounts = Counter(map(operator.itemgetter('title'), hits))
         else:
             hitcounts = Counter(map(operator.itemgetter('path'), hits))
-        
+
         # Iterate over the hitcounts, putting them through the filter function.
         # Items are removed if the filter function returns false.
-        hitcounts = dict(filter(self._sf.filter_hitcount(minimum_hits), 
+        hitcounts = dict(filter(self._sf.filter_hitcount(minimum_hits),
                                 hitcounts.iteritems()))
         return hitcounts
-    
-    def get_keywords(self, url=None, start_time=None, end_time=None, 
+
+    def get_keywords(self, url=None, start_time=None, end_time=None,
                      minimum_count=None):
         """Get all keywords and their counts.
         Returns dictionary: {keyword: count}
         """
         hits = self._hits
-        
+
         hits = filter(self._sf.filter_url(url), hits)
-        hits = filter(self._sf.filter_timestamp(start_time, end_time), 
+        hits = filter(self._sf.filter_timestamp(start_time, end_time),
                       hits)
-        
+
         # Iterate over keywords in hits, combining them in a single list.
         # Then use Counter to get a dictionary like {keyword: count}
         keywords = Counter(reduce(operator.add,
                                   map(operator.itemgetter('keywords'), hits),
                                   []))
-        
+
         keywords = dict(filter(self._sf.filter_keywordcount(minimum_count),
                         keywords.iteritems()))
         return keywords
@@ -143,7 +141,7 @@ class MemoryStorage(object):
 
 
 class StorageError(StandardError):
-    
+
     def __init__(self, value):
         self.message = value
         print '-'*10 + value
@@ -153,7 +151,7 @@ class StorageError(StandardError):
 
 
 class SQLStorage(object):
-    
+
     def __init__(self, config):
         self._conf = config
         self.localdata = threading.local()
@@ -182,8 +180,8 @@ class SQLStorage(object):
         cfg = self._conf
         if cfg['dbtype'] == 'mysql':
             try:
-                return MySQLdb.connect(host = cfg['dbhost'], 
-                                       user = cfg['dbuser'], 
+                return MySQLdb.connect(host = cfg['dbhost'],
+                                       user = cfg['dbuser'],
                                        passwd = cfg['dbpass'],
                                        db = cfg['dbname'])
             except MySQLdb.Error, e:
@@ -243,7 +241,7 @@ class SQLStorage(object):
               PRIMARY KEY (hit_id, keyword),\
               FOREIGN KEY (hit_id) REFERENCES hits(hit_id)\
             )")
-        cursor.close() 
+        cursor.close()
 
     def clear_hits(self):
         cursor = self.get_cursor()
@@ -273,7 +271,7 @@ class SQLStorage(object):
                                           hit_path, hit_title, hit_referrer)\
                         VALUES ('%(timestamp)i', '%(url)s',\
                                 '%(path)s', '%(title)s', '%(referrer)s')" % {
-                       'timestamp': timestamp, 'url': url, 
+                       'timestamp': timestamp, 'url': url,
                        'path': path, 'title': title, 'referrer': referrer})
         hitid = cursor.lastrowid
         for word in keywords:
@@ -288,19 +286,19 @@ class SQLStorage(object):
                                 ) VALUES ('%(hitid)i', '%(keyword)s')" % {
                                 'hitid': hitid, 'keyword': word})
         cursor.close()
-        hitobj = {'url': url, 'timestamp': timestamp, 'title': title, 
+        hitobj = {'url': url, 'timestamp': timestamp, 'title': title,
                   'keywords': keywords, 'path': path, 'source': source}
         self._recenthits.append(hitobj)
         if len(self._recenthits) > 50:
             self._recenthits = self._recenthits[-50:]
-        
+
     def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
         recenthits = filter(self._sf.filter_sources(sources), recenthits)
         recenthits = filter(self._sf.filter_timestamp(
                                 start_time = last_timestamp), recenthits)
         return recenthits
-    
+
     def __get_recenthits(self):
         cursor = self.get_cursor()
         cursor.execute("SELECT hit_timestamp AS timestamp,\
@@ -329,16 +327,16 @@ class SQLStorage(object):
         urls = cursor.fetchall().values()
         cursor.close()
 
-        urls = filter(self._sf.filter_timestamp(start_time, end_time), 
+        urls = filter(self._sf.filter_timestamp(start_time, end_time),
                       urls)
 
         if unique:
             return list(set(urls))
-        
+
         return urls
 
     def get_hitcount(self, url, start_time=None, end_time=None):
-        """Returns number of hits for a specific url. Optional parameters:  
+        """Returns number of hits for a specific url. Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         """
@@ -361,7 +359,7 @@ class SQLStorage(object):
 
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
                       qfield='hit_path'):
-        """Return dictionary of hitcounts for all urls using the format 
+        """Return dictionary of hitcounts for all urls using the format
         {url: count}. Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
@@ -427,7 +425,7 @@ class SQLStorage(object):
         for ref in res:
             referrers.append(ref[0])
         return referrers
-    
+
     def list_searches(self, keyword=None):
         """List all the search phrases which contain the given keyword, or all
         phrases if no keyword given.
