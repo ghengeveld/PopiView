@@ -242,6 +242,7 @@ class SQLStorage(object):
         cursor.close()
 
     def clear_hits(self):
+        self._recenthits = []
         cursor = self.get_cursor()
         if self._conf['dbtype'] == 'mysql':
             # MySQL syntax
