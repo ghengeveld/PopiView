@@ -171,8 +171,7 @@ class SQLStorage(object):
                 self.localdata.db.set_character_set('utf8')
         return self.localdata.db
 
-    def get_cursor(self, DictCursor=True):
-        conn = self.get_connection()
+    def get_cursor(self, conn, DictCursor=True):
         if self._conf['dbtype'] == 'mysql' and DictCursor==True:
             return conn.cursor(MySQLdb.cursors.DictCursor)
         else:
@@ -199,7 +198,8 @@ class SQLStorage(object):
             self.localdata.db.close()
 
     def _setup(self):
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         #cursor.execute("DROP TABLE IF EXISTS hits")
         #cursor.execute("DROP TABLE IF EXISTS hits_keywords")
         if self._conf['dbtype'] == 'mysql':
@@ -244,7 +244,8 @@ class SQLStorage(object):
 
     def clear_hits(self):
         self._recenthits = []
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         if self._conf['dbtype'] == 'mysql':
             # MySQL syntax
             cursor.execute("TRUNCATE TABLE hits_keywords")
@@ -256,7 +257,8 @@ class SQLStorage(object):
         cursor.close()
 
     def add_hit(self, hit):
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         timestamp = int(hit.timestamp())
         url = hit.url()
         path = hit.path()
@@ -269,7 +271,7 @@ class SQLStorage(object):
             return
         cursor.execute("""INSERT INTO hits (`hit_timestamp`, `hit_url`,
                             `hit_path`, `hit_title`, `hit_referrer`)
-                        VALUES ('%(timestamp)i', '%(url)s',
+                          VALUES ('%(timestamp)i', '%(url)s',
                                 '%(path)s', '%(title)s', '%(referrer)s')""" % {
                        'timestamp': timestamp, 'url': url,
                        'path': path, 'title': title, 'referrer': referrer})
@@ -285,6 +287,7 @@ class SQLStorage(object):
                                   `hit_id`, `keyword`
                                   ) VALUES ('%(hitid)i', '%(keyword)s')""" % {
                                   'hitid': hitid, 'keyword': word})
+        conn.commit()
         cursor.close()
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title,
                   'keywords': keywords, 'path': path, 'source': source}
@@ -300,7 +303,8 @@ class SQLStorage(object):
         return recenthits
 
     def __get_recenthits(self):
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         cursor.execute("""SELECT hit_timestamp AS timestamp,
                                  hit_url AS url,
                                  hit_path AS path,
@@ -322,7 +326,8 @@ class SQLStorage(object):
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         cursor.execute("SELECT hit_url FROM hits")
         urls = cursor.fetchall().values()
         cursor.close()
@@ -340,7 +345,8 @@ class SQLStorage(object):
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         """
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         qstart = ''
         qend = ''
         if start_time is not None:
@@ -365,7 +371,8 @@ class SQLStorage(object):
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
         """
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         qstart = ''
         qend = ''
         if qfield not in ['hit_url', 'hit_path', 'hit_title']:
@@ -395,7 +402,8 @@ class SQLStorage(object):
         """Get all keywords and their counts.
         Returns dictionary: {keyword: count}
         """
-        cursor = self.get_cursor()
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn)
         cursor.execute("""SELECT keyword, COUNT(keyword) AS count
                           FROM hits_keywords GROUP BY keyword""")
         keywords = {}
@@ -411,7 +419,8 @@ class SQLStorage(object):
     def list_referrers(self, url=None, urlsearch=None, refsearch=None):
         """List all referrers (to a certain url)."""
         referrers = []
-        cursor = self.get_cursor(DictCursor=False)
+        conn = self.get_connection()
+        cursor = self.get_cursor(conn, DictCursor=False)
         qand = ''
         if url is not None:
             qand += " AND hit_url = '%s'" % url
