@@ -159,6 +159,7 @@ class SQLStorage(object):
         self.lastrecenthitsrequest = 0
         self._recenthits = []
         self._sf = StorageFilters()
+        self._setup()
 
     def __del__(self):
         self._close_connection()
@@ -191,7 +192,7 @@ class SQLStorage(object):
             try:
                 return sqlite3.connect(cfg['dbfile'])
             except sqlite3.Error, e:
-                raise StorageError(str(e))
+                raise StorageError(str(e))        
 
     def _close_connection(self):
         if hasattr(self.localdata, 'db'):
@@ -199,8 +200,8 @@ class SQLStorage(object):
 
     def _setup(self):
         cursor = self.get_cursor()
-        cursor.execute("DROP TABLE IF EXISTS hits")
-        cursor.execute("DROP TABLE IF EXISTS hits_keywords")
+        #cursor.execute("DROP TABLE IF EXISTS hits")
+        #cursor.execute("DROP TABLE IF EXISTS hits_keywords")
         if self._conf['dbtype'] == 'mysql':
             # MySQL syntax
             cursor.execute("""
