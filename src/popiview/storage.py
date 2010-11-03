@@ -267,22 +267,22 @@ class SQLStorage(object):
         if not self._sf.filter_path(path):
             # Don't store hits for blacklisted paths
             return
-        cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
-                                          hit_path, hit_title, hit_referrer)\
-                        VALUES ('%(timestamp)i', '%(url)s',\
-                                '%(path)s', '%(title)s', '%(referrer)s')" % {
+        cursor.execute("""INSERT INTO hits (`hit_timestamp`, `hit_url`,
+                            `hit_path`, `hit_title`, `hit_referrer`)
+                        VALUES ('%(timestamp)i', '%(url)s',
+                                '%(path)s', '%(title)s', '%(referrer)s')""" % {
                        'timestamp': timestamp, 'url': url,
                        'path': path, 'title': title, 'referrer': referrer})
         hitid = cursor.lastrowid
         for word in keywords:
             if self._conf['dbtype'] == 'sqlite':
                 cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
-                                  hit_id, keyword
+                                  `hit_id`, `keyword`
                                   ) VALUES ('%(hitid)i', '%(keyword)s')""" % {
                                   'hitid': hitid, 'keyword': word})
             else:
                 cursor.execute("""INSERT IGNORE INTO hits_keywords (
-                                  hit_id, keyword
+                                  `hit_id`, `keyword`
                                   ) VALUES ('%(hitid)i', '%(keyword)s')""" % {
                                   'hitid': hitid, 'keyword': word})
         cursor.close()
