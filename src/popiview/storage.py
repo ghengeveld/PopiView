@@ -267,10 +267,11 @@ class SQLStorage(object):
         if not self._sf.filter_path(path):
             # Don't store hits for blacklisted paths
             return
-        cursor.execute("""INSERT INTO hits (hit_timestamp, hit_url,
-                                          hit_path, hit_title, hit_referrer)
-                        VALUES ('%(timestamp)i', '%(url)s',
-                                '%(path)s', '%(title)s', '%(referrer)s')""" % {
+        query = 
+        cursor.execute("INSERT INTO hits (hit_timestamp, hit_url,\
+                                          hit_path, hit_title, hit_referrer)\
+                        VALUES ('%(timestamp)i', '%(url)s',\
+                                '%(path)s', '%(title)s', '%(referrer)s')" % {
                        'timestamp': timestamp, 'url': url,
                        'path': path, 'title': title, 'referrer': referrer})
         hitid = cursor.lastrowid
