@@ -119,10 +119,10 @@ class PopiWSGIServer(object):
         if cur:
             hit = Hit(self._conf, cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
-            return response
+        return response
 
     def _load_component(self, filepath):
-        path = os.path.join(os.path.dirname(__file__), '..', '..', 
+        path = os.path.join(os.path.dirname(__file__), '..', '..',
             'components', filepath)
         if not os.path.exists(path):
             return None

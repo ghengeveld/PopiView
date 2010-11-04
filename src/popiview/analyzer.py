@@ -3,21 +3,21 @@ from popiview.htmlparser import HTMLParser
 
 class Analyzer(object):
 
-    def __init__(self, storage, start_time=None, 
+    def __init__(self, storage, start_time=None,
                  boundary_time=None, end_time=None):
         self._storage = storage
         now = time.time()
-        
+
         if start_time is None:
             self._start_time = now - 3600 * 25
         else:
             self._start_time = start_time
-        
+
         if boundary_time is None:
             self._boundary_time = now - 3600
         else:
             self._boundary_time = boundary_time
-        
+
         if end_time is None:
             self._end_time = now
         else:
@@ -25,17 +25,17 @@ class Analyzer(object):
 
     def get_top_deviators(self, limit=None, sort_absolute=True,
                           qfield='hit_path'):
-        """Returns a list containing top deviators, each represented in a 
+        """Returns a list containing top deviators, each represented in a
         dictionary: {'name': name, 'value': deviation_pct}
         Sorted by deviation pct, optionally absolute.
         """
         deviators = []
-        
+
         start = self._start_time
         boundary = self._boundary_time
         end = self._end_time
 
-        historic = self._storage.get_hitcounts(start_time=start, 
+        historic = self._storage.get_hitcounts(start_time=start,
                                                end_time=boundary,
                                                qfield=qfield)
         recent = self._storage.get_hitcounts(start_time=boundary, end_time=end,
@@ -49,10 +49,10 @@ class Analyzer(object):
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)
-            deviation_pct = int(round((recent_hps - historic_hps) / 
+            deviation_pct = int(round((recent_hps - historic_hps) /
                 historic_hps * 100.0))
             deviators.append({'name': name, 'value': deviation_pct})
-        
+
         # Reverse sort by deviation pct value
         if sort_absolute:
             deviators.sort(key=lambda x: abs(x['value']), reverse=True)
@@ -113,4 +113,4 @@ class Analyzer(object):
     def relative_url(self, url):
         """Returns relative url
         """
-        return 
+        return
