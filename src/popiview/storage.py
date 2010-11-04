@@ -363,7 +363,7 @@ class SQLStorage(object):
     def get_hitcounts(self, start_time=None, end_time=None, minimum_hits=1,
                       qfield='hit_path'):
         """Return dictionary of hitcounts for all urls using the format
-        {url: count}. Optional parameters:
+        {name: count}. Optional parameters:
         start_time Return only urls requested after this timestamp.
         end_time Return only urls requested before this timestamp.
         minimum_hits Return only urls with at least this amount of hits.
@@ -377,7 +377,7 @@ class SQLStorage(object):
             qstart = " AND hit_timestamp >= %i" % (start_time)
             pass
         if end_time is not None:
-            qend = " AND hit_timestamp <= %i" % (end_time)
+            qend = " AND hit_timestamp < %i" % (end_time)
             pass
 
         cursor.execute("""SELECT %s AS name, COUNT(hit_url) AS count \
