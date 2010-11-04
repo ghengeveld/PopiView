@@ -86,9 +86,7 @@
 							monitor_timestamp = data[x].timestamp;
 							if(data[x].source.indexOf('internal') == 0) { sourcetype = 'internal'; }
 							else if(data[x].source.indexOf('direct') == 0) { sourcetype = 'direct'; }
-							else if(data[x].source.indexOf('Google') == 0) { sourcetype = 'searches'; }
-							else if(data[x].source.indexOf('Yahoo') == 0) { sourcetype = 'searches'; }
-							else if(data[x].source.indexOf('Bing') == 0) { sourcetype = 'searches'; }
+							else if(data[x].source.indexOf('searches') == 0) { sourcetype = 'searches'; }
 							else { sourcetype = 'external'; }
 							item = '<li class="new '+sourcetype+'" title="' + data[x].url + '">' + data[x].title + '<br/>' +
 								'<span class="bull">&bull;</span> <span>' + data[x].source + '</span></li>';
