@@ -5,11 +5,11 @@ from popiview.storage import SQLStorage
 class TestBase(unittest.TestCase):
 
     def setUp(self):
-        config = {'sparams': {'bing': 'q', 'google': 'q', 'yahoo': 'p'}, 
+        config = {'sparams': {'bing': 'q', 'google': 'q', 'yahoo': 'p'},
                   'urlmap': {
-                    'index': 'index', 'keywordcloud.json': 'keywordcloud', 
-                    'cleardata': 'cleardata', 'component': 'get_component', 
-                    'hitmonitor.json': 'hitmonitor', 
+                    'index': 'index', 'keywordcloud.json': 'keywordcloud',
+                    'cleardata': 'cleardata', 'component': 'get_component',
+                    'hitmonitor.json': 'hitmonitor',
                     'randomdata': 'randomdata', 'dummydata': 'dummydata',
                     'deviators.json': 'deviators', 'image.gif': 'log_hit'},
                   'dbtype': 'sqlite',

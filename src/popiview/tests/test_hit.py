@@ -17,7 +17,7 @@ class TestHit(TestBase):
         """Test a url with a subdomain"""
         self.hit = Hit(self._conf, u'http://abc.mysite.com')
         self.assertEqual(self.hit.url(), u'http://abc.mysite.com')
-    
+
     def test_url_with_ending_slash(self):
         """Test a url with an ending slash"""
         self.hit = Hit(self._conf, u'http://www.mysite.com/page')
@@ -38,14 +38,14 @@ class TestHit(TestBase):
     def test_url_with_cyrillic_chars(self):
         """Test a url with cyrillic (russian) characters in it"""
         self.hit = Hit(self._conf, u'http://mysite.com/page?a=русское альфа')
-        self.assertEqual(self.hit.url(), 
+        self.assertEqual(self.hit.url(),
             u'http://mysite.com/page?a=русское альфа')
 
     def test_url_non_unicode(self):
         """Test a url that is not provided as unicode string"""
         self.hit = Hit(self._conf, 'http://mysite.com/page?a=x&b=1#top')
         self.assertEqual(self.hit.url(), u'http://mysite.com/page?a=x&b=1#top')
-    
+
     def test_path_with_subdomain(self):
         """Test a path with a subdomain"""
         self.hit = Hit(self._conf, u'http://www.mysite.com/page')
@@ -68,15 +68,15 @@ class TestHit(TestBase):
 
     def test_title_basic(self):
         """Test a title with basic characters"""
-        self.hit = Hit(self._conf, u'http://abc.nl/page', 
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
                 title='ABC.nl - Some random page')
         self.assertEqual(self.hit.title(), 'ABC.nl - Some random page')
 
     def test_title_specialchars(self):
         """Test a title with special characters"""
-        self.hit = Hit(self._conf, u'http://abc.nl/page', 
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
                 title='<>@!^#$%&*¶«{(?)}»~€⁂⁀®“『₳”"')
-        self.assertEqual(self.hit.title(), 
+        self.assertEqual(self.hit.title(),
                 '<>@!^#$%&*¶«{(?)}»~€⁂⁀®“『₳”"')
 
     def test_title_cyrillic(self):
@@ -102,14 +102,14 @@ class TestHit(TestBase):
         """Test a referrer with query string parameters and an anchor"""
         self.hit = Hit(self._conf, u'http://abc.nl/page',
                 referrer=u'http://xyz.nl/page?a=x&b=1#top')
-        self.assertEqual(self.hit.referrer(), 
+        self.assertEqual(self.hit.referrer(),
                 u'http://xyz.nl/page?a=x&b=1#top')
 
     def test_referrer_with_cyrillic_chars(self):
         """Test a referrer with cyrillic (russian) characters in it"""
         self.hit = Hit(self._conf, u'http://abc.nl/page',
                 referrer=u'http://xyz.nl/page?a=русское альфа')
-        self.assertEqual(self.hit.referrer(), 
+        self.assertEqual(self.hit.referrer(),
                 u'http://xyz.nl/page?a=русское альфа')
 
     def test_timestamp(self):
@@ -132,7 +132,7 @@ class TestHit(TestBase):
         tests.append({'timestamp': None, 'expect': self.now})
 
         for test in tests:
-            self.hit = Hit(self._conf, u'http://abc.nl', 
+            self.hit = Hit(self._conf, u'http://abc.nl',
                 timestamp=test['timestamp'])
             self.assertEqual(self.hit.timestamp(), test['expect'])
 

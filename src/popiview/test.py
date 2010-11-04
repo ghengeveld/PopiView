@@ -5,6 +5,7 @@ from tests import test_urlparser
 from tests import test_hit
 from tests import test_dummy
 from tests import test_analyzer
+from tests import test_functional
 
 FLAGS = doctest.NORMALIZE_WHITESPACE + doctest.ELLIPSIS
 GLOBS = {}
@@ -20,4 +21,5 @@ def suite():
     suite.addTests(test_hit.test_suite())
     suite.addTests(test_dummy.test_suite())
     suite.addTests(test_analyzer.test_suite())
+    suite.addTests(test_functional.test_suite())
     return suite
