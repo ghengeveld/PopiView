@@ -40,14 +40,14 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 	margin:0; padding:8px 0;
 }
-#hitmonitor ol li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; }
+#hitmonitor ol li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; border-left:3px #fff solid; }
 #hitmonitor ol li span { font-size:0.8em; color:#666; }
 
 .internal.new { background-color:#ff6; }
-.internal span.bull { color:#ec3!important; }
+.internal { border-left-color:#ec3!important; }
 .external.new { background-color:#f22; }
-.external span.bull { color:#f22!important; }
+.external { border-left-color:#f22!important; }
 .direct.new { background-color:#28f; }
-.direct span.bull { color:#28f!important; }
+.direct { border-left-color:#28f!important; }
 .searches.new { background-color:#0f0; }
-.searches span.bull { color:#0a0!important; }
+.searches { border-left-color:#0a0!important; }

@@ -89,7 +89,7 @@
 							else if(data[x].source.indexOf('searches') == 0) { sourcetype = 'searches'; }
 							else { sourcetype = 'external'; }
 							item = '<li class="new '+sourcetype+'" title="' + data[x].url + '">' + data[x].title + '<br/>' +
-								'<span class="bull">&bull;</span> <span>' + data[x].source + '</span></li>';
+								'<span>' + data[x].source + '</span></li>';
 							$('#hitmonitor ol').prepend(item);
 							if($('#hitmonitor ol li').length > 20){
 								$('#hitmonitor ol li:last').remove();
