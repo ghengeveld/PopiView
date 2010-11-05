@@ -380,9 +380,10 @@ class SQLStorage(object):
             qend = " AND hit_timestamp < %i" % (end_time)
             pass
 
-        cursor.execute("""SELECT %s AS name, COUNT(hit_url) AS count \
-                          FROM hits WHERE 1=1%s%s GROUP BY hit_url""" % (
-                          qfield, qstart, qend))
+        cursor.execute("""SELECT %(qfield)s AS name, COUNT(%(qfield)s) AS count
+                          FROM hits WHERE 1=1%(qstart)s%(qend)s
+                          GROUP BY %(qfield)s""" % { 'qfield': qfield, 
+                              'qstart': qstart, 'qend': qend})
         counts = {}
         res = list(cursor.fetchall())
         cursor.close()
