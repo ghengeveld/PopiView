@@ -45,7 +45,7 @@ class Analyzer(object):
 
         for name, recent_value in recent.iteritems():
             historic_value = historic.get(name, 0.0)
-            if recent_value < 10 or historic_value < 10:
+            if recent_value < 3 or historic_value < 3:
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)

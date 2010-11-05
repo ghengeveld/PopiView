@@ -31,8 +31,8 @@ class MemoryStorage(object):
             return
         self._hits.append(hitobj)
         self._recenthits.append(hitobj)
-        if len(self._recenthits) > 20:
-            self._recenthits = self._recenthits[-20:]
+        if len(self._recenthits) > 500:
+            self._recenthits = self._recenthits[-500:]
 
     def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
@@ -292,8 +292,8 @@ class SQLStorage(object):
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title,
                   'keywords': keywords, 'path': path, 'source': source}
         self._recenthits.append(hitobj)
-        if len(self._recenthits) > 50:
-            self._recenthits = self._recenthits[-50:]
+        if len(self._recenthits) > 500:
+            self._recenthits = self._recenthits[-500:]
 
     def get_recenthits(self, sources, last_timestamp=0):
         recenthits = self._recenthits
