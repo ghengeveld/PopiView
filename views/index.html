@@ -94,6 +94,7 @@
 							if($('#hitmonitor ol li').length > 20){
 								$('#hitmonitor ol li:last').remove();
 							}
+							if(sourcetype == 'searches'){ updateKeywordCloud(); }
 						}
 						$("li.new").animate({
 							backgroundColor: "#fff"
