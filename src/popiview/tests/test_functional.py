@@ -1,8 +1,11 @@
+# coding=utf-8
+
 import unittest
 
 from webob import Request
 from popiview.server import PopiWSGIServer
 from popiview.tests.test_base import TestBase
+from urllib import quote
 
 
 class TestFunctional(TestBase):
@@ -22,6 +25,17 @@ class TestFunctional(TestBase):
                             'Cache-Control': 'no-cache, must-revalidate'}
         self.assertEquals(expected_headers, dict(response.headers))
 
+    def test_latin1(self):
+        """Test latin-1 encoding in request"""
+        request = Request.blank('/image.gif?' + 
+            'cur=http://mysite.com&ref=' + quote(
+                quote('http://google.com?q=' + u'café'.encode('latin-1'))
+            ) + '&title=sometitle')
+        response = request.get_response(self.app)
+        self.assertEquals('200 OK', response.status)
+        Request.blank('/keywordcloud.json') 
+        self.assertEquals('200 OK', response.status)
+        
 
 def test_suite():
     suite = unittest.TestSuite()
