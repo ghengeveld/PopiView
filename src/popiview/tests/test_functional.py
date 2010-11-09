@@ -27,15 +27,15 @@ class TestFunctional(TestBase):
 
     def test_latin1(self):
         """Test latin-1 encoding in request"""
-        request = Request.blank('/image.gif?' + 
-            'cur=http://mysite.com&ref=' + quote(
-                quote('http://google.com?q=' + u'café'.encode('latin-1'))
-            ) + '&title=sometitle')
+        request = Request.blank(
+            '/image.gif?cur=http://mysite.com&ref='
+            'http://google.com?q=caf%E9'
+            '&title=sometitle')
         response = request.get_response(self.app)
         self.assertEquals('200 OK', response.status)
-        Request.blank('/keywordcloud.json') 
+        Request.blank('/keywordcloud.json')
         self.assertEquals('200 OK', response.status)
-        
+
 
 def test_suite():
     suite = unittest.TestSuite()
