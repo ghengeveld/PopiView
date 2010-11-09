@@ -104,6 +104,14 @@ class TestAnalyzer(TestBase):
                 ('very', 5.0, sorted([u'very cool funny test page']))
             ]))
 
+    def test_keywordcloud_specialchars(self):
+        """Test generation of keyword cloud - special characters"""
+        hit = Hit(self._conf, u'http://mysite.com/page', 
+            referrer=u'http://google.com?q=éäüòñрусском')
+        self._storage.add_hit(hit)
+        self.assertEqual(self.analyzer.get_keyword_cloud(), 
+            [(u'éäüòñрусском', 100.0, [u'éäüòñрусском'])])
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestAnalyzer))

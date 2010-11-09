@@ -411,7 +411,7 @@ class SQLStorage(object):
             if isinstance(cursor, MySQLdb.cursors.DictCursor):
                 keywords[item['keyword']] = item['count']
             else:
-                keywords[str(item[0])] = item[1]
+                keywords[item[0]] = item[1]
         return keywords
 
     def list_referrers(self, url=None, urlsearch=None, refsearch=None):

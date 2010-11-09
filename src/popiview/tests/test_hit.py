@@ -105,6 +105,13 @@ class TestHit(TestBase):
         self.assertEqual(self.hit.referrer(),
                 u'http://xyz.nl/page?a=x&b=1#top')
 
+    def test_referrer_with_special_chars(self):
+        """Test a referrer with special characters in it"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://xyz.nl/page?a=éáëöóñùüẽ')
+        self.assertEqual(self.hit.referrer(),
+                u'http://xyz.nl/page?a=éáëöóñùüẽ')
+
     def test_referrer_with_cyrillic_chars(self):
         """Test a referrer with cyrillic (russian) characters in it"""
         self.hit = Hit(self._conf, u'http://abc.nl/page',

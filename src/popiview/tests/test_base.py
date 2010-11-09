@@ -17,7 +17,8 @@ class TestBase(unittest.TestCase):
                   'dbhost': 'localhost',
                   'dbuser': 'root',
                   'dbpass': 'qqrs',
-                  'dbname': 'popiview'
+                  'dbname': 'popiview',
+                  'recenthits_size': '200'
                  }
         self._conf = config
         self._storage = SQLStorage(config)

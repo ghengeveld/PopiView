@@ -95,7 +95,7 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def log_hit(self):
-        self.request.charset = 'utf8'
+        self.request.charset = 'utf-8'
         cur = self.request.GET.get('cur', None)
         ref = self.request.GET.get('ref', None)
         title = self.request.GET.get('title', None)
@@ -106,7 +106,7 @@ class PopiWSGIServer(object):
             ref = ref.encode('utf8')
         if title is not None:
             title = title.encode('utf8')
-
+        
         if not cur:
             cur = self.request.headers.get('referer', None)
 

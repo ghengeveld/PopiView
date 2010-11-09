@@ -31,6 +31,16 @@ class TestDummy(TestBase):
         hitcount = self._storage.get_hitcount(url)
         self.assertEqual(hitcount, 50)
 
+    def test_create_linear_specialchars(self):
+        """Test the linear creation of dummy hits - special chars"""
+        url = u'http://abc.nl/page?x=éäüòñ'
+        self.dummy.create_hits_linear(url,
+            referrer=u'http://example.com/page/éäüòñ',
+            start_hits_per_hour=0, end_hits_per_hour=100,
+            start_time=0, end_time=3600)
+        hitcount = self._storage.get_hitcount(url)
+        self.assertEqual(hitcount, 50)
+
     def test_create_linear_cyrillic(self):
         """Test the linear creation of dummy hits - cyrillic"""
         url = u'http://abc.nl/page?x=миниатю'
