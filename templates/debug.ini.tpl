@@ -2,14 +2,14 @@
 use = egg:PopiView
 storage_name = sql
 
-cfg>>dbtype = mysql
-cfg>>dbhost = localhost
-cfg>>dbuser = root
-cfg>>dbpass = qqrs
-cfg>>dbname = popiview
+cfg>>dbtype = ${dbconfig:dbtype}
+cfg>>dbhost = ${dbconfig:dbhost}
+cfg>>dbuser = ${dbconfig:dbuser}
+cfg>>dbpass = ${dbconfig:dbpass}
+cfg>>dbname = ${dbconfig:dbname}
 
 cfg>>urlmap>>index = index
-cfg>>urlmap>>image.gif = log_hit 
+cfg>>urlmap>>image.gif = log_hit
 cfg>>urlmap>>deviators.json = deviators
 cfg>>urlmap>>keywordcloud.json = keywordcloud
 cfg>>urlmap>>hitmonitor.json = hitmonitor
@@ -22,8 +22,6 @@ cfg>>sparams>>google = q
 cfg>>sparams>>bing = q
 cfg>>sparams>>yahoo = p
 
-cfg>>recenthits_size = 200
-
 [filter:pdb]
 use = egg:z3c.evalexception#ajax
 
@@ -32,5 +30,5 @@ pipeline = pdb popiview
 
 [server:main]
 use = egg:PasteScript#wsgiutils
-host = 0.0.0.0
-port = 3033
+host = ${debug.ini:host}
+port = ${debug.ini:port}

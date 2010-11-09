@@ -1,127 +1,119 @@
-##############################################################################
-#
-# Copyright (c) 2006 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Bootstrap a buildout-based project
-
-Simply run this script in a directory containing a buildout.cfg.
-The script accepts buildout command-line options, so you can
-use the -c option to specify an alternate configuration file.
-
+"""Bootstrap a buildout-based project.
 $Id$
 """
 
-import os, shutil, sys, tempfile, urllib2
 from optparse import OptionParser
+import atexit
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import urllib2
 
-tmpeggs = tempfile.mkdtemp()
-
-is_jython = sys.platform.startswith('java')
-
-# parsing arguments
-parser = OptionParser(
-    'This is a custom version of the zc.buildout %prog script.  It is '
-    'intended to meet a temporary need if you encounter problems with '
-    'the zc.buildout 1.5 release.')
-parser.add_option("-v", "--version", dest="version", default='1.4.4',
-                          help='Use a specific zc.buildout version.  *This '
-                          'bootstrap script defaults to '
-                          '1.4.4, unlike usual buildpout bootstrap scripts.*')
-parser.add_option("-d", "--distribute",
-                   action="store_true", dest="distribute", default=False,
-                   help="Use Disribute rather than Setuptools.")
-
-parser.add_option("-c", None, action="store", dest="config_file",
-                   help=("Specify the path to the buildout configuration "
-                         "file to be used."))
+parser = OptionParser(usage="python bootstrap.py\n\n"
+                      "Bootstrap the installation process.",
+                      version="bootstrap.py $Revision$")
+parser.add_option(
+    "--buildout-config", dest="config", default="buildout.cfg",
+    help="specify buildout configuration file to use, default to buildout.cfg")
+parser.add_option(
+    "--buildout-profile", dest="profile",
+    help="specify a buildout profile to extends as configuration")
+parser.add_option(
+    "--buildout-version", dest="buildout_version", default="1.4.4",
+    help="specify version of zc.buildout to use, default to 1.4.4")
+parser.add_option(
+    "--install", dest="install", action="store_true", default=False,
+    help="directly start the install process after bootstrap")
+parser.add_option(
+    "--virtualenv", dest="virtualenv", action="store_true", default=False,
+    help="create a virtualenv to install the software. " \
+        "This is recommended if you don't need to rely on globally installed " \
+        "libraries")
 
 options, args = parser.parse_args()
 
-# if -c was provided, we push it back into args for buildout' main function
-if options.config_file is not None:
-    args += ['-c', options.config_file]
+bin_dir = 'bin'
+if sys.platform.startswith('win'):
+    bin_dir = 'Scripts'
 
-if options.version is not None:
-    VERSION = '==%s' % options.version
-else:
-    VERSION = ''
-
-USE_DISTRIBUTE = options.distribute
-args = args + ['bootstrap']
-
+tmp_eggs = tempfile.mkdtemp()
+atexit.register(shutil.rmtree, tmp_eggs)
 to_reload = False
 try:
     import pkg_resources
+    # Verify it is distribute
     if not hasattr(pkg_resources, '_distribute'):
         to_reload = True
         raise ImportError
 except ImportError:
     ez = {}
-    if USE_DISTRIBUTE:
-        exec urllib2.urlopen('http://python-distribute.org/distribute_setup.py'
+    exec urllib2.urlopen('http://python-distribute.org/distribute_setup.py'
                          ).read() in ez
-        ez['use_setuptools'](to_dir=tmpeggs, download_delay=0, no_fake=True)
-    else:
-        exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
-                             ).read() in ez
-        ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
+    ez['use_setuptools'](to_dir=tmp_eggs, download_delay=0, no_fake=True)
 
     if to_reload:
         reload(pkg_resources)
     else:
         import pkg_resources
 
-if sys.platform == 'win32':
-    def quote(c):
-        if ' ' in c:
-            return '"%s"' % c # work around spawn lamosity on windows
-        else:
-            return c
-else:
-    def quote (c):
-        return c
 
-ws  = pkg_resources.working_set
+def install(requirement):
+    print "Installing %s ..." % requirement
+    cmd = 'from setuptools.command.easy_install import main; main()'
+    if sys.platform == 'win32':
+        cmd = '"%s"' % cmd # work around spawn lamosity on windows
+    distribute_path = pkg_resources.working_set.find(
+        pkg_resources.Requirement.parse('distribute')).location
+    if subprocess.call(
+        [sys.executable, '-c', cmd, '-mqNxd', tmp_eggs, requirement],
+        env={'PYTHONPATH': distribute_path}, stdout=subprocess.PIPE):
+        sys.stderr.write(
+            "\n\nFatal error while installing %s\n" % requirement)
+        sys.exit(1)
 
-if USE_DISTRIBUTE:
-    requirement = 'distribute'
-else:
-    requirement = 'setuptools'
+    pkg_resources.working_set.add_entry(tmp_eggs)
+    pkg_resources.working_set.require(requirement)
 
-env = dict(os.environ,
-           PYTHONPATH=
-           ws.find(pkg_resources.Requirement.parse(requirement)).location
-           )
 
-cmd = [quote(sys.executable),
-       '-c',
-       quote('from setuptools.command.easy_install import main; main()'),
-       '-mqNxd',
-       quote(tmpeggs)]
+if options.virtualenv:
+    python_path = os.path.join(bin_dir, os.path.basename(sys.executable))
+    if not os.path.isfile(python_path):
+        install('virtualenv >= 1.5')
+        import virtualenv
+        print "Running virtualenv"
+        args = sys.argv[:]
+        sys.argv = ['bootstrap', os.getcwd(),
+                    '--clear', '--no-site-package', '--distribute']
+        virtualenv.main()
+        subprocess.call([python_path] + args)
+        sys.exit(0)
 
-if 'bootstrap-testing-find-links' in os.environ:
-    cmd.extend(['-f', os.environ['bootstrap-testing-find-links']])
 
-cmd.append('zc.buildout' + VERSION)
+if options.profile:
+    if not os.path.isfile(options.profile):
+        sys.stderr.write('No such profile file: %s\n' % options.profile)
+        sys.exit(1)
 
-if is_jython:
-    import subprocess
-    exitcode = subprocess.Popen(cmd, env=env).wait()
-else: # Windows prefers this, apparently; otherwise we would prefer subprocess
-    exitcode = os.spawnle(*([os.P_WAIT, sys.executable] + cmd + [env]))
-assert exitcode == 0
+    print "Creating configuration '%s'" % os.path.abspath(options.config)
+    config = open(options.config, 'w')
+    config.write("""[buildout]
+extends = %s
+""" % options.profile)
+    config.close()
 
-ws.add_entry(tmpeggs)
-ws.require('zc.buildout' + VERSION)
+
+install('zc.buildout == %s' % options.buildout_version)
 import zc.buildout.buildout
-zc.buildout.buildout.main(args)
-shutil.rmtree(tmpeggs)
+zc.buildout.buildout.main(['-c', options.config, 'bootstrap'])
+
+
+if options.install:
+    print "Start installation ..."
+    # Run install
+    subprocess.call(
+        [sys.executable, os.path.join(bin_dir, 'buildout'),
+         '-c', options.config, 'install'])
+
+sys.exit(0)
