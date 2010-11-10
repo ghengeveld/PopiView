@@ -40,14 +40,14 @@ h1 {
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 	margin:0; padding:8px 0;
 }
-#hitmonitor ol li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; border-left:5px #fff solid; }
+#hitmonitor ol li { margin:0; padding:10px 20px; line-height:1em; font-size:1.5em; border-left:10px #fff solid; }
 #hitmonitor ol li span { font-size:0.8em; color:#666; }
 
-.internal.new { background-color:#ff6; }
-.internal { border-left-color:#ec3!important; }
-.external.new { background-color:#f22; }
-.external { border-left-color:#f22!important; }
-.direct.new { background-color:#28f; }
-.direct { border-left-color:#28f!important; }
-.searches.new { background-color:#0f0; }
-.searches { border-left-color:#0e0!important; }
+.internal.new { background-color:#EEE600; }
+.internal { border-left-color:#EEE600!important; }
+.external.new { background-color:#FF2222; }
+.external { border-left-color:#FF2222!important; }
+.direct.new { background-color:#2288FF; }
+.direct { border-left-color:#2288FF!important; }
+.searches.new { background-color:#00E900; }
+.searches { border-left-color:#00E900!important; }
