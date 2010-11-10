@@ -273,29 +273,38 @@ class SQLStorage(object):
         if not self._sf.filter_path(path):
             # Don't store hits for blacklisted paths
             return
-        cursor.execute("""INSERT INTO hits (`hit_timestamp`, `hit_url`,
-                            `hit_path`, `hit_title`, `hit_referrer`)
-                          VALUES ('%(timestamp)i', '%(url)s',
-                                '%(path)s', '%(title)s', '%(referrer)s')""" % {
-                       'timestamp': timestamp, 
-                       'url': conn.escape_string(url),
-                       'path': conn.escape_string(path), 
-                       'title': conn.escape_string(title), 
-                       'referrer': conn.escape_string(referrer)})
-        hitid = cursor.lastrowid
-        for word in keywords:
-            if self._conf['dbtype'] == 'sqlite':
-                cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
-                                  `hit_id`, `keyword`
-                                  ) VALUES ('%(hitid)i', '%(keyword)s');""" % {
-                                  'hitid': hitid, 
-                                  'keyword': conn.escape_string(word)})
-            else:
-                cursor.execute("""INSERT IGNORE INTO hits_keywords (
-                                  `hit_id`, `keyword`
-                                  ) VALUES ('%(hitid)i', '%(keyword)s');""" % {
-                                  'hitid': hitid, 
-                                  'keyword': conn.escape_string(word)})
+        if self._conf['dbtype'] == 'mysql':
+            # MySQL syntax
+            cursor.execute("""INSERT INTO hits (`hit_timestamp`, `hit_url`,
+                              `hit_path`, `hit_title`, `hit_referrer`)
+                              VALUES (%s, %s, %s, %s, %s)""", (
+                           timestamp, url, path, title, referrer))
+            hitid = cursor.lastrowid
+            for word in keywords:
+                if self._conf['dbtype'] == 'sqlite':
+                    cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
+                                      `hit_id`, `keyword`
+                                      ) VALUES (%s, %s)""", (hitid, word))
+                else:
+                    cursor.execute("""INSERT IGNORE INTO hits_keywords (
+                                      `hit_id`, `keyword`
+                                      ) VALUES (%s, %s)""", (hitid, word))
+        else:
+            # SQLite syntax
+            cursor.execute("""INSERT INTO hits (`hit_timestamp`, `hit_url`,
+                              `hit_path`, `hit_title`, `hit_referrer`)
+                              VALUES (?, ?, ?, ?, ?)""", (
+                       timestamp, url, path, title, referrer))
+            hitid = cursor.lastrowid
+            for word in keywords:
+                if self._conf['dbtype'] == 'sqlite':
+                    cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
+                                      `hit_id`, `keyword`
+                                      ) VALUES (?, ?)""", (hitid, word))
+                else:
+                    cursor.execute("""INSERT IGNORE INTO hits_keywords (
+                                      `hit_id`, `keyword`
+                                      ) VALUES (?, ?)""", (hitid, word))
         #conn.commit()
         cursor.close()
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title,
