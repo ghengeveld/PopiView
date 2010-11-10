@@ -96,7 +96,6 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def log_hit(self):
-        #self.request.charset = 'utf-8'
         cur = self.request.str_GET.get('cur', None)
         ref = self.request.str_GET.get('ref', None)
         title = self.request.str_GET.get('title', None)
@@ -117,7 +116,18 @@ class PopiWSGIServer(object):
         response.headers['Cache-Control'] = "no-cache, must-revalidate"
         response.body = self._image
 
-        if cur:
+        visitor_ip = self.request.headers.get('X-Forwarded-For', None)
+        if visitor_ip is None:
+            visitor_ip = self.request.headers.get('REMOTE-ADDR', None)
+        if visitor_ip is None:
+            visitor_ip = self.request.headers.get('REMOTE_ADDR', None)
+        if visitor_ip is None:
+            visitor_ip = self.request.environ.get('REMOTE_ADDR', None)
+        if visitor_ip is None:
+            visitor_ip = self.request.remote_addr
+        blocked_ip_list = ['188.118.12.169', '80.101.121.33', '127.0.0.1']
+
+        if cur and visitor_ip not in blocked_ip_list:
             hit = Hit(self._conf, cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
         return response
