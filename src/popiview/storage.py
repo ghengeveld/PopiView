@@ -261,6 +261,7 @@ class SQLStorage(object):
         cursor.close()
 
     def add_hit(self, hit):
+        conn = self.get_connection()
         cursor = self.get_cursor()
         timestamp = int(hit.timestamp())
         url = hit.url()
@@ -276,20 +277,25 @@ class SQLStorage(object):
                             `hit_path`, `hit_title`, `hit_referrer`)
                           VALUES ('%(timestamp)i', '%(url)s',
                                 '%(path)s', '%(title)s', '%(referrer)s')""" % {
-                       'timestamp': timestamp, 'url': url,
-                       'path': path, 'title': title, 'referrer': referrer})
+                       'timestamp': timestamp, 
+                       'url': conn.escape_string(url),
+                       'path': conn.escape_string(path), 
+                       'title': conn.escape_string(title), 
+                       'referrer': conn.escape_string(referrer)})
         hitid = cursor.lastrowid
         for word in keywords:
             if self._conf['dbtype'] == 'sqlite':
                 cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
                                   `hit_id`, `keyword`
                                   ) VALUES ('%(hitid)i', '%(keyword)s');""" % {
-                                  'hitid': hitid, 'keyword': word})
+                                  'hitid': hitid, 
+                                  'keyword': conn.escape_string(word)})
             else:
                 cursor.execute("""INSERT IGNORE INTO hits_keywords (
                                   `hit_id`, `keyword`
                                   ) VALUES ('%(hitid)i', '%(keyword)s');""" % {
-                                  'hitid': hitid, 'keyword': word})
+                                  'hitid': hitid, 
+                                  'keyword': conn.escape_string(word)})
         #conn.commit()
         cursor.close()
         hitobj = {'url': url, 'timestamp': timestamp, 'title': title,
