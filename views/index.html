@@ -15,8 +15,8 @@
 			<h1>Top Deviators</h1>
 			<ul class="options">
 				<li><input type="radio" name="qfield" value="hit_url"/>URLs</li>
-				<li><input type="radio" name="qfield" value="hit_path" checked="checked"/>Paths</li>
-				<li><input type="radio" name="qfield" value="hit_title"/>Titles</li>
+				<li><input type="radio" name="qfield" value="hit_path"/>Paths</li>
+				<li><input type="radio" name="qfield" value="hit_title" checked="checked"/>Titles</li>
 			</ul>
 			<table></table>
 		</div>
@@ -39,11 +39,11 @@
 			$(document).ready(function(){
 				var monitor_timestamp = 0;
 				var opts = new Array();
-				opts['qfield'] = 'hit_path';
-				opts['external'] = 1;
-				opts['searches'] = 1;
-				opts['internal'] = 1;
-				opts['direct'] = 1;
+				opts['qfield'] = $("input[name=qfield]").val();
+				opts['external'] = $("input[name=external]").is(":checked")?1:0;
+				opts['searches'] = $("input[name=searches]").is(":checked")?1:0;
+				opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
+				opts['direct'] = $("input[name=direct]").is(":checked")?1:0;
 				$("input[type=radio]").change(function(){
 					opts[$(this).attr('name')] = $(this).val();
 					updateDeviators();
