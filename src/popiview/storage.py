@@ -405,7 +405,8 @@ class SQLStorage(object):
         """
         cursor = self.get_cursor()
         cursor.execute("""SELECT keyword, COUNT(keyword) AS count
-                          FROM hits_keywords GROUP BY keyword""")
+                          FROM hits_keywords GROUP BY keyword
+                          ORDER BY count DESC LIMIT 100""")
         keywords = {}
         res = list(cursor.fetchall())
         cursor.close()
@@ -416,7 +417,8 @@ class SQLStorage(object):
                 keywords[item[0]] = item[1]
         return keywords
 
-    def list_referrers(self, url=None, urlsearch=None, refsearch=None):
+    def list_referrers(self, limit=None, url=None, 
+                       urlsearch=None, refsearch=None):
         """List all referrers (to a certain url)."""
         referrers = []
         cursor = self.get_cursor(DictCursor=False)
@@ -427,9 +429,12 @@ class SQLStorage(object):
             qand += " AND hit_url LIKE '%s'" % ('%'+urlsearch+'%',)
         if refsearch is not None:
             qand += " AND hit_referrer LIKE '%s'" % ('%'+refsearch+'%',)
+        qlimit = ''
+        if limit is not None:
+            qlimit = " LIMIT %i" % limit
         cursor.execute("""SELECT hit_referrer FROM hits
-                          WHERE hit_referrer != '' 
-                          AND hit_referrer != 'None' %s""" % qand)
+                          WHERE hit_referrer != '' AND hit_referrer != 'None' 
+                          %s ORDER BY hit_timestamp DESC %s""" % (qand, qlimit))
         res = cursor.fetchall()
         for ref in res:
             referrers.append(ref[0])
@@ -443,9 +448,9 @@ class SQLStorage(object):
         urlparser = URLParser(self._conf)
         htmlparser = HTMLParser()
         if keyword is None:
-            referrers = self.list_referrers()
+            referrers = self.list_referrers(limit=limit)
         else:
-            referrers = self.list_referrers(refsearch=keyword)
+            referrers = self.list_referrers(limit=limit, refsearch=keyword)
         for ref in referrers:
             ref = list(urlparse.urlsplit(ref))
             if ref is not None:
@@ -453,6 +458,4 @@ class SQLStorage(object):
                 if querydata is not None:
                     phrase = querydata[1]
                     phrases.append(htmlparser.escape(phrase))
-        if limit is not None:
-            return phrases[:limit]
         return phrases
