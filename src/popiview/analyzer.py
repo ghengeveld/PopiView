@@ -3,45 +3,31 @@ from popiview.htmlparser import HTMLParser
 
 class Analyzer(object):
 
-    def __init__(self, storage, start_time=None,
-                 boundary_time=None, end_time=None):
+    def __init__(self, storage):
         self._storage = storage
-        now = time.time()
-
-        if start_time is None:
-            self._start_time = now - 3600 * 25
-        else:
-            self._start_time = start_time
-
-        if boundary_time is None:
-            self._boundary_time = now - 3600
-        else:
-            self._boundary_time = boundary_time
-
-        if end_time is None:
-            self._end_time = now
-        else:
-            self._end_time = end_time
 
     def get_top_deviators(self, limit=None, sort_absolute=True,
-                          qfield='hit_path'):
+                          qfield='hit_path', start_time=None,
+                          boundary_time=None, end_time=None):
         """Returns a list containing top deviators, each represented in a
         dictionary: {'name': name, 'value': deviation_pct}
         Sorted by deviation pct, optionally absolute.
         """
         deviators = []
+        
+        if start_time is None:
+            start_time = time.time() - (3600 * 25)
+        if boundary_time is None:
+            boundary_time = time.time() - 3600
+        if end_time is None:
+            end_time = time.time()
 
-        start = self._start_time
-        boundary = self._boundary_time
-        end = self._end_time
-
-        historic = self._storage.get_hitcounts(start_time=start,
-                                               end_time=boundary,
-                                               qfield=qfield)
-        recent = self._storage.get_hitcounts(start_time=boundary, end_time=end,
-                                             qfield=qfield)
-        historic_length = boundary - start
-        recent_length = end - boundary
+        historic = self._storage.get_hitcounts(start_time=start_time,
+            end_time=boundary_time, qfield=qfield)
+        recent = self._storage.get_hitcounts(start_time=boundary_time, 
+            end_time=end_time, qfield=qfield)
+        historic_length = boundary_time - start_time
+        recent_length = end_time - boundary_time
 
         for name, recent_value in recent.iteritems():
             historic_value = historic.get(name, 0.0)
@@ -71,7 +57,7 @@ class Analyzer(object):
         """
         cloud = []
         parser = HTMLParser()
-
+        
         keywords = self._storage.get_keywords(minimum_count=minimum_count)
 
         limitval = 0
@@ -91,7 +77,7 @@ class Analyzer(object):
                 continue
             pct = (keywords[keyword] / float(totalcount) * pct_range
                    + minimum_pct)
-            phrases = self._storage.list_searches(keyword)
+            phrases = self._storage.list_searches(keyword, limit=10)
             phrases = {}.fromkeys(phrases).keys()
             keyword = parser.escape(keyword)
             cloud.append((keyword, round(pct), sorted(phrases)))

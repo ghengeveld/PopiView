@@ -124,7 +124,7 @@ class MemoryStorage(object):
                         keywords.iteritems()))
         return keywords
 
-    def list_searches(self, keyword=None):
+    def list_searches(self, keyword=None, limit=None):
         """List all the search phrases which contain the given keyword, or all
         phrases if no keyword given.
         """
@@ -139,6 +139,8 @@ class MemoryStorage(object):
                     phrase = source[qpos+2:]
                     if keyword is None or phrase.find(keyword) != -1:
                         phrases.append(htmlparser.escape(phrase))
+        if limit is not None:
+            return phrases[:limit]
         return phrases
 
 
@@ -433,7 +435,7 @@ class SQLStorage(object):
             referrers.append(ref[0])
         return referrers
 
-    def list_searches(self, keyword=None):
+    def list_searches(self, keyword=None, limit=None):
         """List all the search phrases which contain the given keyword, or all
         phrases if no keyword given.
         """
@@ -451,4 +453,6 @@ class SQLStorage(object):
                 if querydata is not None:
                     phrase = querydata[1]
                     phrases.append(htmlparser.escape(phrase))
+        if limit is not None:
+            return phrases[:limit]
         return phrases

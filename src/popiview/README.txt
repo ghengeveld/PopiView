@@ -150,8 +150,7 @@ What the analyzer does is:
 - Hand of these numbers to (one of) the popularity_algorithm(s)
 
 >>> from popiview.analyzer import Analyzer
->>> analyzer = Analyzer(storage, start_time=0, boundary_time=5000,
-...                     end_time=10000)
+>>> analyzer = Analyzer(storage)
 
 Now that we have the analyzer, we can ask it what the trends are
 on the website. First we will need to create some dummy data.
@@ -182,7 +181,8 @@ Add some more dummy data
 
 Now we can test the analyzer
 
->>> analyzer.get_top_deviators(qfield='hit_url')
+>>> analyzer.get_top_deviators(qfield='hit_url', 
+...     start_time=0, boundary_time=5000, end_time=10000)
 [{'name': u'http://www.mysite.com/page', 'value': 412},
  {'name': u'http://www.mysite.com/page3', 'value': 200},
  {'name': u'http://www.mysite.com/page4', 'value': -66},
@@ -191,7 +191,8 @@ Now we can test the analyzer
 By default they are sorted by absolute value, meaning -66 comes between
 203 and 0. We can disable this behavior:
 
->>> analyzer.get_top_deviators(sort_absolute=False, qfield='hit_url')
+>>> analyzer.get_top_deviators(sort_absolute=False, qfield='hit_url', 
+...     start_time=0, boundary_time=5000, end_time=10000)
 [{'name': u'http://www.mysite.com/page', 'value': 412},
  {'name': u'http://www.mysite.com/page3', 'value': 200},
  {'name': u'http://www.mysite.com/page2', 'value': 1},
@@ -199,7 +200,8 @@ By default they are sorted by absolute value, meaning -66 comes between
 
 If we want just the top # of deviators we can set a limit:
 
->>> analyzer.get_top_deviators(limit=1, qfield='hit_url')
+>>> analyzer.get_top_deviators(limit=1, qfield='hit_url', 
+...     start_time=0, boundary_time=5000, end_time=10000)
 [{'name': u'http://www.mysite.com/page', 'value': 412}]
 
 
@@ -209,8 +211,7 @@ Keyword Cloud
 A separate part of the application is the keyword cloud. Because we want to set
 a different timespan for this we create a new Analyzer first.
 
->>> keywordanalyzer = Analyzer(storage, start_time=0, boundary_time=5000,
-...                            end_time=10000)
+>>> keywordanalyzer = Analyzer(storage)
 
 We can now get a keyword 'cloud', which is a list of keywords and their
 relative sizes and and the searchphrases in which they occurred.

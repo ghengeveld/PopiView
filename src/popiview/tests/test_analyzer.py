@@ -11,8 +11,7 @@ class TestAnalyzer(TestBase):
 
     def setUp(self):
         super(TestAnalyzer, self).setUp()
-        self.analyzer = Analyzer(self._storage, 
-            start_time=0, boundary_time=7500, end_time=10000)
+        self.analyzer = Analyzer(self._storage)
         self.dummy = Dummy(self._conf, self._storage, clear=True)
     
     def test_deviators_stable(self):
@@ -20,7 +19,8 @@ class TestAnalyzer(TestBase):
         self.dummy.create_hits_linear(u'http://mysite.com/page1',
             start_hits_per_hour=5000, end_hits_per_hour=5000,
             start_time=0, end_time=10000)
-        self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url'), 
+        self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
+            start_time=0, boundary_time=7500, end_time=10000), 
             [{'name': u'http://mysite.com/page1', 'value': 0}])
     
     def test_deviators_increasing(self):
@@ -28,7 +28,8 @@ class TestAnalyzer(TestBase):
         self.dummy.create_hits_linear(u'http://mysite.com/page2',
             start_hits_per_hour=0, end_hits_per_hour=8000,
             start_time=0, end_time=10000)
-        self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url'), 
+        self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
+            start_time=0, boundary_time=7500, end_time=10000), 
             [{'name': u'http://mysite.com/page2', 'value': 133}])
     
     def test_deviators_decreasing(self):
@@ -36,7 +37,8 @@ class TestAnalyzer(TestBase):
         self.dummy.create_hits_linear(u'http://mysite.com/page3',
             start_hits_per_hour=8000, end_hits_per_hour=0,
             start_time=0, end_time=10000)
-        self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url'), 
+        self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
+            start_time=0, boundary_time=7500, end_time=10000), 
             [{'name': u'http://mysite.com/page3', 'value': -80}])
 
     def test_keywordcloud_basic(self):

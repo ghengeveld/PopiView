@@ -38,7 +38,6 @@ class TestFunctional(TestBase):
         self.assertEquals('200 OK', response.status)
         request = Request.blank('/keywordcloud.json')
         response = request.get_response(self.app)
-        print response.body
         self.assertEquals('200 OK', response.status)
 
 
