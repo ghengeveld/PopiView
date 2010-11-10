@@ -13,7 +13,7 @@ class TestBase(unittest.TestCase):
                     'randomdata': 'randomdata', 'dummydata': 'dummydata',
                     'deviators.json': 'deviators', 'image.gif': 'log_hit'},
                   'dbtype': 'sqlite',
-                  'dbfile': 'unittest.db',
+                  'dbfile': ':memory:',
                   'dbhost': 'localhost',
                   'dbuser': 'root',
                   'dbpass': 'qqrs',

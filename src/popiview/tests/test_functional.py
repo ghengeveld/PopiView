@@ -28,12 +28,16 @@ class TestFunctional(TestBase):
     def test_latin1(self):
         """Test latin-1 encoding in request"""
         request = Request.blank(
-            '/image.gif?cur=http://mysite.com&ref='
-            'http://google.com?q=caf%E9'
-            '&title=sometitle')
-        response = request.get_response(self.app)
+            '/image.gif?cur=' + quote('http://mysite.com/dead')
+            + '&ref='
+            + quote('http://google.com?q='+ quote(u'café'.encode('latin1')))
+            + '&title=sometitle')
+
+        for i in range(1,1000):
+            response = request.get_response(self.app)
         self.assertEquals('200 OK', response.status)
-        Request.blank('/keywordcloud.json')
+        request = Request.blank('/keywordcloud.json')
+        response = request.get_response(self.app)
         self.assertEquals('200 OK', response.status)
 
 

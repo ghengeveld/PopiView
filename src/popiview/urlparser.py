@@ -56,7 +56,7 @@ class URLParser(object):
                         f['replace']
             elif f['type'] == 'replace':
                 if f['limit']:
-                    url[f['urlpart']] = url[f['urlpart']].replace(f['find'], 
+                    url[f['urlpart']] = url[f['urlpart']].replace(f['find'],
                         f['replace'], f['limit'])
                 else:
                     url[f['urlpart']] = url[f['urlpart']].replace(f['find'],

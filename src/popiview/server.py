@@ -106,7 +106,7 @@ class PopiWSGIServer(object):
             ref = ref.encode('utf8')
         if title is not None:
             title = title.encode('utf8')
-        
+
         if not cur:
             cur = self.request.headers.get('referer', None)
 

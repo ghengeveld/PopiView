@@ -193,9 +193,9 @@ class SQLStorage(object):
                 raise StorageError(str(e))
         else:
             try:
-                return sqlite3.connect(cfg['dbfile'])
+                return sqlite3.connect(cfg['dbfile'], isolation_level=None)
             except sqlite3.Error, e:
-                raise StorageError(str(e))        
+                raise StorageError(str(e))
 
     def _close_connection(self):
         if hasattr(self.localdata, 'db'):
