@@ -125,7 +125,7 @@ class PopiWSGIServer(object):
             visitor_ip = self.request.environ.get('REMOTE_ADDR', None)
         if visitor_ip is None:
             visitor_ip = self.request.remote_addr
-        blocked_ip_list = ['188.118.12.169', '80.101.121.33', '127.0.0.1']
+        blocked_ip_list = ['188.118.12.169', '80.101.121.33']
 
         if cur and visitor_ip not in blocked_ip_list:
             hit = Hit(self._conf, cur, referrer=ref, title=title)
