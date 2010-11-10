@@ -22,6 +22,8 @@ cfg>>sparams>>google = q
 cfg>>sparams>>bing = q
 cfg>>sparams>>yahoo = p
 
+cfg>>recenthits_size = 200
+
 [server:main]
 use = egg:PasteScript#wsgiutils
 host = ${settings.ini:host}

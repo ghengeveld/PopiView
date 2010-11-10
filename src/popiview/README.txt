@@ -47,7 +47,7 @@ be analyzed to see if there are any keywords.
 >>> hit = Hit(config, u'http://www.mysite.com/page',
 ...           referrer='http://www.google.com?q=cool%20page')
 >>> hit.keywords()
-['cool', 'page']
+[u'cool', u'page']
 
 It is also possible to specify a datetime when the request was made.
 This is useful in unittesting, and to add historic data from external
@@ -122,7 +122,7 @@ certain period
 >>> storage.get_keywords(u'http://www.mysite.com/page',
 ...                      start_time=1285050000,
 ...                      end_time=1285070000)
-{'page': 1, 'cool': 2}
+{u'page': 1, u'cool': 2}
 
 
 Determining Popularity
@@ -216,22 +216,22 @@ We can now get a keyword 'cloud', which is a list of keywords and their
 relative sizes and and the searchphrases in which they occurred.
 
 >>> keywordanalyzer.get_keyword_cloud()
-[('cool', 60.0, ['cool', 'cool page']),
- ('page', 40.0, ['cool page', 'page'])]
+[(u'cool', 60.0, [u'cool', u'cool page']),
+ (u'page', 40.0, [u'cool page', u'page'])]
 
 We can specify a minimum hitcount for the keyword, so only keywords with at
 least so many hits are returned:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_count=80)
-[('cool', 100.0, ['cool', 'cool page'])]
+[(u'cool', 100.0, [u'cool', u'cool page'])]
 
 Or with a limit:
 
 >>> keywordanalyzer.get_keyword_cloud(limit=1)
-[('cool', 100.0, ['cool', 'cool page'])]
+[(u'cool', 100.0, [u'cool', u'cool page'])]
 
 We can adjust the percentage by setting minimum and/or maximum values:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_pct=25, maximum_pct=175)
-[('cool', 115.0, ['cool', 'cool page']),
- ('page', 85.0, ['cool page', 'page'])]
+[(u'cool', 115.0, [u'cool', u'cool page']),
+ (u'page', 85.0, [u'cool page', u'page'])]

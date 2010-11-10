@@ -8,6 +8,7 @@ from popiview.storage import MemoryStorage, SQLStorage
 from popiview.analyzer import Analyzer
 from popiview.dummy import Dummy
 from popiview.view import View
+from popiview.utils import get_unicode
 
 def json_response(data):
     response = Response(json.dumps(data))
@@ -95,17 +96,17 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def log_hit(self):
-        self.request.charset = 'utf-8'
-        cur = self.request.GET.get('cur', None)
-        ref = self.request.GET.get('ref', None)
-        title = self.request.GET.get('title', None)
-
+        #self.request.charset = 'utf-8'
+        cur = self.request.str_GET.get('cur', None)
+        ref = self.request.str_GET.get('ref', None)
+        title = self.request.str_GET.get('title', None)
+        
         if cur is not None:
-            cur = cur.encode('utf8')
+            cur = get_unicode(cur)
         if ref is not None:
-            ref = ref.encode('utf8')
+            ref = get_unicode(ref)
         if title is not None:
-            title = title.encode('utf8')
+            title = get_unicode(title)
 
         if not cur:
             cur = self.request.headers.get('referer', None)

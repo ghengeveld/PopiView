@@ -449,5 +449,6 @@ class SQLStorage(object):
             if ref is not None:
                 querydata = urlparser.searchquery(ref)
                 if querydata is not None:
-                    phrases.append(htmlparser.escape(querydata[1]))
+                    phrase = querydata[1]
+                    phrases.append(htmlparser.escape(phrase))
         return phrases
