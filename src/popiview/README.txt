@@ -181,29 +181,65 @@ Add some more dummy data
 
 Now we can test the analyzer
 
->>> analyzer.get_top_deviators(qfield='hit_url', 
+>>> a = analyzer.get_top_deviators(qfield='hit_url', 
 ...     start_time=0, boundary_time=5000, end_time=10000)
-[{'hph': 50, 'name': u'http://www.mysite.com/page', 'pct': 412},
- {'hph': 37, 'name': u'http://www.mysite.com/page3', 'pct': 200},
- {'hph': -99, 'name': u'http://www.mysite.com/page4', 'pct': -66},
- {'hph': 1, 'name': u'http://www.mysite.com/page2', 'pct': 1}]
-
+>>> b = []
+>>> for c in a:
+...     d = c.items()
+...     d.sort()
+...     b.append(d)
+>>> b
+[[('hph_historic', 12), ('hph_recent', 62), 
+    ('name', u'http://www.mysite.com/page'), 
+    ('num_historic', 17), ('num_recent', 87), ('pct', 412)],
+ [('hph_historic', 18), ('hph_recent', 56), 
+    ('name', u'http://www.mysite.com/page3'), 
+    ('num_historic', 26), ('num_recent', 78), ('pct', 200)],
+ [('hph_historic', 149), ('hph_recent', 50), 
+    ('name', u'http://www.mysite.com/page4'), 
+    ('num_historic', 208), ('num_recent', 70), ('pct', -66)],
+ [('hph_historic', 99), ('hph_recent', 100), 
+    ('name', u'http://www.mysite.com/page2'), 
+    ('num_historic', 138), ('num_recent', 140), ('pct', 1)]]
+    
 By default they are sorted by absolute value, meaning -66 comes between
 203 and 0. We can disable this behavior:
 
->>> analyzer.get_top_deviators(sort_absolute=False, qfield='hit_url', 
+>>> a = analyzer.get_top_deviators(sort_absolute=False, qfield='hit_url', 
 ...     start_time=0, boundary_time=5000, end_time=10000)
-[{'hph': 50, 'name': u'http://www.mysite.com/page', 'pct': 412},
- {'hph': 37, 'name': u'http://www.mysite.com/page3', 'pct': 200},
- {'hph': 1, 'name': u'http://www.mysite.com/page2', 'pct': 1},
- {'hph': -99, 'name': u'http://www.mysite.com/page4', 'pct': -66}]
+>>> b = []
+>>> for c in a:
+...     d = c.items()
+...     d.sort()
+...     b.append(d)
+>>> b
+[[('hph_historic', 12), ('hph_recent', 62), 
+    ('name', u'http://www.mysite.com/page'), 
+    ('num_historic', 17), ('num_recent', 87), ('pct', 412)],
+ [('hph_historic', 18), ('hph_recent', 56), 
+    ('name', u'http://www.mysite.com/page3'), 
+    ('num_historic', 26), ('num_recent', 78), ('pct', 200)],
+ [('hph_historic', 99), ('hph_recent', 100), 
+    ('name', u'http://www.mysite.com/page2'), 
+    ('num_historic', 138), ('num_recent', 140), ('pct', 1)],
+ [('hph_historic', 149), ('hph_recent', 50), 
+    ('name', u'http://www.mysite.com/page4'), 
+    ('num_historic', 208), ('num_recent', 70), ('pct', -66)]]
 
 If we want just the top # of deviators we can set a limit:
 
->>> analyzer.get_top_deviators(limit=1, qfield='hit_url', 
+>>> a = analyzer.get_top_deviators(limit=1, qfield='hit_url', 
 ...     start_time=0, boundary_time=5000,
 ...     end_time=10000)
-[{'hph': 50, 'name': u'http://www.mysite.com/page', 'pct': 412}]
+>>> b = []
+>>> for c in a:
+...     d = c.items()
+...     d.sort()
+...     b.append(d)
+>>> b
+[[('hph_historic', 12), ('hph_recent', 62), 
+    ('name', u'http://www.mysite.com/page'), 
+    ('num_historic', 17), ('num_recent', 87), ('pct', 412)]]
 
 
 Keyword Cloud

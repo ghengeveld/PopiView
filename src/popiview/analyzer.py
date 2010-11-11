@@ -31,14 +31,20 @@ class Analyzer(object):
 
         for name, recent_value in recent.iteritems():
             historic_value = historic.get(name, 0.0)
-            if recent_value < 5 or historic_value < 10:
+            if recent_value < 3 or historic_value < 5:
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)
             deviation_pct = int(round((recent_hps - historic_hps) /
                 historic_hps * 100.0))
-            deviators.append({'name': name, 'pct': deviation_pct, 
-                'hph': int((recent_hps - historic_hps) * 3600)})
+            deviators.append({
+                'name': name, 
+                'pct': deviation_pct, 
+                'hph_recent': int(recent_hps * 3600),
+                'hph_historic': int(historic_hps * 3600),
+                'num_recent': recent_value, 
+                'num_historic': historic_value
+            })
 
         # Reverse sort by deviation pct value
         if sort_absolute:

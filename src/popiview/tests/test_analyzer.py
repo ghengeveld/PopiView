@@ -21,7 +21,9 @@ class TestAnalyzer(TestBase):
             start_time=0, end_time=10000)
         self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
             start_time=0, boundary_time=7500, end_time=10000), 
-            [{'name': u'http://mysite.com/page1', 'pct': 0, 'hph': 1}])
+            [{'name': u'http://mysite.com/page1', 'pct': 0, 
+                'hph_recent': 5001, 'hph_historic': 4999,
+                'num_recent': 3473, 'num_historic': 10416}])
     
     def test_deviators_increasing(self):
         """Test listing of top deviators - increasing"""
@@ -30,7 +32,9 @@ class TestAnalyzer(TestBase):
             start_time=0, end_time=10000)
         self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
             start_time=0, boundary_time=7500, end_time=10000), 
-            [{'name': u'http://mysite.com/page2', 'pct': 133, 'hph': 4000}])
+            [{'name': u'http://mysite.com/page2', 'pct': 133, 
+                'hph_recent': 6999, 'hph_historic': 2999,
+                'num_recent': 4861, 'num_historic': 6249}])
     
     def test_deviators_decreasing(self):
         """Test listing of top deviators - decreasing"""
@@ -39,7 +43,9 @@ class TestAnalyzer(TestBase):
             start_time=0, end_time=10000)
         self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
             start_time=0, boundary_time=7500, end_time=10000), 
-            [{'name': u'http://mysite.com/page3', 'pct': -80, 'hph': -3999}])
+            [{'name': u'http://mysite.com/page3', 'pct': -80, 
+                'hph_recent': 1000, 'hph_historic': 5000,
+                'num_recent': 695, 'num_historic': 10417}])
 
     def test_keywordcloud_basic(self):
         """Test generation of keyword cloud - basic"""

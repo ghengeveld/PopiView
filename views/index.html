@@ -63,8 +63,7 @@
 					$.getJSON('deviators.json?qfield='+opts['qfield'], function(data){
 						var items = '';
 						for (x in data){
-							if (data[x].hph > 0) { data[x].hph = '+' + data[x].hph; }
-							items += '<tr><td>' + data[x].name + '</td><td>' + data[x].hph + '</td></tr>';
+                            items += '<tr><td>' + data[x].name + '</td><td>' + data[x].hph_historic + '->' + data[x].hph_recent + '</td></tr>';
 						}
 						$('#deviators table').html(items);
 					});
