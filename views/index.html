@@ -9,11 +9,35 @@
 		<link rel="stylesheet" type="text/css" href="component?file=css/fonts.css" media="screen, projection" />
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="component?file=js/ajaxDeviators.js"></script>
+		<script type="text/javascript" src="component?file=js/ajaxHitMonitor.js"></script>
+		<script type="text/javascript" src="component?file=js/ajaxKeywordCloud.js"></script>
 	</head>
 	<body>
 		<div id="deviators">
 			<h1>Top Deviators</h1>
 			<ul class="options">
+				<li>
+					<select name="historic_length"><optgroup label="History:">
+							<option value="3600">1 hour</option>
+							<option value="7200">2 hours</option>
+							<option value="10800">3 hours</option>
+							<option value="21600">6 hours</option>
+							<option value="43200" selected="selected">12 hours</option>
+							<option value="86400">24 hours</option>
+							<option value="127800">48 hours</option>
+					</optgroup></select> +
+					<select name="recent_length"><optgroup label="Recent:">
+						<option value="900">15 min</option>
+						<option value="1800">30 min</option>
+						<option value="2700">45 min</option>
+						<option value="3600" selected="selected">1 hour</option>
+						<option value="7200">2 hours</option>
+						<option value="10800">3 hours</option>
+						<option value="21600">6 hours</option>
+						<option value="43200">12 hours</option>
+					</optgroup></select>
+				</li>
 				<li><input type="radio" name="qfield" value="hit_title" checked="checked"/>Titles</li>
 				<li><input type="radio" name="qfield" value="hit_path"/>Paths</li>
 				<li><input type="radio" name="qfield" value="hit_url"/>URLs</li>
@@ -35,80 +59,5 @@
 			</ul>
 			<ol></ol>
 		</div>
-		<script type="text/javascript">
-			$(document).ready(function(){
-				var monitor_timestamp = 0;
-				var opts = new Array();
-				opts['qfield'] = $("input[name=qfield]:checked").val();
-				opts['external'] = $("input[name=external]").is(":checked")?1:0;
-				opts['searches'] = $("input[name=searches]").is(":checked")?1:0;
-				opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
-				opts['direct'] = $("input[name=direct]").is(":checked")?1:0;
-				$("input[type=radio]").change(function(){
-					opts[$(this).attr('name')] = $(this).val();
-					updateDeviators();
-				});
-				$("input[type=checkbox]").click(function(){
-					if ($(this).is(":checked")){
-						opts[$(this).attr('name')] = 1;
-					} else {
-						opts[$(this).attr('name')] = 0;
-					}
-					$('#hitmonitor ol').html('');
-					monitor_timestamp = 0;
-					updateMonitor();
-				});
-
-				function updateDeviators(){
-					$.getJSON('deviators.json?qfield='+opts['qfield'], function(data){
-						var items = '';
-						for (x in data){
-                            items += '<tr><td>' + data[x].name + '</td><td>' + data[x].hph_historic + '->' + data[x].hph_recent + '</td></tr>';
-						}
-						$('#deviators table').html(items);
-					});
-				}
-				function updateKeywordCloud(){
-					$.getJSON('keywordcloud.json', function(data){
-						var items = '';
-						for (x in data){
-							items += '<li style="font-size:' + data[x][1] + '%;" title="' + data[x][2] + '">' + data[x][0] + '</li>';
-						}
-						$('#keywordcloud ol').html(items);
-					});
-				}
-				function updateMonitor(){
-					$.getJSON('hitmonitor.json?last_timestamp='+monitor_timestamp+'&ext='+opts['external']+'&sea='+opts['searches']+'&int='+opts['internal']+'&dir='+opts['direct'], function(data){
-						var item = '';
-						var sourcetype = 'external';
-						for (x in data){
-							monitor_timestamp = data[x].timestamp;
-							if(data[x].source.indexOf('internal') == 0) { sourcetype = 'internal'; }
-							else if(data[x].source.indexOf('direct') == 0) { sourcetype = 'direct'; }
-							else if(data[x].source.indexOf('searches') == 0) { sourcetype = 'searches'; }
-							else { sourcetype = 'external'; }
-							item = '<li class="new '+sourcetype+'" title="' + data[x].url + '">' + data[x].title + '<br/>' +
-								'<span>' + data[x].source + '</span></li>';
-							$('#hitmonitor ol').prepend(item);
-							if($('#hitmonitor ol li').length > 20){
-								$('#hitmonitor ol li:last').remove();
-							}
-							if(sourcetype == 'searches'){ updateKeywordCloud(); }
-						}
-						$("li.new").animate({
-							backgroundColor: "#fff"
-						}, 5000, function(){
-							$(this).removeClass('new');
-						});
-					});
-				}
-				updateDeviators();
-				updateKeywordCloud();
-				updateMonitor();
-				setInterval(function(){ updateDeviators(); }, 30000);
-				setInterval(function(){ updateKeywordCloud(); }, 30000);
-				setInterval(function(){ updateMonitor(); }, 5000);
-			});
-		</script>
 	</body>
 </html>

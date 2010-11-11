@@ -2,6 +2,7 @@ import json
 import random
 import mimetypes
 import os.path
+import time
 from webob import Request, Response
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage, SQLStorage
@@ -35,8 +36,16 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def deviators(self):
-        qfield = self.request.GET.get('qfield', 'hit_path')
-        output = self._deviation_analyzer.get_top_deviators(qfield=qfield)
+        qfield = self.request.GET.get('qfield', 'hit_title')
+        historic_length = self.request.GET.get('historic_length', None)
+        recent_length = self.request.GET.get('recent_length', None)
+        if historic_length is not None and recent_length is not None:
+            boundary = int(int(time.time()) - int(recent_length))
+            start = int(boundary - int(historic_length))
+            output = self._deviation_analyzer.get_top_deviators(qfield=qfield, 
+                start_time=start, boundary_time=boundary)
+        else:
+            output = self._deviation_analyzer.get_top_deviators(qfield=qfield)
         return json_response(output)
 
     def keywordcloud(self):
@@ -105,7 +114,7 @@ class PopiWSGIServer(object):
         if ref is not None:
             ref = get_unicode(ref)
         if title is not None:
-            title = get_unicode(title)
+            title = get_unicode(title).strip()
 
         if not cur:
             cur = self.request.headers.get('referer', None)
@@ -127,7 +136,9 @@ class PopiWSGIServer(object):
             visitor_ip = self.request.remote_addr
         blocked_ip_list = ['188.118.12.169', '80.101.121.33']
 
-        if cur and visitor_ip not in blocked_ip_list:
+        hometitle = 'brusselnieuws.be | hier begint de stad'
+
+        if cur and visitor_ip not in blocked_ip_list and title != hometitle:
             hit = Hit(self._conf, cur, referrer=ref, title=title)
             self._storage.add_hit(hit)
         return response
