@@ -31,6 +31,5 @@ setup(
       'WSGIUtils',
       'MySQL-python',
     ],
-    tests_require=['Nose'],
-    test_suite='nose.collector'
+    test_suite='popiview',
 )

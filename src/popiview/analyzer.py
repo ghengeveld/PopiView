@@ -10,7 +10,7 @@ class Analyzer(object):
                           qfield='hit_path', start_time=None,
                           boundary_time=None, end_time=None):
         """Returns a list containing top deviators, each represented in a
-        dictionary: {'name': name, 'value': deviation_pct}
+        dictionary: {'name': name, 'pct': deviation_pct, 'hph': deviation_abs}
         Sorted by deviation pct, optionally absolute.
         """
         deviators = []
@@ -37,13 +37,14 @@ class Analyzer(object):
             historic_hps = historic_value / float(historic_length)
             deviation_pct = int(round((recent_hps - historic_hps) /
                 historic_hps * 100.0))
-            deviators.append({'name': name, 'value': deviation_pct})
+            deviators.append({'name': name, 'pct': deviation_pct, 
+                'hph': int((recent_hps - historic_hps) * 3600)})
 
         # Reverse sort by deviation pct value
         if sort_absolute:
-            deviators.sort(key=lambda x: abs(x['value']), reverse=True)
+            deviators.sort(key=lambda x: abs(x['pct']), reverse=True)
         else:
-            deviators.sort(key=lambda x: x['value'], reverse=True)
+            deviators.sort(key=lambda x: x['pct'], reverse=True)
 
         if limit is None:
             return deviators

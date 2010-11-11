@@ -3,7 +3,7 @@
 import unittest
 import time
 from popiview.dummy import Dummy
-from popiview.tests.test_base import TestBase
+from popiview.tests.base import TestBase
 
 class TestDummy(TestBase):
     

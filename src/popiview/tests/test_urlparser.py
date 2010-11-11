@@ -3,7 +3,7 @@
 import urlparse
 import unittest
 from popiview.urlparser import URLParser
-from popiview.tests.test_base import TestBase
+from popiview.tests.base import TestBase
 
 class TestURLParser(TestBase):
 

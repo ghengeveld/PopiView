@@ -5,7 +5,7 @@ import time
 from popiview.dummy import Dummy
 from popiview.analyzer import Analyzer
 from popiview.hit import Hit
-from popiview.tests.test_base import TestBase
+from popiview.tests.base import TestBase
 
 class TestAnalyzer(TestBase):
 
@@ -21,7 +21,7 @@ class TestAnalyzer(TestBase):
             start_time=0, end_time=10000)
         self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
             start_time=0, boundary_time=7500, end_time=10000), 
-            [{'name': u'http://mysite.com/page1', 'value': 0}])
+            [{'name': u'http://mysite.com/page1', 'pct': 0, 'hph': 1}])
     
     def test_deviators_increasing(self):
         """Test listing of top deviators - increasing"""
@@ -30,7 +30,7 @@ class TestAnalyzer(TestBase):
             start_time=0, end_time=10000)
         self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
             start_time=0, boundary_time=7500, end_time=10000), 
-            [{'name': u'http://mysite.com/page2', 'value': 133}])
+            [{'name': u'http://mysite.com/page2', 'pct': 133, 'hph': 4000}])
     
     def test_deviators_decreasing(self):
         """Test listing of top deviators - decreasing"""
@@ -39,7 +39,7 @@ class TestAnalyzer(TestBase):
             start_time=0, end_time=10000)
         self.assertEqual(self.analyzer.get_top_deviators(qfield='hit_url', 
             start_time=0, boundary_time=7500, end_time=10000), 
-            [{'name': u'http://mysite.com/page3', 'value': -80}])
+            [{'name': u'http://mysite.com/page3', 'pct': -80, 'hph': -3999}])
 
     def test_keywordcloud_basic(self):
         """Test generation of keyword cloud - basic"""

@@ -183,26 +183,27 @@ Now we can test the analyzer
 
 >>> analyzer.get_top_deviators(qfield='hit_url', 
 ...     start_time=0, boundary_time=5000, end_time=10000)
-[{'name': u'http://www.mysite.com/page', 'value': 412},
- {'name': u'http://www.mysite.com/page3', 'value': 200},
- {'name': u'http://www.mysite.com/page4', 'value': -66},
- {'name': u'http://www.mysite.com/page2', 'value': 1}]
+[{'hph': 50, 'name': u'http://www.mysite.com/page', 'pct': 412},
+ {'hph': 37, 'name': u'http://www.mysite.com/page3', 'pct': 200},
+ {'hph': -99, 'name': u'http://www.mysite.com/page4', 'pct': -66},
+ {'hph': 1, 'name': u'http://www.mysite.com/page2', 'pct': 1}]
 
 By default they are sorted by absolute value, meaning -66 comes between
 203 and 0. We can disable this behavior:
 
 >>> analyzer.get_top_deviators(sort_absolute=False, qfield='hit_url', 
 ...     start_time=0, boundary_time=5000, end_time=10000)
-[{'name': u'http://www.mysite.com/page', 'value': 412},
- {'name': u'http://www.mysite.com/page3', 'value': 200},
- {'name': u'http://www.mysite.com/page2', 'value': 1},
- {'name': u'http://www.mysite.com/page4', 'value': -66}]
+[{'hph': 50, 'name': u'http://www.mysite.com/page', 'pct': 412},
+ {'hph': 37, 'name': u'http://www.mysite.com/page3', 'pct': 200},
+ {'hph': 1, 'name': u'http://www.mysite.com/page2', 'pct': 1},
+ {'hph': -99, 'name': u'http://www.mysite.com/page4', 'pct': -66}]
 
 If we want just the top # of deviators we can set a limit:
 
 >>> analyzer.get_top_deviators(limit=1, qfield='hit_url', 
-...     start_time=0, boundary_time=5000, end_time=10000)
-[{'name': u'http://www.mysite.com/page', 'value': 412}]
+...     start_time=0, boundary_time=5000,
+...     end_time=10000)
+[{'hph': 50, 'name': u'http://www.mysite.com/page', 'pct': 412}]
 
 
 Keyword Cloud

@@ -54,7 +54,7 @@ class PopiWSGIServer(object):
         return json_response(output)
 
     def dummydata(self):
-        dummy = Dummy(self._storage, True)
+        dummy = Dummy(self._conf, self._storage, True)
 
         dummy.create_hits_linear(u'http://www.mysite.com/page',
                                  start_time=0, end_time=10000,

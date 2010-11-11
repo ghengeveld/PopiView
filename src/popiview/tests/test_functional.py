@@ -4,7 +4,7 @@ import unittest
 
 from webob import Request
 from popiview.server import PopiWSGIServer
-from popiview.tests.test_base import TestBase
+from popiview.tests.base import TestBase
 from urllib import quote
 
 

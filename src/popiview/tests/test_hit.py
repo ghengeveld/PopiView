@@ -2,7 +2,7 @@
 
 import unittest
 from popiview.hit import Hit
-from popiview.tests.test_base import TestBase
+from popiview.tests.base import TestBase
 
 class TestHit(TestBase):
 
