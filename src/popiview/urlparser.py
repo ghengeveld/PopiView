@@ -46,6 +46,14 @@ class URLParser(object):
         # Filters is a list of dictionaries
         filters = [
             {'type': 'endswith', 'urlpart': 2, 'find': '/', 'replace': ''},
+            {'type': 'endswith', 'urlpart': 2, 'find': '/homepage', 
+                'replace': ''},
+            {'type': 'endswith', 'urlpart': 2, 'find': '/cultuur', 
+                'replace': ''},
+            {'type': 'endswith', 'urlpart': 2, 'find': '/eten-drinken', 
+                'replace': ''},
+            {'type': 'endswith', 'urlpart': 2, 'find': '/opinie', 
+                'replace': ''},
             #{'type': 'replace', 'urlpart': 1, 'find': 'www.', 'replace': '',
             #    'limit': 1},
             {'type': 'cutoff', 'urlpart': 3, 'find': 'PHPSESSID'}]
