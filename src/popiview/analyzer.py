@@ -35,6 +35,8 @@ class Analyzer(object):
                 continue
             recent_hps = recent_value / float(recent_length)
             historic_hps = historic_value / float(historic_length)
+            if int(recent_hps) == 0 or int(historic_hps) == 0:
+                continue
             deviation_pct = int(round((recent_hps - historic_hps) /
                 historic_hps * 100.0))
             deviators.append({
