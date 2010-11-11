@@ -14,9 +14,9 @@
 		<div id="deviators">
 			<h1>Top Deviators</h1>
 			<ul class="options">
-				<li><input type="radio" name="qfield" value="hit_url"/>URLs</li>
-				<li><input type="radio" name="qfield" value="hit_path"/>Paths</li>
 				<li><input type="radio" name="qfield" value="hit_title" checked="checked"/>Titles</li>
+				<li><input type="radio" name="qfield" value="hit_path"/>Paths</li>
+				<li><input type="radio" name="qfield" value="hit_url"/>URLs</li>
 			</ul>
 			<table></table>
 		</div>
@@ -28,10 +28,10 @@
 		<div id="hitmonitor">
 			<h1>Hit Monitor</h1>
 			<ul class="options">
+				<li><input type="checkbox" name="direct" checked />Direct</li>
+				<li><input type="checkbox" name="internal" checked />Internal</li>
 				<li><input type="checkbox" name="external" checked />External</li>
 				<li><input type="checkbox" name="searches" checked />Searches</li>
-				<li><input type="checkbox" name="internal" checked />Internal</li>
-				<li><input type="checkbox" name="direct" checked />Direct</li>
 			</ul>
 			<ol></ol>
 		</div>
@@ -39,7 +39,7 @@
 			$(document).ready(function(){
 				var monitor_timestamp = 0;
 				var opts = new Array();
-				opts['qfield'] = $("input[name=qfield]").val();
+				opts['qfield'] = $("input[name=qfield]:checked").val();
 				opts['external'] = $("input[name=external]").is(":checked")?1:0;
 				opts['searches'] = $("input[name=searches]").is(":checked")?1:0;
 				opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
@@ -98,7 +98,7 @@
 						}
 						$("li.new").animate({
 							backgroundColor: "#fff"
-						}, 3000, function(){
+						}, 5000, function(){
 							$(this).removeClass('new');
 						});
 					});

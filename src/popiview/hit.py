@@ -17,8 +17,10 @@ class Hit(object):
         
         if title is None:
             self._title = ''
+        elif config['title_strip']:
+            self._title = title.replace(config['title_strip'], '').strip()
         else:
-            self._title = title
+            self._title = title.strip()
 
         if timestamp is None:
             self._timestamp = int(time.time())

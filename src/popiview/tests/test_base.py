@@ -18,7 +18,8 @@ class TestBase(unittest.TestCase):
                   'dbuser': 'root',
                   'dbpass': 'qqrs',
                   'dbname': 'popiview',
-                  'recenthits_size': '200'
+                  'recenthits_size': '200',
+                  'title_strip': '| brusselnieuws.be'
                  }
         self._conf = config
         self._storage = SQLStorage(config)

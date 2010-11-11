@@ -23,6 +23,7 @@ cfg>>sparams>>bing = q
 cfg>>sparams>>yahoo = p
 
 cfg>>recenthits_size = 200
+cfg>>title_strip = | brusselnieuws.be
 
 [server:main]
 use = egg:PasteScript#wsgiutils
