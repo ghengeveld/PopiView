@@ -4,7 +4,8 @@ from popiview.urlparser import URLParser
 
 class Hit(object):
 
-    def __init__(self, config, url, referrer=None, title=None, timestamp=None):
+    def __init__(self, config, url, referrer=None, title=None, 
+            timestamp=None, visitor_ip=None):
         self._conf = config
         self._urlp = URLParser(config)
         self._url_parts = self._urlp.urlfilter(list(urlparse.urlsplit(url)))
@@ -26,6 +27,11 @@ class Hit(object):
             self._timestamp = int(time.time())
         else:
             self._timestamp = int(timestamp)
+        
+        if visitor_ip is None:
+            self._visitor_ip = ''
+        else:
+            self._visitor_ip = visitor_ip
 
     def url(self):
         return urlparse.urlunsplit(self._url_parts)
@@ -51,3 +57,21 @@ class Hit(object):
 
     def source(self):
         return self._urlp.source(self._url_parts, self._referrer_parts)
+
+    def is_whitelisted(self):
+        if 'whitelist_lvl1' in self._conf:
+            whitelist_items = split(self._conf['whitelist_lvl1'], ',')
+            pathlevels = split(strip(self.path, '/'), '/')
+            if pathlevels:
+                lvl1 = pathlevels[0]
+            if lvl1 in whitelist_items:
+                return True
+            return False
+        return True
+
+    def is_blacklisted(self):
+        if 'ip_blacklist' in self._conf:
+            blacklist_items = split(self._conf['ip_blacklist'], ',')
+            if self._visitor_ip in blacklist_items:
+                return True
+        return False

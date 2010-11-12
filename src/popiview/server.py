@@ -115,7 +115,6 @@ class PopiWSGIServer(object):
             ref = get_unicode(ref)
         if title is not None:
             title = get_unicode(title).strip()
-
         if not cur:
             cur = self.request.headers.get('referer', None)
 
@@ -125,21 +124,16 @@ class PopiWSGIServer(object):
         response.headers['Cache-Control'] = "no-cache, must-revalidate"
         response.body = self._image
 
+        if not cur:
+            return response
+
         visitor_ip = self.request.headers.get('X-Forwarded-For', None)
         if visitor_ip is None:
-            visitor_ip = self.request.headers.get('REMOTE-ADDR', None)
-        if visitor_ip is None:
-            visitor_ip = self.request.headers.get('REMOTE_ADDR', None)
-        if visitor_ip is None:
-            visitor_ip = self.request.environ.get('REMOTE_ADDR', None)
-        if visitor_ip is None:
-            visitor_ip = self.request.remote_add
-        blocked_ip_list = ['188.118.12.169', '80.101.121.33']
+            visitor_ip = self.request.remote_addr
 
-        hometitle = 'brusselnieuws.be | hier begint de stad'
-
-        if cur and visitor_ip not in blocked_ip_list and title != hometitle:
-            hit = Hit(self._conf, cur, referrer=ref, title=title)
+        hit = Hit(self._conf, cur, referrer=ref, title=title,
+            visitor_ip=visitor_ip)
+        if hit.is_whitelisted() and not hit.is_blacklisted():
             self._storage.add_hit(hit)
         return response
 
