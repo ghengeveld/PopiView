@@ -133,7 +133,7 @@ class PopiWSGIServer(object):
         if visitor_ip is None:
             visitor_ip = self.request.environ.get('REMOTE_ADDR', None)
         if visitor_ip is None:
-            visitor_ip = self.request.remote_addr
+            visitor_ip = self.request.remote_add
         blocked_ip_list = ['188.118.12.169', '80.101.121.33']
 
         hometitle = 'brusselnieuws.be | hier begint de stad'

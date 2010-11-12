@@ -102,7 +102,7 @@ $(document).ready(function(){
 				}
 				$("li.new").animate({
 					backgroundColor: "#fff"
-				}, 5000, function(){
+				}, 3000, function(){
 					$(this).removeClass('new');
 				});
 			}
