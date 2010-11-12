@@ -1,10 +1,23 @@
 $(document).ready(function(){
-	var monitor_timestamp = 0;
 	var opts = new Array();
+	opts['historic_length'] = $("select[name=historic_length]").val();
+	opts['recent_length'] = $("select[name=recent_length]").val();
+	opts['qfield'] = $("input[name=qfield]:checked").val();
 	opts['external'] = $("input[name=external]").is(":checked")?1:0;
 	opts['searches'] = $("input[name=searches]").is(":checked")?1:0;
 	opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
 	opts['direct'] = $("input[name=direct]").is(":checked")?1:0;
+
+	$("select").change(function(){
+		opts[$(this).attr('name')] = $(this).val();
+		updateDeviators();
+	});
+	$("input[type=radio]").change(function(){
+		opts[$(this).attr('name')] = $(this).val();
+		updateDeviators();
+	});
+
+	var monitor_timestamp = 0;
 	$("input[type=checkbox]").click(function(){
 		if ($(this).is(":checked")){
 			opts[$(this).attr('name')] = 1;
@@ -15,6 +28,36 @@ $(document).ready(function(){
 		monitor_timestamp = 0;
 		updateMonitor();
 	});
+	
+	function updateDeviators()
+	{
+		$.getJSON(
+			'deviators.json?qfield=' + opts['qfield']
+			+ '&historic_length=' + opts['historic_length']
+			+ '&recent_length=' + opts['recent_length'],
+			function(data)
+			{
+				var items = '';
+				for (x in data){
+					items += '<tr>';
+					items += '<td>' + data[x].name + '</td>';
+					items += '<td>' + data[x].hph_historic + '->' + data[x].hph_recent + '</td>';
+					items += '</tr>';
+				}
+				$('#deviators table').html(items);
+			}
+		);
+	}
+	function updateKeywordCloud()
+	{
+		$.getJSON('keywordcloud.json', function(data){
+			var items = '';
+			for (x in data){
+				items += '<li style="font-size:' + data[x][1] + '%;" title="' + data[x][2] + '">' + data[x][0] + '</li>';
+			}
+			$('#keywordcloud ol').html(items);
+		});
+	}
 	function updateMonitor()
 	{
 		$.getJSON(
@@ -65,6 +108,11 @@ $(document).ready(function(){
 			}
 		);
 	}
+
+	updateDeviators();
+	updateKeywordCloud();
 	updateMonitor();
+	setInterval(function(){ updateDeviators(); }, 30000);
+	setInterval(function(){ updateKeywordCloud(); }, 30000);
 	setInterval(function(){ updateMonitor(); }, 5000);
 });
