@@ -1,7 +1,6 @@
 import operator
 import MySQLdb
 import MySQLdb.cursors
-import sqlite3
 import threading
 import urlparse
 from popiview.counter import Counter
@@ -194,6 +193,7 @@ class SQLStorage(object):
             except MySQLdb.Error, e:
                 raise StorageError(str(e))
         else:
+            import sqlite3
             try:
                 return sqlite3.connect(cfg['dbfile'], isolation_level=None)
             except sqlite3.Error, e:
