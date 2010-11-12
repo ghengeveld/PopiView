@@ -60,8 +60,8 @@ class Hit(object):
 
     def is_whitelisted(self):
         if 'whitelist_lvl1' in self._conf:
-            whitelist_items = split(self._conf['whitelist_lvl1'], ',')
-            pathlevels = split(strip(self.path, '/'), '/')
+            whitelist_items = self._conf['whitelist_lvl1'].split(',')
+            pathlevels = self.path.strip('/').split('/')
             if pathlevels:
                 lvl1 = pathlevels[0]
             if lvl1 in whitelist_items:
@@ -71,7 +71,7 @@ class Hit(object):
 
     def is_blacklisted(self):
         if 'ip_blacklist' in self._conf:
-            blacklist_items = split(self._conf['ip_blacklist'], ',')
+            blacklist_items = self._conf['ip_blacklist'].split(',')
             if self._visitor_ip in blacklist_items:
                 return True
         return False
