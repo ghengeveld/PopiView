@@ -47,6 +47,16 @@ class TestAnalyzer(TestBase):
                 'hph_recent': 1000, 'hph_historic': 5000,
                 'num_recent': 695, 'num_historic': 10417}])
 
+    def test_toppages(self):
+        """Test listing of top pages"""
+        self.dummy.create_hits_linear(u'http://mysite.com/page',
+            start_hits_per_hour=50, end_hits_per_hour=50,
+            start_time=0, end_time=3600)
+        self.assertEqual(self.analyzer.get_top_pages(qfield='hit_url',
+            start_time=0, end_time=3600), [
+                {'name': u'http://mysite.com/page', 'count': 50, 'hph': 50.0}
+            ])
+
     def test_keywordcloud_basic(self):
         """Test generation of keyword cloud - basic"""
         tests = []

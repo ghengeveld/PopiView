@@ -11,6 +11,7 @@ cfg>>dbname = ${dbconfig:dbname}
 cfg>>urlmap>>index = index
 cfg>>urlmap>>image.gif = log_hit
 cfg>>urlmap>>deviators.json = deviators
+cfg>>urlmap>>toppages.json = toppages
 cfg>>urlmap>>keywordcloud.json = keywordcloud
 cfg>>urlmap>>hitmonitor.json = hitmonitor
 cfg>>urlmap>>dummydata = dummydata

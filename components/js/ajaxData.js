@@ -3,6 +3,7 @@ $(document).ready(function(){
 	opts['historic_length'] = $("select[name=historic_length]").val();
 	opts['recent_length'] = $("select[name=recent_length]").val();
 	opts['qfield'] = $("input[name=qfield]:checked").val();
+	opts['timespan'] = $("select[name=timespan]").val();
 	opts['external'] = $("input[name=external]").is(":checked")?1:0;
 	opts['searches'] = $("input[name=searches]").is(":checked")?1:0;
 	opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
@@ -45,6 +46,23 @@ $(document).ready(function(){
 					items += '</tr>';
 				}
 				$('#deviators table').html(items);
+			}
+		);
+	}
+	function updateTopPages()
+	{
+		$.getJSON(
+			'toppages.json?timespan=' + opts['timespan'],
+			function(data)
+			{
+				var items = '';
+				for (x in data){
+					items += '<tr>';
+					items += '<td>' + data[x].name + '</td>';
+					items += '<td>' + data[x].count + '</td>';
+					items += '</tr>';
+				}
+				$('#toppages table').html(items);
 			}
 		);
 	}
@@ -110,9 +128,11 @@ $(document).ready(function(){
 	}
 
 	updateDeviators();
+	updateTopPages();
 	updateKeywordCloud();
 	updateMonitor();
 	setInterval(function(){ updateDeviators(); }, 30000);
+	setInterval(function(){ updateTopPages(); }, 30000);
 	setInterval(function(){ updateKeywordCloud(); }, 30000);
 	setInterval(function(){ updateMonitor(); }, 5000);
 });

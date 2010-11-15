@@ -22,8 +22,7 @@ class PopiWSGIServer(object):
     def __init__(self, config, storage):
         self._conf = config
         self._storage = storage
-        self._deviation_analyzer = Analyzer(self._storage)
-        self._keyword_analyzer = Analyzer(self._storage)
+        self._analyzer = Analyzer(self._storage)
         self._view = View()
         self._image = self._load_component('img/img.gif')
 
@@ -42,15 +41,23 @@ class PopiWSGIServer(object):
         if historic_length is not None and recent_length is not None:
             boundary = int(int(time.time()) - int(recent_length))
             start = int(boundary - int(historic_length))
-            output = self._deviation_analyzer.get_top_deviators(qfield=qfield, 
+            output = self._analyzer.get_top_deviators(qfield=qfield, 
                 start_time=start, boundary_time=boundary)
         else:
-            output = self._deviation_analyzer.get_top_deviators(qfield=qfield)
+            output = self._analyzer.get_top_deviators(qfield=qfield)
+        return json_response(output)
+
+    def toppages(self):
+        timespan = self.request.GET.get('timespan', None)
+        start_time = self.request.GET.get('start_time', None)
+        end_time = self.request.GET.get('end_time', None)
+        output = self._analyzer.get_top_pages(
+            start_time=start_time, end_time=end_time, timespan=timespan)
         return json_response(output)
 
     def keywordcloud(self):
-        output = self._keyword_analyzer.get_keyword_cloud(minimum_pct=80,
-                                                          maximum_pct=500)
+        output = self._analyzer.get_keyword_cloud(minimum_pct=80,
+                                                  maximum_pct=500)
         return json_response(output)
 
     def hitmonitor(self):

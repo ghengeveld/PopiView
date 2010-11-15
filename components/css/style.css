@@ -23,14 +23,21 @@ h1 {
 	border:0; background:transparent; font-size:0.9em;
 }
 
-#deviators { position:absolute; top:3%; left:2%; width:60%; height:60%; }
+#deviators { position:absolute; top:3%; left:2%; width:60%; height:33%; }
 #deviators table {
-	display:block; height:87%; background:#fff; overflow:auto; padding:8px 0;
+	display:block; height:80%; background:#fff; overflow:auto; padding:8px 0;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
 #deviators table td { padding:0 20px; line-height:2em; font-size:1.5em; }
 
-#keywordcloud { position:absolute; top:66%; left:2%; width:60%; height:31%; }
+#toppages { position:absolute; top:39%; left:2%; width:60%; height:33%; }
+#toppages table {
+	display:block; height:80%; background:#fff; overflow:auto; padding:8px 0;
+    -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
+}
+#toppages table td { padding:0 20px; line-height:2em; font-size:1.5em; }
+
+#keywordcloud { position:absolute; top:75%; left:2%; width:60%; height:25%; }
 #keywordcloud ol {
     width:100%; background:#fff; list-style:none; text-align:center; overflow:auto;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
