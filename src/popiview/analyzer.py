@@ -116,10 +116,8 @@ class Analyzer(object):
                 continue
             pct = (keywords[keyword] / float(totalcount) * pct_range
                    + minimum_pct)
-            phrases = self._storage.list_searches(keyword, limit=10)
-            phrases = {}.fromkeys(phrases).keys()
             keyword = parser.escape(keyword)
-            cloud.append((keyword, round(pct), sorted(phrases)))
+            cloud.append((keyword, round(pct)))
         return sorted(cloud)
 
     def calc_sd(self, numlist):

@@ -56,8 +56,9 @@ class PopiWSGIServer(object):
         return json_response(output)
 
     def keywordcloud(self):
-        output = self._analyzer.get_keyword_cloud(minimum_pct=80,
-                                                  maximum_pct=500)
+        minimum_count = self.request.GET.get('minimum_count', None)
+        output = self._analyzer.get_keyword_cloud(minimum_count=minimum_count,
+            minimum_pct=80, maximum_pct=500)
         return json_response(output)
 
     def hitmonitor(self):

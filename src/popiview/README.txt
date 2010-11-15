@@ -254,22 +254,22 @@ We can now get a keyword 'cloud', which is a list of keywords and their
 relative sizes and and the searchphrases in which they occurred.
 
 >>> keywordanalyzer.get_keyword_cloud()
-[(u'cool', 60.0, [u'cool', u'cool page']),
- (u'page', 40.0, [u'cool page', u'page'])]
+[(u'cool', 60.0),
+ (u'page', 40.0)]
 
 We can specify a minimum hitcount for the keyword, so only keywords with at
 least so many hits are returned:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_count=80)
-[(u'cool', 100.0, [u'cool', u'cool page'])]
+[(u'cool', 100.0)]
 
 Or with a limit:
 
 >>> keywordanalyzer.get_keyword_cloud(limit=1)
-[(u'cool', 100.0, [u'cool', u'cool page'])]
+[(u'cool', 100.0)]
 
 We can adjust the percentage by setting minimum and/or maximum values:
 
 >>> keywordanalyzer.get_keyword_cloud(minimum_pct=25, maximum_pct=175)
-[(u'cool', 115.0, [u'cool', u'cool page']),
- (u'page', 85.0, [u'cool page', u'page'])]
+[(u'cool', 115.0),
+ (u'page', 85.0)]

@@ -83,8 +83,7 @@ class TestAnalyzer(TestBase):
         # Regular search
         tests.append({
             'ref': u'http://google.com?q=cool page', 
-            'expect': [('cool', 50.0, [u'cool page']), 
-                       ('page', 50.0, [u'cool page'])]
+            'expect': [('cool', 50.0), ('page', 50.0)]
         })
         # Empty search query
         tests.append({
@@ -131,24 +130,17 @@ class TestAnalyzer(TestBase):
 
         self.assertEqual(sorted(self.analyzer.get_keyword_cloud()), 
             sorted([
-                ('cool', 30.0, sorted([u'cool page', u'cool', u'cool test page',
-                    u'very cool funny test page'])),
-                ('page', 35.0, sorted([u'cool page', u'page', u'test page test',
-                    u'cool test page', u'very cool funny test page'])),
-                ('funny', 10.0, sorted([u'funny test',
-                    u'very cool funny test page'])),
-                ('test', 20.0, sorted([u'funny test', u'test page test', 
-                    u'cool test page', u'very cool funny test page'])),
-                ('very', 5.0, sorted([u'very cool funny test page']))
+                ('cool', 30.0), ('page', 35.0), ('funny', 10.0),
+                ('test', 20.0), ('very', 5.0)
             ]))
 
     def test_keywordcloud_specialchars(self):
         """Test generation of keyword cloud - special characters"""
-        hit = Hit(self._conf, u'http://mysite.com/page', 
+        hit = Hit(self._conf, u'http://mysite.com/page',
             referrer=u'http://google.com?q=éäüòñрусском')
         self._storage.add_hit(hit)
         self.assertEqual(self.analyzer.get_keyword_cloud(), 
-            [(u'éäüòñрусском', 100.0, [u'éäüòñрусском'])])
+            [(u'éäüòñрусском', 100.0)])
 
 def test_suite():
     suite = unittest.TestSuite()

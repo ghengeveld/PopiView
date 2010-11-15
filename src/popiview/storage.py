@@ -224,7 +224,8 @@ class SQLStorage(object):
             CREATE TABLE IF NOT EXISTS hits_keywords (
               hit_id int(32) NOT NULL,
               keyword varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-              PRIMARY KEY (hit_id, keyword)
+              PRIMARY KEY (hit_id, keyword),
+              KEY `keywords_index` (keyword)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci""")
         else:
             # SQLite syntax
@@ -421,7 +422,7 @@ class SQLStorage(object):
         cursor = self.get_cursor()
         cursor.execute("""SELECT keyword, COUNT(keyword) AS count
                           FROM hits_keywords GROUP BY keyword
-                          ORDER BY count DESC LIMIT 100""")
+                          ORDER BY count DESC LIMIT 50""")
         keywords = {}
         res = list(cursor.fetchall())
         cursor.close()
