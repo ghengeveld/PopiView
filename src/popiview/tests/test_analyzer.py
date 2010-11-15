@@ -47,8 +47,8 @@ class TestAnalyzer(TestBase):
                 'hph_recent': 1000, 'hph_historic': 5000,
                 'num_recent': 695, 'num_historic': 10417}])
 
-    def test_toppages(self):
-        """Test listing of top pages"""
+    def test_toppages_basic(self):
+        """Test listing of top pages - basic"""
         self.dummy.create_hits_linear(u'http://mysite.com/page',
             start_hits_per_hour=50, end_hits_per_hour=50,
             start_time=0, end_time=3600)
@@ -57,6 +57,26 @@ class TestAnalyzer(TestBase):
                 {'name': u'http://mysite.com/page', 'count': 50, 'hph': 50.0}
             ])
 
+    def test_toppages_strings(self):
+        """Test listing of top pages - timestamps as string"""
+        self.dummy.create_hits_linear(u'http://mysite.com/page',
+            start_hits_per_hour=50, end_hits_per_hour=50,
+            start_time=0, end_time=3600)
+        self.assertEqual(self.analyzer.get_top_pages(qfield='hit_url',
+            start_time='0', end_time='3600'), [
+                {'name': u'http://mysite.com/page', 'count': 50, 'hph': 50.0}
+            ])
+    
+    def test_toppages_timespan(self):
+        """Test listing of top pages - using timespan"""
+        self.dummy.create_hits_linear(u'http://mysite.com/page',
+            start_hits_per_hour=50, end_hits_per_hour=50,
+            start_time=time.time() - 3600, end_time=time.time())
+        self.assertEqual(self.analyzer.get_top_pages(qfield='hit_url',
+            timespan='3600'), [
+                {'name': u'http://mysite.com/page', 'count': 50, 'hph': 50.0}
+            ])
+    
     def test_keywordcloud_basic(self):
         """Test generation of keyword cloud - basic"""
         tests = []

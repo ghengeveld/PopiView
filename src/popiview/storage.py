@@ -366,9 +366,9 @@ class SQLStorage(object):
         qstart = ''
         qend = ''
         if start_time is not None:
-            qstart = " AND hit_timestamp >= %i" % (start_time)
+            qstart = " AND hit_timestamp >= %i" % (int(start_time))
         if end_time is not None:
-            qend = " AND hit_timestamp <= %i" % (end_time)
+            qend = " AND hit_timestamp <= %i" % (int(end_time))
 
         cursor.execute("""SELECT COUNT(hit_url) AS count FROM hits
                           WHERE hit_url = '%s'%s%s""" % (url, qstart, qend))
@@ -393,10 +393,10 @@ class SQLStorage(object):
         if qfield not in ['hit_url', 'hit_path', 'hit_title']:
             qfield = 'hit_path'
         if start_time is not None:
-            qstart = " AND hit_timestamp >= %i" % (start_time)
+            qstart = " AND hit_timestamp >= %i" % (int(start_time))
             pass
         if end_time is not None:
-            qend = " AND hit_timestamp < %i" % (end_time)
+            qend = " AND hit_timestamp < %i" % (int(end_time))
             pass
 
         cursor.execute("""SELECT %(qfield)s AS name, COUNT(%(qfield)s) AS count

@@ -65,22 +65,22 @@ class Analyzer(object):
         pages = []
 
         if timespan is not None:
-            start_time = time.time() - timespan
-            end_time = time.time()
+            start_time = int(time.time()) - int(timespan)
+            end_time = int(time.time())
         else:
             if start_time is None and end_time is None:
-                start_time = time.time() - 3600
-                end_time = time.time()
+                start_time = int(time.time()) - 3600
+                end_time = int(time.time())
             elif start_time is None:
-                start_time = end_time - 3600
+                start_time = int(end_time) - 3600
             elif end_time is None:
-                end_time = time.time()
+                end_time = int(time.time())
 
         hitcounts = self._storage.get_hitcounts(start_time=start_time,
                 end_time=end_time, qfield=qfield)
 
         for name, count in hitcounts.iteritems():
-            hph = round(count / float(end_time - start_time) * 3600.0)
+            hph = round(count / float(int(end_time) - int(start_time)) * 3600.0)
             pages.append({'name': name, 'count': count, 'hph': hph})
 
         pages.sort(key=lambda x: x['count'], reverse=True)
