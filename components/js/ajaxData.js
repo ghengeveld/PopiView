@@ -43,7 +43,7 @@ $(document).ready(function(){
 				for (x in data){
 					items += '<tr>';
 					items += '<td>' + data[x].name + '</td>';
-					items += '<td>' + data[x].hph_historic + '->' + data[x].hph_recent + ' hits/hour</td>';
+					items += '<td class="alignRight">' + data[x].hph_historic + '->' + data[x].hph_recent + ' hits/hour</td>';
 					items += '</tr>';
 				}
 				$('#deviators table').html(items);
@@ -60,7 +60,7 @@ $(document).ready(function(){
 				for (x in data){
 					items += '<tr>';
 					items += '<td>' + data[x].name + '</td>';
-					items += '<td>' + data[x].count + ' hits</td>';
+					items += '<td class="alignRight">' + data[x].count + ' hits</td>';
 					items += '</tr>';
 				}
 				$('#toppages table').html(items);
