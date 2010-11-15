@@ -12,6 +12,7 @@ $(document).ready(function(){
 	$("select").change(function(){
 		opts[$(this).attr('name')] = $(this).val();
 		updateDeviators();
+        updateTopPages();
 	});
 	$("input[type=radio]").change(function(){
 		opts[$(this).attr('name')] = $(this).val();
@@ -42,7 +43,7 @@ $(document).ready(function(){
 				for (x in data){
 					items += '<tr>';
 					items += '<td>' + data[x].name + '</td>';
-					items += '<td>' + data[x].hph_historic + '->' + data[x].hph_recent + '</td>';
+					items += '<td>' + data[x].hph_historic + '->' + data[x].hph_recent + ' hits/hour</td>';
 					items += '</tr>';
 				}
 				$('#deviators table').html(items);
@@ -59,7 +60,7 @@ $(document).ready(function(){
 				for (x in data){
 					items += '<tr>';
 					items += '<td>' + data[x].name + '</td>';
-					items += '<td>' + data[x].count + '</td>';
+					items += '<td>' + data[x].count + ' hits</td>';
 					items += '</tr>';
 				}
 				$('#toppages table').html(items);
