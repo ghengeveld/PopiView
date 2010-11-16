@@ -3,7 +3,7 @@ from os.path import join, dirname
 
 setup(
     name='popiview',
-    version='1.0a',
+    version='1.0dev',
     description=('Real-time website analytics'),
     long_description=open(join(
         dirname(__file__),
