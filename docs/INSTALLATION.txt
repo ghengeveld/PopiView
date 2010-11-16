@@ -1,0 +1,157 @@
+==================================
+PopiView Installation Instructions
+==================================
+
+Requirements
+============
+* Python 2.6
+* MySQL server
+* Subversion
+
+Getting the files
+=================
+First, do an SVN checkout from the Infrae repository to the destination 
+directory on the server::
+
+ svn checkout https://svn.infrae.com/PopiView/tags/PopiView-1.0a popiview
+
+All files should now be downloaded and stored in the 'popiview' folder.
+
+Setting up MySQL and application configuration
+==============================================
+Now we have to setup the MySQL database. This requires root access to mysql so
+we can add a new user. Make sure to set a more secure password than the one
+in the example below::
+
+ mysql -u root -p
+ CREATE DATABASE popiview;
+ GRANT ALL ON popiview.* TO popiview IDENTIFIED BY 'securepassword';
+ exit
+
+So replace 'securepassword' with another password, but keep the quotes.
+
+.. Hint:: Troubleshooting: `mysql_config not found`_
+
+Now we will create the configuration file with the new settings::
+
+ cd popiview
+ cp profiles/production.cfg profiles/popiview.cfg
+ vim profiles/popiview.cfg
+
+Alternatively you can use another texteditor instead of vim, like nano or emacs.
+
+Change the values under [dbconfig] to match the database we just created.
+Usually it will only require the password (dbpass) to be changed. If the port 
+number has to be modified (default is 3033), add the following lines::
+
+ [settings.ini]
+ port = 1234
+ 
+Building the application with buildout
+======================================
+Now that the configuration is done we can run the bootstrap and buildout::
+
+ python2.6 bootstrap.py --buildout-profile profiles/popiview.cfg
+
+.. Hint:: Troubleshooting: `AttributeError in bootstrap.py`_
+
+This will install all dependencies and create a buildout script which we will
+run next::
+
+ bin/buildout
+
+.. Hint:: Troubleshooting: `Python.h not found`_
+
+This will generate bin/test script and bin/paster script. To make sure the
+application was properly installed, start paster (the application server)::
+
+ bin/paster serve settings.ini
+
+This should start the server and display the IP and port number on which the
+application is served::
+
+ Starting server in PID ####.
+ Starting HTTP server on http://0.0.0.0:1234
+
+To exit paster, press Ctrl + C.
+To start paster as a deamon (in the background), run it like this::
+
+ bin/paster serve --daemon settings.ini
+
+You can stop the daemon like this::
+
+ bin/paster serve --daemon settings.ini stop
+
+Apache proxy configuration (advanced users)
+===========================================
+First we have to set a password so the application is protected. For this we 
+have to create a .htpasswd file::
+
+ htpasswd -c popiview.htpasswd pvuser
+
+Make sure to choose a proper password. The username will be 'pvuser', or you 
+can choose another.
+
+To make Apache serve the paster application, add this to your Apache 
+configuration file, and modify the following:
+
+* ServerName: final application url
+* RewriteRule: port number
+* AuthUserFile: path to the .htpasswd file we just created
+
+Edit the settings to match your Apache installation.
+
+::
+
+ <VirtualHost *:80>
+
+	ServerName popiview.example.com
+
+	ProxyPreserveHost on
+
+	RewriteEngine on
+	RewriteRule ^/(.*)$ http://localhost:1234/$1 [P,L]
+
+	<Location "/favicon.ico">
+	  Satisfy Any
+	  Order deny,allow
+	  Allow from all
+	</Location>
+
+	<Location "/image.gif">
+	  Satisfy Any
+	  Order deny,allow
+	  Allow from all
+	</Location>
+
+	<Location />
+    	  AuthUserFile /etc/apache2/popiview.htpasswd
+    	  AuthName "Popiview"
+    	  AuthType Basic
+    	  require valid-user
+	  Order deny,allow
+	  Allow from all
+	</Location>
+
+ </VirtualHost>
+
+Troubleshooting
+===============
+If you run into problems during installation, this error troubleshooting guide 
+may help.
+
+mysql_config not found
+----------------------
+You should install mysql first. This includes mysql-server, mysql-common and 
+python-mysqldb, among others.
+
+AttributeError in bootstrap.py
+------------------------------
+If you get this error: 'NoneType' object has no attribute 'location'
+
+Install python distribute:
+http://pypi.python.org/pypi/distribute#installation-instructions
+
+Python.h not found
+------------------
+You should install the package: python-dev

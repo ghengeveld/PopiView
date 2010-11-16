@@ -1,0 +1,11 @@
+========
+PopiView
+========
+
+PopiView 1.0a (2010-11-16)
+--------------------------
+
+* Top Deviators with configurable history/recent timespans
+* Top Pages with configurable timespan
+* Keyword Cloud
+* Real-time hit monitor with selectable referrer types
