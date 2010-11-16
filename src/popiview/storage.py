@@ -121,6 +121,8 @@ class MemoryStorage(object):
 
         keywords = dict(filter(self._sf.filter_keywordcount(minimum_count),
                         keywords.iteritems()))
+        keywords = dict(filter(self._sf.filter_keywords(self._conf),
+                        keywords.iteritems()))
         return keywords
 
     def list_searches(self, keyword=None, limit=None):
@@ -422,7 +424,7 @@ class SQLStorage(object):
         cursor = self.get_cursor()
         cursor.execute("""SELECT keyword, COUNT(keyword) AS count
                           FROM hits_keywords GROUP BY keyword
-                          ORDER BY count DESC LIMIT 50""")
+                          ORDER BY count DESC LIMIT 200""")
         keywords = {}
         res = list(cursor.fetchall())
         cursor.close()
@@ -431,6 +433,8 @@ class SQLStorage(object):
                 keywords[item['keyword']] = item['count']
             else:
                 keywords[item[0]] = item[1]
+        keywords = dict(filter(self._sf.filter_keywords(self._conf),
+                        keywords.iteritems()))
         return keywords
 
     def list_referrers(self, limit=None, url=None, 

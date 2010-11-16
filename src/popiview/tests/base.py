@@ -19,7 +19,8 @@ class TestBase(unittest.TestCase):
                   'dbpass': 'qqrs',
                   'dbname': 'popiview',
                   'recenthits_size': '200',
-                  'title_strip': '| brusselnieuws.be'
+                  'title_strip': '| brusselnieuws.be',
+                  'keyword_ignorelist': 'brussel, nieuws',
                  }
         self._conf = config
         self._storage = SQLStorage(config)

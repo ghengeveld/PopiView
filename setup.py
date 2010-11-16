@@ -4,14 +4,13 @@ from os.path import join, dirname
 setup(
     name='popiview',
     version='1.0a',
-    description=('Real-time website analytics to measure changes in page '
-                 'popularity'),
+    description=('Real-time website analytics'),
     long_description=open(join(
         dirname(__file__),
         'src', 'popiview', 'README.txt'
     )).read(),
     author='Gert Hengeveld',
-    author_email='gert@infrae.com',
+    author_email='info@infrae.com',
     url='',
     package_dir={'': 'src'},
     packages=find_packages('src'),

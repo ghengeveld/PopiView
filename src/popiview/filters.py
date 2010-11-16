@@ -58,6 +58,29 @@ class StorageFilters(object):
             return True
         return filter_function
 
+    def filter_keywords(self, conf):
+        """Returns a filter function for filtering keywords.
+        """
+        ignorelist = []
+        for item in conf['keyword_ignorelist'].split(','):
+            ignorelist.append(item.strip())
+        def filter_function((keyword, count),):
+            """Return False if keyword is shorter than 3 characters, in ignore 
+            list or numeric.
+            """
+            if len(keyword) < 3:
+                return False
+            if keyword in ignorelist:
+                return False
+            try:
+                i = float(keyword)
+            except ValueError:
+                return True
+            else:
+                return False
+            return True
+        return filter_function
+
     def filter_path(self, path):
         """Return False if path is in ignore list, True otherwise.
         """

@@ -27,6 +27,7 @@ cfg>>recenthits_size = 200
 cfg>>title_strip = | brusselnieuws.be
 cfg>>whitelist_lvl1 = artikel,cultuur,eten-drinken,opinie,dossier,video,audio
 cfg>>ip_blacklist = 188.118.12.169
+cfg>>keyword_ignorelist = brussel, brussels, brusselnieuws, brusselnieuws.be, nieuws, het, een, voor, via, door, over, van, and
 
 [server:main]
 use = egg:PasteScript#wsgiutils

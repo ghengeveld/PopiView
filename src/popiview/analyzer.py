@@ -106,7 +106,12 @@ class Analyzer(object):
             vals = vals[:limit]
             limitval = vals[-1]
 
-        totalcount = sum(vals)
+        if len(vals) == 1:
+            totalcount = vals[0]
+            truncate = 0
+        else:
+            totalcount = sum(vals) - (limitval * len(vals))
+            truncate = limitval
         pct_range = maximum_pct - minimum_pct
         keys = keywords.keys()
         keys.sort()
@@ -114,8 +119,8 @@ class Analyzer(object):
         for keyword in keys:
             if limitval and keywords[keyword] < limitval:
                 continue
-            pct = (keywords[keyword] / float(totalcount) * pct_range
-                   + minimum_pct)
+            pct = ((keywords[keyword] - truncate) / float(totalcount) 
+                   * pct_range + minimum_pct)
             keyword = parser.escape(keyword)
             cloud.append((keyword, round(pct)))
         return sorted(cloud)
