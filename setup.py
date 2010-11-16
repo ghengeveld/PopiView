@@ -3,7 +3,7 @@ from os.path import join, dirname
 
 setup(
     name='popiview',
-    version='0.1',
+    version='1.0a',
     description=('Real-time website analytics to measure changes in page '
                  'popularity'),
     long_description=open(join(
