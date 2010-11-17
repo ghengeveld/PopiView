@@ -39,7 +39,7 @@ class URLParser(object):
             return 'internal'
         query = self.searchquery(ref)
         if query is not None:
-            return 'searches - ' + query[0] + ': ' + query[1]
+            return 'searches - ' + query[0] + ': ' + get_unicode(query[1])
         return 'external: ' + ref[1]
 
     def urlfilter(self, url):

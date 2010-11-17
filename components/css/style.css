@@ -20,10 +20,7 @@ h1 {
     
 }
 .options li input[type=checkbox] { margin:0 5px 0 0; }
-
-.options select {
-	border:0; background:transparent; font-size:0.9em;
-}
+.options select { border:0; font-size:0.9em; }
 
 #deviators { position:absolute; top:3%; left:2%; width:60%; height:33%; }
 #deviators table {

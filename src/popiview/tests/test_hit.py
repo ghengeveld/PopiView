@@ -119,6 +119,42 @@ class TestHit(TestBase):
         self.assertEqual(self.hit.referrer(),
                 u'http://xyz.nl/page?a=русское альфа')
 
+    def test_source_direct(self):
+        """Test source - direct (no referrer)"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page')
+        self.assertEqual(self.hit.source(), u'direct')
+
+    def test_source_internal(self):
+        """Test source - internal"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://abc.nl/page2')
+        self.assertEqual(self.hit.source(), u'internal')
+
+    def test_source_external(self):
+        """Test source - external"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://www.xyz.nl/page')
+        self.assertEqual(self.hit.source(), u'external: www.xyz.nl')
+    
+    def test_source_searches(self):
+        """Test source - searches (basic)"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://google.nl?q=abc')
+        self.assertEqual(self.hit.source(), u'searches - google.nl: abc')
+
+    def test_source_searches_special_chars(self):
+        """Test source - searches (special characters)"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://google.nl?q=éáëöóñùüẽ')
+        self.assertEqual(self.hit.source(), u'searches - google.nl: éáëöóñùüẽ')
+
+    def test_source_searches_cyrillic_chars(self):
+        """Test source - searches (cyrillic characters)"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://google.ru?q=русское альфа')
+        self.assertEqual(self.hit.source(),
+                u'searches - google.ru: русское альфа')
+
     def test_timestamp(self):
         """Test the timestamp as (signed) int, string and None"""
         tests = []

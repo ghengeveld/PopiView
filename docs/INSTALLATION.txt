@@ -82,8 +82,8 @@ You can stop the daemon like this::
 
  bin/paster serve --daemon settings.ini stop
 
-Apache proxy configuration (advanced users)
-===========================================
+Apache proxy configuration
+==========================
 First we have to set a password so the application is protected. For this we 
 have to create a .htpasswd file::
 
@@ -134,6 +134,30 @@ Edit the settings to match your Apache installation.
 	</Location>
 
  </VirtualHost>
+
+Include PopiView JS code
+========================
+In order to catch information of incoming visitors on the website, a piece of
+JavaScript code must be included in every page of the website. The exact
+location of the code and installation into the website depends on the website's
+underlying structure, often a CMS or framework. The goal is to include the JS
+code on every page, as close to the end of the HTML <body> section as possible.
+Usually this will mean a modification to the website engine's footer template
+file. If you already have a system like Google Analytics installed, the PopiView
+installation procedure is the same, and you can just put the PopiView code right
+after (or before) the Google Analytics code. The code to be included is the
+following::
+
+ <script type="text/javascript" 
+  src="http://popiview.example.com/static/popiview.js"></script>
+ <script type="text/javascript">pv();</script>
+
+The exact URL for the JS file depends on the installation path for PopiView, as
+described in the Apache configuration file.
+
+Once this code is included in every page, and the application is running, you
+should see incoming hits in the Hit Monitor, which means the application is
+succesfully installed.
 
 Troubleshooting
 ===============
