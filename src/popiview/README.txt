@@ -35,8 +35,7 @@ Using this data we can construct a Hit object,
 >>> hit.url()
 u'http://mysite.com/page'
 
-A hit object normalizes the url, so it can strip of the slash at
-the end of the url.
+The hit url will always be normalized so it doesn't end with a slash.
 
 >>> hit = Hit(config, u'http://mysite.com/page/')
 >>> hit.url()
@@ -46,7 +45,7 @@ The referrer string can also be passed to the hit class, which will
 be analyzed to see if there are any keywords.
 
 >>> hit = Hit(config, u'http://www.mysite.com/page',
-...           referrer='http://www.google.com?q=cool%20page')
+...           referrer=u'http://www.google.com?q=cool%20page')
 >>> hit.keywords()
 [u'cool', u'page']
 
@@ -98,11 +97,11 @@ Lets empty the hit log now and create some dummy hits with different timestamps
 
 >>> storage.clear_hits()
 >>> storage.add_hit(Hit(config, u'http://www.mysite.com/page', timestamp=1285050010,
-...                     referrer='http://google.com?q=cool%20page'))
+...                     referrer=u'http://google.com?q=cool%20page'))
 >>> storage.add_hit(Hit(config, u'http://www.mysite.com/page', timestamp=1285060010,
-...                     referrer='http://google.com?q=cool'))
+...                     referrer=u'http://google.com?q=cool'))
 >>> storage.add_hit(Hit(config, u'http://www.mysite.com/page', timestamp=1285070010,
-...                     referrer='http://google.com?q=page'))
+...                     referrer=u'http://google.com?q=page'))
 
 We can now get the number of hits on that page for a specific period
 

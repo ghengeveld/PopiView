@@ -80,10 +80,15 @@ class TestAnalyzer(TestBase):
     def test_keywordcloud_basic(self):
         """Test generation of keyword cloud - basic"""
         tests = []
-        # Regular search
+        # Regular search, single word
+        tests.append({
+            'ref': u'http://google.com?q=cool', 
+            'expect': [(u'cool', 100.0)]
+        })
+        # Regular search, phrase
         tests.append({
             'ref': u'http://google.com?q=cool page', 
-            'expect': [('cool', 50.0), ('page', 50.0)]
+            'expect': [(u'cool', 50.0), (u'page', 50.0)]
         })
         # Empty search query
         tests.append({
@@ -102,7 +107,7 @@ class TestAnalyzer(TestBase):
         })
 
         for test in tests:
-            self._storage.clear_hits()
+            self._storage.clear_hits(0)
             hit = Hit(self._conf, u'http://mysite.com/page',
                       referrer=test['ref'])
             self._storage.add_hit(hit)

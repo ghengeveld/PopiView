@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import unittest
+from urllib import quote
 from popiview.hit import Hit
 from popiview.tests.base import TestBase
 
@@ -41,11 +42,20 @@ class TestHit(TestBase):
         self.assertEqual(self.hit.url(),
             u'http://mysite.com/page?a=русское альфа')
 
-    def test_url_non_unicode(self):
-        """Test a url that is not provided as unicode string"""
-        self.hit = Hit(self._conf, 'http://mysite.com/page?a=x&b=1#top')
-        self.assertEqual(self.hit.url(), u'http://mysite.com/page?a=x&b=1#top')
+    def test_url_utf8(self):
+        """Test a url that is provided as utf-8 encoded string"""
+        self.hit = Hit(self._conf,
+                u'http://mysite.com/café'.encode('utf8'))
+        self.assertEqual(self.hit.url(), 
+                u'http://mysite.com/café'.encode('utf8'))
 
+    def test_url_latin1(self):
+        """Test a url that is provided as latin-1 encoded string"""
+        self.hit = Hit(self._conf,
+                u'http://mysite.com/café'.encode('latin1'))
+        self.assertEqual(self.hit.url(), 
+                u'http://mysite.com/café'.encode('latin1'))
+    
     def test_path_with_subdomain(self):
         """Test a path with a subdomain"""
         self.hit = Hit(self._conf, u'http://www.mysite.com/page')
@@ -66,6 +76,18 @@ class TestHit(TestBase):
         self.hit = Hit(self._conf, u'http://mysite.com/page?a=русское альфа')
         self.assertEqual(self.hit.path(), u'/page?a=русское альфа')
 
+    def test_path_utf8(self):
+        """Test a path that is provided as utf-8 encoded string"""
+        self.hit = Hit(self._conf,
+                u'http://mysite.com/café'.encode('utf8'))
+        self.assertEqual(self.hit.path(), u'/café'.encode('utf8'))
+
+    def test_path_latin1(self):
+        """Test a path that is provided as latin-1 encoded string"""
+        self.hit = Hit(self._conf,
+                u'http://mysite.com/café'.encode('latin1'))
+        self.assertEqual(self.hit.path(), u'/café'.encode('latin1'))
+    
     def test_title_basic(self):
         """Test a title with basic characters"""
         self.hit = Hit(self._conf, u'http://abc.nl/page',
@@ -118,6 +140,20 @@ class TestHit(TestBase):
                 referrer=u'http://xyz.nl/page?a=русское альфа')
         self.assertEqual(self.hit.referrer(),
                 u'http://xyz.nl/page?a=русское альфа')
+    
+    def test_referrer_utf8(self):
+        """Test a referrer with utf-8 encoding"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://xyz.nl/page?a=café'.encode('utf-8'))
+        self.assertEqual(self.hit.referrer(),
+                u'http://xyz.nl/page?a=café'.encode('utf-8'))
+    
+    def test_referrer_latin1(self):
+        """Test a referrer with latin-1 encoding"""
+        self.hit = Hit(self._conf, u'http://abc.nl/page',
+                referrer=u'http://xyz.nl/page?a=café'.encode('latin-1'))
+        self.assertEqual(self.hit.referrer(),
+                u'http://xyz.nl/page?a=café'.encode('latin-1'))
 
     def test_source_direct(self):
         """Test source - direct (no referrer)"""

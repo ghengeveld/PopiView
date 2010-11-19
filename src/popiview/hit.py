@@ -8,13 +8,15 @@ class Hit(object):
             timestamp=None, visitor_ip=None):
         self._conf = config
         self._urlp = URLParser(config)
-        self._url_parts = self._urlp.urlfilter(list(urlparse.urlsplit(url)))
+
+        if url.endswith('/'):
+            url = url[:-1]
+        self._url_parts = urlparse.urlsplit(url)
     
         if referrer is None:
             self._referrer_parts = None
         else:
-            self._referrer_parts = self._urlp.urlfilter(
-                list(urlparse.urlsplit(referrer)))
+            self._referrer_parts = urlparse.urlsplit(referrer)
         
         if title is None:
             self._title = ''
@@ -34,7 +36,9 @@ class Hit(object):
             self._visitor_ip = visitor_ip
 
     def url(self):
-        return urlparse.urlunsplit(self._url_parts)
+        if self._url_parts is None:
+            return None
+        return self._url_parts.geturl()
 
     def path(self):
         if self._url_parts[3]:
@@ -44,7 +48,7 @@ class Hit(object):
     def referrer(self):
         if self._referrer_parts is None:
             return None
-        return urlparse.urlunsplit(self._referrer_parts)
+        return self._referrer_parts.geturl()
 
     def title(self):
         return self._title

@@ -3,6 +3,7 @@ import MySQLdb
 import MySQLdb.cursors
 import threading
 import urlparse
+import time
 from popiview.counter import Counter
 from popiview.filters import StorageFilters
 from popiview.urlparser import URLParser
@@ -17,7 +18,7 @@ class MemoryStorage(object):
         self._recenthits = []
         self._sf = StorageFilters()
 
-    def clear_hits(self):
+    def clear_hits(self, days=7):
         self._hits = []
         self._recenthits = []
 
@@ -250,17 +251,17 @@ class SQLStorage(object):
             )""")
         cursor.close()
 
-    def clear_hits(self):
-        self._recenthits = []
+    def clear_hits(self, days=7):
         cursor = self.get_cursor()
-        if self._conf['dbtype'] == 'mysql':
-            # MySQL syntax
-            cursor.execute("TRUNCATE TABLE hits_keywords")
-            cursor.execute("TRUNCATE TABLE hits")
-        else:
-            # SQLite syntax
+        days = int(days)
+        ts = time.time() - 3600 * 24 * days
+        if days == 0:
             cursor.execute("DELETE FROM hits_keywords")
             cursor.execute("DELETE FROM hits")
+        else:
+            cursor.execute("""DELETE FROM hits_keywords WHERE hit_id IN (
+                SELECT hit_id FROM hits WHERE hit_timestamp <= %i)""" % ts)
+            cursor.execute("DELETE FROM hits WHERE hit_timestamp <= %i" % ts)
         cursor.close()
 
     def add_hit(self, hit):
@@ -287,11 +288,13 @@ class SQLStorage(object):
                 if self._conf['dbtype'] == 'sqlite':
                     cursor.execute("""INSERT OR IGNORE INTO hits_keywords ( 
                                       `hit_id`, `keyword`
-                                      ) VALUES (%s, %s)""", (hitid, word))
+                                      ) VALUES (%s, %s)""", (hitid, 
+                                          word.lower()))
                 else:
                     cursor.execute("""INSERT IGNORE INTO hits_keywords (
                                       `hit_id`, `keyword`
-                                      ) VALUES (%s, %s)""", (hitid, word))
+                                      ) VALUES (%s, %s)""", (hitid, 
+                                          word.lower()))
         else:
             # SQLite syntax
             cursor.execute("""INSERT INTO hits (`hit_timestamp`, `hit_url`,

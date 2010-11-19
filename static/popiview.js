@@ -4,9 +4,9 @@ function pv()
 		'<img src="http://popiview.infrae.com/image.gif?cur=' +
 			encodeURIComponent(location.href) +
 		'&amp;ref=' +
-			encodeURIComponent(document.referrer) +
+			encodeURIComponent(decodeURI(document.referrer)) +
 		'&amp;title=' +
-			encodeURI(document.title) +
+			encodeURIComponent(document.title) +
 		'" alt="" width="1" height="1" />'
 	);
 }

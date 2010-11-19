@@ -4,6 +4,7 @@ import mimetypes
 import os.path
 import time
 from webob import Request, Response
+from urllib import unquote_plus
 from popiview.hit import Hit
 from popiview.storage import MemoryStorage, SQLStorage
 from popiview.analyzer import Analyzer
@@ -31,7 +32,8 @@ class PopiWSGIServer(object):
         return Response(view)
 
     def cleardata(self):
-        self._storage.clear_hits()
+        days = self.request.GET.get('days', 7)
+        self._storage.clear_hits(days)
         return Response('done')
 
     def deviators(self):
@@ -113,18 +115,21 @@ class PopiWSGIServer(object):
         return Response('done')
 
     def log_hit(self):
+        # Make sure we get plain strings, not unicode
+        #self.request.charset = None 
         cur = self.request.str_GET.get('cur', None)
         ref = self.request.str_GET.get('ref', None)
         title = self.request.str_GET.get('title', None)
-        
-        if cur is not None:
-            cur = get_unicode(cur)
-        if ref is not None:
-            ref = get_unicode(ref)
-        if title is not None:
-            title = get_unicode(title).strip()
+
         if not cur:
             cur = self.request.headers.get('referer', None)
+        
+        if cur is not None:
+            cur = get_unicode(unquote_plus(cur))
+        if ref is not None:
+            ref = get_unicode(unquote_plus(ref))
+        if title is not None:
+            title = get_unicode(unquote_plus(title)).strip()
 
         response = Response()
         response.headers['Content-Type'] = "image/gif"
@@ -186,8 +191,19 @@ class PopiWSGIServer(object):
 
 
 def app_factory(global_config, storage_name, **local_conf):
+    config = ConfigParser(local_conf)
+    if storage_name == 'memory':
+        storage = MemoryStorage(config)
+    elif storage_name == 'sql':
+        storage = SQLStorage(config)
+    else:
+        raise ValueError('No such storage: %s' % storage_name)
+    return PopiWSGIServer(config, storage)
+
+
+def ConfigParser(paster_config):
     config = {}
-    for key, value in local_conf.iteritems():
+    for key, value in paster_config.iteritems():
         # XXX this algorithm is a bit unreadable
         # you could make a generic one that build nested dictionaries
         if key.startswith('cfg>>'):
@@ -204,10 +220,4 @@ def app_factory(global_config, storage_name, **local_conf):
                     if not keys[1] in config[keys[0]]:
                         config[keys[0]][keys[1]] = {}
                     config[keys[0]][keys[1]][keys[2]] = value
-    if storage_name == 'memory':
-        storage = MemoryStorage(config)
-    elif storage_name == 'sql':
-        storage = SQLStorage(config)
-    else:
-        raise ValueError('No such storage: %s' % storage_name)
-    return PopiWSGIServer(config, storage)
+    return config

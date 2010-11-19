@@ -20,7 +20,8 @@ setup(
     entry_points={
     'paste.app_factory': [
         'main=popiview.server:app_factory'
-      ]
+      ],
+    'console_scripts': ['cleanup=popiview.dbcleanup:cleanup']
     },
     install_requires=[
       'setuptools',

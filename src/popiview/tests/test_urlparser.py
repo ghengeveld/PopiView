@@ -74,11 +74,11 @@ class TestURLParser(TestBase):
             self.assertEqual(self.urlparser.searchquery(ref), test['expect'])
 
     def test_keywords(self):
-        """Test keyword separation from searchquery, converted to lowercase"""
+        """Test keyword separation from searchquery"""
         tests = []
         # Regular search
         tests.append({
-            'query': 'Test SearchQuery',
+            'query': 'test searchquery',
             'expect': ['test', u'searchquery']
         })
         # Number

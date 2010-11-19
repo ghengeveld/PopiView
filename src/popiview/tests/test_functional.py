@@ -1,12 +1,11 @@
 # coding=utf-8
 
 import unittest
-
+import json
 from webob import Request
 from popiview.server import PopiWSGIServer
 from popiview.tests.base import TestBase
-from urllib import quote
-
+from urllib import quote_plus
 
 class TestFunctional(TestBase):
 
@@ -14,32 +13,74 @@ class TestFunctional(TestBase):
         super(TestFunctional, self).setUp()
         self.app = PopiWSGIServer(self._conf, self._storage)
 
-    def test_image_without_paramaters(self):
-        """ Test image.gif without javascript inserted parameters """
-        request = Request.blank('/image.gif')
+    def test_image_basic(self):
+        """Test image.gif with only required parameters"""
+        request = Request.blank('/image.gif?cur=http%3A%2F%2Fwww.mysite.com')
         response = request.get_response(self.app)
-        self.assertEquals('200 OK', response.status)
-        expected_headers = {'Content-Length': '807',
-                            'Expires': 'Sat, 26 Jul 1997 05:00:00 GMT',
-                            'Content-Type': 'image/gif',
-                            'Cache-Control': 'no-cache, must-revalidate'}
-        self.assertEquals(expected_headers, dict(response.headers))
-
-    def test_latin1(self):
-        """Test latin-1 encoding in request"""
-        request = Request.blank(
-            '/image.gif?cur=' + quote('http://mysite.com/dead?page='
-            + u'café'.encode('latin1'))
-            + '&ref='
-            + quote('http://google.com?q='+ quote(u'café'.encode('latin1')))
-            + '&title=sometitle')
-
-        response = request.get_response(self.app)
-        self.assertEquals('200 OK', response.status)
+        self.assertEqual('200 OK', response.status)
         request = Request.blank('/keywordcloud.json')
         response = request.get_response(self.app)
-        self.assertEquals('200 OK', response.status)
+        self.assertEqual('200 OK', response.status)
+        self.assertEqual([], json.loads(response.body))
+        
+    def test_image_searchquery(self):
+        """Test image.gif with searchengine as referrer"""
+        request = Request.blank('/image.gif?cur='
+                + quote_plus('http://www.mysite.com/page')
+                + '&ref='
+                + quote_plus('http://www.google.com?q=café')
+                + '&title=Google'
+            ) 
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        request = Request.blank('/keywordcloud.json')
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        self.assertEqual([[u'café', 500.0]], json.loads(response.body))
 
+    def test_image_without_params(self):
+        """Test image.gif without javascript inserted parameters"""
+        request = Request.blank('/image.gif')
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        request = Request.blank('/keywordcloud.json')
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        self.assertEqual([], json.loads(response.body))
+    
+    def test_image_utf8(self):
+        """Test image.gif with utf-8 encoding in request"""
+        request = Request.blank('/image.gif?cur='
+                + quote_plus(u'http://www.mysite.com/page'.encode('utf8'))
+                + '&ref='
+                + quote_plus(u'http://www.google.com?q=café'.encode('utf8'))
+                + '&title=Google'
+            ) 
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        request = Request.blank('/keywordcloud.json')
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        self.assertEqual([[u'café', 500.0]], json.loads(response.body))
+
+    def test_image_latin1(self):
+        """Test image.gif with latin-1 encoding in request"""
+        request = Request.blank('/image.gif?cur='
+                + quote_plus(u'http://www.mysite.com/page'.encode('latin1'))
+                + '&ref='
+                + quote_plus(u'http://www.google.com?q=café'.encode('latin1'))
+                + '&title=Google'
+            ) 
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        request = Request.blank('/keywordcloud.json')
+        response = request.get_response(self.app)
+        self.assertEqual('200 OK', response.status)
+        self.assertEqual([[u'café', 500.0]], json.loads(response.body))
+
+    def tearDown(self):
+        super(TestFunctional, self).tearDown()
+        self.app = None
 
 def test_suite():
     suite = unittest.TestSuite()
