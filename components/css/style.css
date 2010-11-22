@@ -7,7 +7,7 @@ h1 {
 	font-weight:bold; font-size:1.8em; color:#fff;
     -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px;
 }
-
+a { color:#000; text-decoration:none; }
 .alignRight { text-align:right; }
 
 .options {
