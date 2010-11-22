@@ -90,14 +90,28 @@ class Analyzer(object):
         return pages[:limit]
 
     def get_keyword_cloud(self, minimum_count=None, limit=50,
-                          minimum_pct=0, maximum_pct=100):
+                          minimum_pct=0, maximum_pct=100,
+                          start_time=None, end_time=None, timespan=None):
         """Returns a list of tuples of keywords and their size relative to the
         others, as a percentage with set bounds. Sorted alphabetically.
         """
         cloud = []
         parser = HTMLParser()
+
+        if timespan is not None:
+            start_time = int(time.time()) - int(timespan)
+            end_time = int(time.time())
+        else:
+            if start_time is None and end_time is None:
+                start_time = int(time.time()) - 3600
+                end_time = int(time.time())
+            elif start_time is None:
+                start_time = int(end_time) - 3600
+            elif end_time is None:
+                end_time = int(time.time())
         
-        keywords = self._storage.get_keywords(minimum_count=minimum_count)
+        keywords = self._storage.get_keywords(minimum_count=minimum_count,
+                start_time=start_time, end_time=end_time)
 
         limitval = 0
         vals = keywords.values()

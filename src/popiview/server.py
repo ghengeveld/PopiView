@@ -58,8 +58,12 @@ class PopiWSGIServer(object):
         return json_response(output)
 
     def keywordcloud(self):
+        timespan = self.request.GET.get('timespan', None)
+        start_time = self.request.GET.get('start_time', None)
+        end_time = self.request.GET.get('end_time', None)
         minimum_count = self.request.GET.get('minimum_count', None)
-        output = self._analyzer.get_keyword_cloud(minimum_count=minimum_count,
+        output = self._analyzer.get_keyword_cloud(start_time=start_time,
+            end_time=end_time, timespan=timespan, minimum_count=minimum_count,
             minimum_pct=80, maximum_pct=500)
         return json_response(output)
 

@@ -425,9 +425,16 @@ class SQLStorage(object):
         Returns dictionary: {keyword: count}
         """
         cursor = self.get_cursor()
-        cursor.execute("""SELECT keyword, COUNT(keyword) AS count
-                          FROM hits_keywords GROUP BY keyword
-                          ORDER BY count DESC LIMIT 200""")
+        sqlwhere = 'WHERE 1'
+        if start_time is not None:
+            sqlwhere += ' AND hit_timestamp >= %i' % int(start_time)
+        if end_time is not None:
+            sqlwhere += ' AND hit_timestamp <= %i' % int(end_time)
+        cursor.execute("""SELECT k.keyword, COUNT(k.keyword) AS count,
+                          h.hit_timestamp AS timestamp
+                          FROM hits_keywords AS k INNER JOIN hits AS h
+                          ON h.hit_id=k.hit_id %s GROUP BY k.keyword
+                          ORDER BY count DESC LIMIT 200""" % sqlwhere)
         keywords = {}
         res = list(cursor.fetchall())
         cursor.close()

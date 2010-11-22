@@ -3,7 +3,8 @@ $(document).ready(function(){
 	opts['historic_length'] = $("select[name=historic_length]").val();
 	opts['recent_length'] = $("select[name=recent_length]").val();
 	opts['qfield'] = $("input[name=qfield]:checked").val();
-	opts['timespan'] = $("select[name=timespan]").val();
+	opts['tp_timespan'] = $("select[name=tp_timespan]").val();
+	opts['kc_timespan'] = $("select[name=kc_timespan]").val();
 	opts['external'] = $("input[name=external]").is(":checked")?1:0;
 	opts['searches'] = $("input[name=searches]").is(":checked")?1:0;
 	opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
@@ -13,6 +14,7 @@ $(document).ready(function(){
 		opts[$(this).attr('name')] = $(this).val();
 		updateDeviators();
         updateTopPages();
+        updateKeywordCloud();
 	});
 	$("input[type=radio]").change(function(){
 		opts[$(this).attr('name')] = $(this).val();
@@ -53,7 +55,7 @@ $(document).ready(function(){
 	function updateTopPages()
 	{
 		$.getJSON(
-			'toppages.json?timespan=' + opts['timespan'],
+			'toppages.json?timespan=' + opts['tp_timespan'],
 			function(data)
 			{
 				var items = '';
@@ -69,7 +71,7 @@ $(document).ready(function(){
 	}
 	function updateKeywordCloud()
 	{
-		$.getJSON('keywordcloud.json', function(data){
+		$.getJSON('keywordcloud.json?timespan=' + opts['kc_timespan'], function(data){
 			var items = '';
 			for (x in data){
 				items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
