@@ -109,8 +109,9 @@ $(document).ready(function(){
 						sourcetype = 'external';
 					}
 					item = '<li class="new '+sourcetype+'" title="'
-						+ data[x].url + '">' + data[x].title + '<br/>'
-						+ '<span>' + data[x].source + '</span></li>';
+						+data[x].url+'"><a href="'+data[x].url+'">' 
+                        +data[x].title+'</a><br/>'
+						+'<span>'+data[x].source+'</span></li>';
 					$('#hitmonitor ol').prepend(item);
 					if($('#hitmonitor ol li').length > 20)
 					{
