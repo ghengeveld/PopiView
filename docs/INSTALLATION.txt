@@ -7,6 +7,8 @@ Requirements
 * Python 2.6
 * MySQL server
 * Subversion
+* Python Distribute
+* Python-dev
 
 Getting the files
 =================
@@ -158,6 +160,26 @@ described in the Apache configuration file.
 Once this code is included in every page, and the application is running, you
 should see incoming hits in the Hit Monitor, which means the application is
 succesfully installed.
+
+Automated database cleanup
+==========================
+In order to prevent the database from growing to virtually unlimited
+proportions, we have to clean up old records automatically. This is achieved by
+running a daily cron job. For this we have to edit the crontab::
+
+ sudo crontab -u username -e
+
+The username should be replaced with the linux username which is running the
+PopiView application server (bin/paster serve). Usually it will be the username
+you're currently logged in as. With this command a text editor will appear in
+which we have to add this line::
+
+ # m h dom mon dow command
+ 0 4 * * * /path/to/popiview/bin/cleanup --config-file /path/to/popiview/settings.ini --days 7
+
+This will run the cleanup utility every day at 04:00 hours. It will cleanup all
+records older than 7 days. The paths must match with the PopiView installation
+path (defined from disk root).
 
 Troubleshooting
 ===============

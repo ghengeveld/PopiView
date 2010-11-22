@@ -2,6 +2,15 @@
 PopiView
 ========
 
+PopiView 1.0b (2010-11-22)
+--------------------------
+
+* Add configurable timespan to Keyword Cloud
+* Add automatic cleanup utility (cron)
+* Add links to target page in Hit Monitor
+* Fix encoding issues in search queries
+* Various layout and javascript fixes
+
 PopiView 1.0a (2010-11-16)
 --------------------------
 
