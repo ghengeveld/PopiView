@@ -12,7 +12,7 @@ class URLParser(object):
         sites = self._conf['sparams']
         if ref is not None:
             for domain, q in sites.iteritems():
-                domainpos = ref[1].find(domain)
+                domainpos = ref[1].find(domain + '.')
                 if domainpos > -1:
                     qs = urlparse.parse_qs(ref[3])
                     query = qs.get(q, None)
