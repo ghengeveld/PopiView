@@ -20,6 +20,7 @@ class TestBase(unittest.TestCase):
                   'dbname': 'popiview',
                   'recenthits_size': '200',
                   'title_strip': '| brusselnieuws.be',
+                  'whitelist_lvl1': '',
                   'keyword_ignorelist': 'brussel, nieuws',
                  }
         self._conf = config

@@ -2,6 +2,7 @@
 
 import unittest
 from urllib import quote
+from copy import deepcopy
 from popiview.hit import Hit
 from popiview.tests.base import TestBase
 
@@ -214,6 +215,48 @@ class TestHit(TestBase):
             self.hit = Hit(self._conf, u'http://abc.nl',
                 timestamp=test['timestamp'])
             self.assertEqual(self.hit.timestamp(), test['expect'])
+
+    def test_whitelist_empty(self):
+        """Test path whitelisting - empty"""
+        testconf = deepcopy(self._conf)
+        testconf['whitelist_lvl1'] = ''
+        hit = Hit(testconf, u'http://abc.nl/path/to/page')
+        self.assertEqual(hit.is_whitelisted(), True)
+
+    def test_whitelist_single_matching(self):
+        """Test path whitelisting - single, matching"""
+        testconf = deepcopy(self._conf)
+        testconf['whitelist_lvl1'] = 'path'
+        hit = Hit(testconf, u'http://abc.nl/path/to/page')
+        self.assertEqual(hit.is_whitelisted(), True)
+
+    def test_whitelist_single_nonmatching(self):
+        """Test path whitelisting - single, non-matchingempty"""
+        testconf = deepcopy(self._conf)
+        testconf['whitelist_lvl1'] = 'anotherpath'
+        hit = Hit(testconf, u'http://abc.nl/path/to/page')
+        self.assertEqual(hit.is_whitelisted(), False)
+
+    def test_whitelist_multi_matching(self):
+        """Test path whitelisting - multi, matching"""
+        testconf = deepcopy(self._conf)
+        testconf['whitelist_lvl1'] = 'one,path,three'
+        hit = Hit(testconf, u'http://abc.nl/path/to/page')
+        self.assertEqual(hit.is_whitelisted(), True)
+
+    def test_whitelist_multi_nonmatching(self):
+        """Test path whitelisting - multi, non-matching"""
+        testconf = deepcopy(self._conf)
+        testconf['whitelist_lvl1'] = 'one,two,three'
+        hit = Hit(testconf, u'http://abc.nl/path/to/page')
+        self.assertEqual(hit.is_whitelisted(), False)
+
+    def test_whitelist_multi_spaced(self):
+        """Test path whitelisting - multi, with spaces"""
+        testconf = deepcopy(self._conf)
+        testconf['whitelist_lvl1'] = 'one, path , three'
+        hit = Hit(testconf, u'http://abc.nl/path/to/page')
+        self.assertEqual(hit.is_whitelisted(), True)
 
 
 def test_suite():

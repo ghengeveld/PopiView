@@ -64,9 +64,10 @@ class Hit(object):
 
     def is_whitelisted(self):
         if 'whitelist_lvl1' in self._conf:
-            whitelist_items = self._conf['whitelist_lvl1'].split(',')
-            if whitelist_items == []:
+            if self._conf['whitelist_lvl1'] == '':
                 return True
+            whitelist_items = [x.strip() for x in list(
+                self._conf['whitelist_lvl1'].split(','))]
             pathlevels = self.path().strip('/').split('/')
             if pathlevels:
                 lvl1 = pathlevels[0]
