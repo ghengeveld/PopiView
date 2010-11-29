@@ -48,6 +48,10 @@ number has to be modified (default is 3033), add the following lines::
 
  [settings.ini]
  port = 1234
+
+Under [siteconfig], edit the baseurl value to match the absolute URL of the
+application once it's installed. This is required to ensure hits are logged to
+your server. The URL should not have an ending slash.
  
 Building the application with buildout
 ======================================
