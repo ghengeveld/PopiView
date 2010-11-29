@@ -22,6 +22,13 @@ cfg>>sparams>>google = q
 cfg>>sparams>>bing = q
 cfg>>sparams>>yahoo = p
 
+cfg>>recenthits_size = ${pvconfig:recenthits_size}
+
+cfg>>title_strip = ${siteconfig:title_strip}
+cfg>>whitelist_lvl1 = ${siteconfig:path_whitelist}
+cfg>>ip_blacklist = ${siteconfig:ip_blacklist}
+cfg>>keyword_ignorelist = ${siteconfig:keyword_ignorelist}
+
 [filter:pdb]
 use = egg:z3c.evalexception#ajax
 
