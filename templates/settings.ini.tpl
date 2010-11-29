@@ -23,11 +23,11 @@ cfg>>sparams>>google = q
 cfg>>sparams>>bing = q
 cfg>>sparams>>yahoo = p
 
-cfg>>recenthits_size = 200
-cfg>>title_strip = | brusselnieuws.be
-cfg>>whitelist_lvl1 = artikel,cultuur,eten-drinken,opinie,dossier,video,audio
-cfg>>ip_blacklist = 188.118.12.169
-cfg>>keyword_ignorelist = brussel, brussels, brusselnieuws, brusselnieuws.be, nieuws, het, een, voor, via, door, over, van, and
+cfg>>recenthits_size = ${pvconfig:recenthits_size}
+cfg>>title_strip = ${siteconfig:title_strip}
+cfg>>whitelist_lvl1 = ${siteconfig:path_whitelist}
+cfg>>ip_blacklist = ${siteconfig:ip_blacklist}
+cfg>>keyword_ignorelist = ${siteconfig:keyword_ignorelist}
 
 [server:main]
 use = egg:PasteScript#wsgiutils
