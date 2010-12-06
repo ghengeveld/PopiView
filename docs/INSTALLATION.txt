@@ -101,13 +101,7 @@ Make sure to choose a proper password. The username will be 'pvuser', or you
 can choose another.
 
 To make Apache serve the paster application, add this to your Apache 
-configuration file, and modify the following:
-
-* ServerName: final application url
-* RewriteRule: port number
-* AuthUserFile: path to the .htpasswd file we just created
-
-Edit the settings to match your Apache installation::
+configuration file and edit the settings to match your Apache installation::
 
   <VirtualHost *:80>
 
@@ -153,10 +147,10 @@ Edit the settings to match your Apache installation::
 
 You have to replace values of the following directives:
 
- - **ServerName** with the hostname you will use for accessing popiview.
- - **DocumentRoot** with the path to static folder of your
-   popiview installation.
- - **AuthUserFile** if you created the htpasswd in a different location.
+* ServerName : the hostname you will use for accessing popiview.
+* DocumentRoot : the path to static folder of your popiview installation.
+* RewriteRule (#3): port number if you changed it
+* AuthUserFile : if you created the htpasswd in a different location.
 
 
 Include PopiView JS code
