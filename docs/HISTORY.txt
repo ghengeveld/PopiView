@@ -2,6 +2,18 @@
 PopiView
 ========
 
+PopiView 1.0b2 (2010-12-06)
+---------------------------
+
+* Automatically generate popiview.js from template to make application url
+  configurable
+* Move settings to template and profile to allow for easy customization
+* Fix detection of searchengine domains
+* Allow empty path whitelist (ignores whitelisting filter)
+* Add tests for whitelisting
+* Update INSTALLATION.txt to include Apache configuration details for serving
+  static files
+
 PopiView 1.0b (2010-11-22)
 --------------------------
 
