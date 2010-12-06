@@ -77,7 +77,7 @@ This should start the server and display the IP and port number on which the
 application is served::
 
  Starting server in PID ####.
- Starting HTTP server on http://0.0.0.0:1234
+ Starting HTTP server on http://0.0.0.0:3033
 
 To exit paster, press Ctrl + C.
 To start paster as a deamon (in the background), run it like this::
@@ -107,41 +107,57 @@ configuration file, and modify the following:
 * RewriteRule: port number
 * AuthUserFile: path to the .htpasswd file we just created
 
-Edit the settings to match your Apache installation.
+Edit the settings to match your Apache installation::
 
-::
+  <VirtualHost *:80>
 
- <VirtualHost *:80>
+    ServerName popiview.example.com
 
-	ServerName popiview.example.com
+    ProxyPreserveHost on
+    DocumentRoot <full path to popiview>/static
 
-	ProxyPreserveHost on
+    RewriteEngine on
+    RewriteRule ^/favicon.ico$ /static/favicon.ico
+    RewriteRule ^/static/(.*) /$1 [L]
+    RewriteRule ^/(.*)$ http://localhost:3033/$1 [P,L]
 
-	RewriteEngine on
-	RewriteRule ^/(.*)$ http://localhost:1234/$1 [P,L]
+    <Location "/static">
+      Satisfy Any
+      Order deny,allow
+      Allow from all
+    </Location>
 
-	<Location "/favicon.ico">
-	  Satisfy Any
-	  Order deny,allow
-	  Allow from all
-	</Location>
+    <Location "/favicon.ico">
+      Satisfy Any
+      Order deny,allow
+      Allow from all
+    </Location>
 
-	<Location "/image.gif">
-	  Satisfy Any
-	  Order deny,allow
-	  Allow from all
-	</Location>
+    <Location "/image.gif">
+      Satisfy Any
+      Order deny,allow
+      Allow from all
+    </Location>
 
-	<Location />
-    	  AuthUserFile /etc/apache2/popiview.htpasswd
-    	  AuthName "Popiview"
-    	  AuthType Basic
-    	  require valid-user
-	  Order deny,allow
-	  Allow from all
-	</Location>
+    <Location />
+          AuthUserFile /etc/apache2/popiview.htpasswd
+          AuthName "Popiview"
+          AuthType Basic
+          require valid-user
+      Order deny,allow
+      Allow from all
+    </Location>
 
- </VirtualHost>
+  </VirtualHost>
+
+
+You have to replace values of the following directives:
+
+ - **ServerName** with the hostname you will use for accessing popiview.
+ - **DocumentRoot** with the path to static folder of your
+   popiview installation.
+ - **AuthUserFile** if you created the htpasswd in a different location.
+
 
 Include PopiView JS code
 ========================
