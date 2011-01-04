@@ -107,7 +107,7 @@ configuration file and edit the settings to match your Apache installation::
     ServerName popiview.example.com
 
     ProxyPreserveHost on
-    DocumentRoot <full path to popiview>/static
+    DocumentRoot <full path to popiview>
 
     RewriteEngine on
     RewriteRule ^/favicon.ico$ /static/favicon.ico
