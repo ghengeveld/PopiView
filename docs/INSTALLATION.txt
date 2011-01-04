@@ -133,10 +133,10 @@ configuration file and edit the settings to match your Apache installation::
     </Location>
 
     <Location />
-          AuthUserFile /etc/apache2/popiview.htpasswd
-          AuthName "Popiview"
-          AuthType Basic
-          require valid-user
+      AuthUserFile /etc/apache2/popiview.htpasswd
+      AuthName "Popiview"
+      AuthType Basic
+      require valid-user
       Order deny,allow
       Allow from all
     </Location>
