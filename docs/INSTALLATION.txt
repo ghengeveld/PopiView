@@ -104,7 +104,6 @@ To make Apache serve the paster application, add this to your Apache
 configuration file and edit the settings to match your Apache installation::
 
   <VirtualHost *:80>
-
     ServerName popiview.example.com
 
     ProxyPreserveHost on
@@ -112,7 +111,7 @@ configuration file and edit the settings to match your Apache installation::
 
     RewriteEngine on
     RewriteRule ^/favicon.ico$ /static/favicon.ico
-    RewriteRule ^/static/(.*) /$1 [L]
+    RewriteRule ^/static/.* - [L]
     RewriteRule ^/(.*)$ http://localhost:3033/$1 [P,L]
 
     <Location "/static">
