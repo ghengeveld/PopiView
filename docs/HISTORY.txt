@@ -2,6 +2,11 @@
 PopiView
 ========
 
+PopiView 1.0final (2011-01-04)
+------------------------------
+
+* Fixed possible security issue caused by incomplete installation instructions.
+
 PopiView 1.0b2 (2010-12-06)
 ---------------------------
 
