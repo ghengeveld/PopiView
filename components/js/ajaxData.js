@@ -10,15 +10,21 @@ $(document).ready(function(){
 	opts['internal'] = $("input[name=internal]").is(":checked")?1:0;
 	opts['direct'] = $("input[name=direct]").is(":checked")?1:0;
 
+    // Updates are triggered round-robin
+    // Some browsers don't allow more than 2 concurrent connections
+    // The hitMonitor is updated every loop, the other monitors once every multiplier loops
+    var loopDelay       = 5000;
+    var hitMultiplier   = 3;
+    var loopCounter     = hitMultiplier;
+    var loopTimeout;
+    
 	$("select").change(function(){
 		opts[$(this).attr('name')] = $(this).val();
-		updateDeviators();
-        updateTopPages();
-        updateKeywordCloud();
+        instantReset();
 	});
 	$("input[type=radio]").change(function(){
 		opts[$(this).attr('name')] = $(this).val();
-		updateDeviators();
+        instantReset();
 	});
 
 	var monitor_timestamp = 0;
@@ -30,7 +36,7 @@ $(document).ready(function(){
 		}
 		$('#hitmonitor ol').html('');
 		monitor_timestamp = 0;
-		updateMonitor();
+        instantReset();
 	});
 	
 	function updateDeviators()
@@ -44,14 +50,15 @@ $(document).ready(function(){
 				var items = '';
 				for (x in data){
 					items += '<tr>';
-					items += '<td>' + data[x].name + '</td>';
-					items += '<td class="alignRight">' + data[x].hph_historic + '->' + data[x].hph_recent + ' hits/hour</td>';
+					items += '<td class="maxWidth">' + data[x].name + '</td>';
+					items += '<td class="alignRight noWrap">' + data[x].hph_historic + '->' + data[x].hph_recent + ' hits/hour</td>';
 					items += '</tr>';
 				}
 				$('#deviators table').html(items);
-			}
+                updateTopPages();
+	 		}
 		);
-	}
+	} 
 	function updateTopPages()
 	{
 		$.getJSON(
@@ -61,23 +68,27 @@ $(document).ready(function(){
 				var items = '';
 				for (x in data){
 					items += '<tr>';
-					items += '<td>' + data[x].name + '</td>';
-					items += '<td class="alignRight">' + data[x].count + ' hits</td>';
+					items += '<td class="maxWidth">' + data[x].name + '</td>';
+					items += '<td class="alignRight noWrap">' + data[x].count + ' hits</td>';
 					items += '</tr>';
-				}
+	 			}
 				$('#toppages table').html(items);
-			}
+                updateKeywordCloud();
+	 		}
 		);
-	}
+	} 
 	function updateKeywordCloud()
 	{
-		$.getJSON('keywordcloud.json?timespan=' + opts['kc_timespan'], function(data){
-			var items = '';
-			for (x in data){
-				items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
-			}
-			$('#keywordcloud ol').html(items);
-		});
+		$.getJSON('keywordcloud.json?timespan=' + opts['kc_timespan'], 
+            function(data){
+			    var items = '';
+    			for (x in data){
+	    			items += '<li style="font-size:' + data[x][1] + '%;">' + data[x][0] + '</li>';
+		    	}
+			    $('#keywordcloud ol').html(items);
+	            updateMonitor();
+		    }
+        );
 	}
 	function updateMonitor()
 	{
@@ -91,23 +102,25 @@ $(document).ready(function(){
 				var sourcetype = 'external';
 				for (x in data)
 				{
-					monitor_timestamp = data[x].timestamp;
-					if(data[x].source.indexOf('internal') == 0)
-					{
-						sourcetype = 'internal';
-					}
-					else if(data[x].source.indexOf('direct') == 0)
-					{
-						sourcetype = 'direct';
-					}
-					else if(data[x].source.indexOf('searches') == 0)
-					{
-						sourcetype = 'searches';
-					}
-					else
-					{
-						sourcetype = 'external';
-					}
+                    monitor_timestamp = Math.max(monitor_timestamp, data[x].timestamp);
+                    if (data[x].source) {
+                        if (data[x].source.indexOf('internal') == 0)
+                        {
+                            sourcetype = 'internal';
+                        }
+                        else if(data[x].source.indexOf('direct') == 0)
+                        {
+                            sourcetype = 'direct';
+                        }
+                        else if(data[x].source.indexOf('searches') == 0)
+                        {
+                            sourcetype = 'searches';
+                        }
+                        else
+                        {
+                            sourcetype = 'external';
+                        }
+                    }
 					item = '<li class="new ' + sourcetype + '" title="'
 						+ data[x].url + '"><a href="'
                         + data[x].url + '" target="_blank">'
@@ -118,26 +131,39 @@ $(document).ready(function(){
 					{
 						$('#hitmonitor ol li:last').remove();
 					}
-					if(sourcetype == 'searches')
-					{
-						updateKeywordCloud();
-					}
 				}
+
 				$("li.new").animate({
 					backgroundColor: "#fff"
 				}, 3000, function(){
 					$(this).removeClass('new');
 				});
+
+                clearTimeout(loopTimeout);
+                if (loopCounter >= hitMultiplier) {
+                    loopCounter = 1;
+                    loopTimeout = setTimeout(updateDeviators, loopDelay);
+                } else {
+                    loopCounter += 1;
+                    loopTimeout = setTimeout(updateMonitor, loopDelay);
+                } 
 			}
 		);
 	}
 
-	updateDeviators();
-	updateTopPages();
-	updateKeywordCloud();
-	updateMonitor();
-	setInterval(function(){ updateDeviators(); }, 30000);
-	setInterval(function(){ updateTopPages(); }, 30000);
-	setInterval(function(){ updateKeywordCloud(); }, 30000);
-	setInterval(function(){ updateMonitor(); }, 5000);
+    // Timeout error for ajax-requests 
+    $.ajaxSetup({"error":function(XMLHttpRequest,textStatus, errorThrown) {
+        clearTimeout(loopTimeout);
+        loopCounter = hitMultiplier;
+        loopTimeout = setTimeout(updateDeviators, loopDelay);
+    }});
+
+    function instantReset() {
+        clearTimeout(loopTimeout);
+        loopCounter = hitMultiplier;
+        updateDeviators();
+    }
+
+    // Start it all up
+    updateDeviators();
 });
